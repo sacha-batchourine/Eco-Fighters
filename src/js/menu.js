@@ -1,5 +1,3 @@
-// menu.js
-
 export default class Menu extends Phaser.Scene {
     constructor() {
         super({ key: "Menu" });
@@ -12,11 +10,16 @@ export default class Menu extends Phaser.Scene {
     }
 
     create() {
-        // Ajout du fond d'écran
-        this.add.image(0, 0, "menu_fond").setOrigin(0).setDepth(0);
+        // Récupération des dimensions de l'écran
+        let largeur = this.scale.width;
+        let hauteur = this.scale.height;
+
+        // Ajout du fond d'écran et adaptation à la taille de l'écran
+        let fond = this.add.image(0, 0, "menu_fond").setOrigin(0).setDepth(0);
+        fond.setDisplaySize(largeur, hauteur); // Ajuste la taille du fond
 
         // Ajout du bouton de démarrage
-        let boutonPlay = this.add.image(400, 300, "imageBoutonPlay").setDepth(1);
+        let boutonPlay = this.add.image(largeur / 2, hauteur / 2, "imageBoutonPlay").setDepth(1);
         boutonPlay.setInteractive();
 
         // Animation du bouton au survol
