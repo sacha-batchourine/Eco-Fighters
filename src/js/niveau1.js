@@ -27,10 +27,7 @@ export default class Niveau1 extends Phaser.Scene {
 
     create() {
         const map = this.make.tilemap({ key: "mapN1" });
-  create() {
-    
-      const map = this.make.tilemap({ key: "mapN1" });
-
+  
         const tilesetGrass = map.addTilesetImage("Grass", "Grass");
         const tilesetMur = map.addTilesetImage("Wall", "Wall");
         const tilesetProps = map.addTilesetImage("Props", "Objet");
@@ -128,7 +125,7 @@ export default class Niveau1 extends Phaser.Scene {
         }
 
         this.updateHealth(); // Mettre à jour l'affichage initial des cœurs
-    }
+    
       this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
 
 
