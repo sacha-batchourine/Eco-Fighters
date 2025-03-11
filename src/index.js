@@ -1,6 +1,8 @@
 
 import Hub from "./js/Hub.js";
 import Menu from "./js/menu.js";
+import Niveau1 from "./js/niveau1.js";
+
 
 const config = {
     type: Phaser.AUTO,
@@ -17,7 +19,7 @@ const config = {
         mode: Phaser.Scale.FIT,  // Ajuste le jeu à la fenêtre sans distorsion
         autoCenter: Phaser.Scale.CENTER_BOTH  // Centre le jeu dans la fenêtre
     },
-    scene: [Menu, Hub]  // Définition des scènes
+    scene: [Menu, Hub, Niveau1]  // Définition des scènes
 };
 
 // Création et lancement du jeu
