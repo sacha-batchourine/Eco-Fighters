@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import Phaser from './node_modules/phaser/dist/phaser.js';
 import Hub from "./js/Hub.js"; // Si Hub.js se trouve dans le dossier js
 const config = {
   type: Phaser.AUTO,
