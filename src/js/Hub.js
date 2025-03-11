@@ -37,30 +37,32 @@ export default class Hub extends Phaser.Scene {
         map.createLayer("Decors", [tilesetProps]);
         map.createLayer("Details", [tilesetProps, tilesetPlant, tilesetMur]);
 
-        // Création du portail avec une zone de détection
+        // ✅ Empêcher le joueur de traverser les murs
+        murLayer.setCollisionByExclusion([-1]); // Active la collision sur toutes les tuiles solides
+        this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels); // Bordures du monde
+
+        // 🌀 Création du portail
         this.portal = this.physics.add.sprite(432, 175, "portail");
         this.portal.setImmovable(true);
 
-        // Ajout du joueur
+        // 🏃‍♂️ Ajout du joueur
         this.player = this.physics.add.sprite(400, 300, "img_perso");
         this.player.setCollideWorldBounds(true);
 
-        // Activer le clavier
+        // 🎮 Activation des touches
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-        // Activation des collisions avec les murs
-        murLayer.setCollisionByProperty({ collides: true });
+        // 🔗 Activation des collisions entre le joueur et les murs
         this.physics.add.collider(this.player, murLayer);
 
-        // Détecter si le joueur touche le portail
+        // 🚀 Détection de la transition vers le niveau 1
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
     }
 
     onPortalOverlap() {
-        // Si le joueur appuie sur ESPACE et touche le portail, il change de niveau
         if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
-            this.scene.start("Niveau1"); // Charger la scène du niveau 1
+            this.scene.start("Niveau1"); // Passage au niveau 1
         }
     }
 
