@@ -115,6 +115,18 @@ export default class Hub extends Phaser.Scene {
 
         // 🚀 Détection de la transition vers le niveau 1
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
+
+
+         // Centrer la caméra sur le joueur
+       this.cameras.main.startFollow(this.player);
+       this.cameras.main.setZoom(1.1); // Zoom léger
+
+       // Limiter les mouvements de la caméra aux bords de la carte
+       const mapWidth = map.widthInPixels;
+       const mapHeight = map.heightInPixels;
+       this.cameras.main.setBounds(-50, -25, mapWidth, mapHeight);
+
+       
     }
 
     onPortalOverlap() {

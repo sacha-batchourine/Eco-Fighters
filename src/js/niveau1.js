@@ -22,6 +22,7 @@ export default class Niveau1 extends Phaser.Scene {
   }
 
   create() {
+    
       const map = this.make.tilemap({ key: "mapN1" });
 
       const tilesetGrass = map.addTilesetImage("Grass", "Grass");
@@ -33,15 +34,23 @@ export default class Niveau1 extends Phaser.Scene {
       const cheminLayer = map.createLayer("Chemin", [tilesetGrass]);
       const portailLayer = map.createLayer("Portail", [tilesetProps]);
 
-      mursLayer.setCollisionByExclusion([-1]);
 
       this.player = this.physics.add.sprite(100, 100, "img_perso");
       this.player.setCollideWorldBounds(true);
 
       this.cursors = this.input.keyboard.createCursorKeys();
 
+      mursLayer.setCollisionByProperty({ collide: true });
+
       this.physics.add.collider(this.player, mursLayer);
 
+
+      // 🌀 Création du portail
+      this.portal = this.physics.add.sprite(432, 175, "portail");
+      this.portal.setImmovable(true);
+
+      
+      
       // Ajout des animations des burgers
       this.anims.create({
           key: "burger_left",
@@ -92,7 +101,21 @@ export default class Niveau1 extends Phaser.Scene {
       });
 
       this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
+
+
+       // Centrer la caméra sur le joueur
+       this.cameras.main.startFollow(this.player);
+       this.cameras.main.setZoom(1.1); // Zoom léger
+
+       // Limiter les mouvements de la caméra aux bords de la carte
+       const mapWidth = map.widthInPixels;
+       const mapHeight = map.heightInPixels;
+       this.cameras.main.setBounds(-50, -25, mapWidth + 50, mapHeight);
+       
   }
+
+
+
 
   update() {
       let speed = 160;
