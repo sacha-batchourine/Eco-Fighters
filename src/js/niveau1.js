@@ -25,9 +25,8 @@ export default class Niveau1 extends Phaser.Scene {
         this.load.image("heart", "src/assets/hearth.png"); // Image d'un cœur
     }
 
+ 
     create() {
-        const map = this.make.tilemap({ key: "mapN1" });
-  create() {
     
       const map = this.make.tilemap({ key: "mapN1" });
 
@@ -40,30 +39,20 @@ export default class Niveau1 extends Phaser.Scene {
         map.createLayer("Chemin", [tilesetGrass]);
         map.createLayer("Portail", [tilesetProps]);
 
-        mursLayer.setCollisionByExclusion([-1]);
+        
 
         this.player = this.physics.add.sprite(100, 100, "img_perso");
         this.player.setCollideWorldBounds(true);
 
         this.cursors = this.input.keyboard.createCursorKeys();
-      this.cursors = this.input.keyboard.createCursorKeys();
 
-      mursLayer.setCollisionByProperty({ collide: true });
-
+        mursLayer.setCollisionByProperty({ collide: true });
         this.physics.add.collider(this.player, mursLayer);
 
-        this.anims.create({
-            key: "burger_left",
-            frames: this.anims.generateFrameNumbers("burger", { start: 4, end: 7 }),
-            frameRate: 10,
-            repeat: -1
-        });
-      this.physics.add.collider(this.player, mursLayer);
 
-
-      // 🌀 Création du portail
-      this.portal = this.physics.add.sprite(432, 175, "portail");
-      this.portal.setImmovable(true);
+        
+        this.portal = this.physics.add.sprite(432, 175, "portail");
+        this.portal.setImmovable(true);
 
       
       
@@ -128,8 +117,9 @@ export default class Niveau1 extends Phaser.Scene {
         }
 
         this.updateHealth(); // Mettre à jour l'affichage initial des cœurs
-    }
-      this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
+
+
+        this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
 
 
        // Centrer la caméra sur le joueur
@@ -140,8 +130,10 @@ export default class Niveau1 extends Phaser.Scene {
        const mapWidth = map.widthInPixels;
        const mapHeight = map.heightInPixels;
        this.cameras.main.setBounds(-50, -25, mapWidth + 50, mapHeight);
+    }
+      
        
-  }
+  
 
 
 

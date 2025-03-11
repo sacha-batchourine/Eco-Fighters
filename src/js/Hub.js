@@ -32,7 +32,7 @@ export default class Hub extends Phaser.Scene {
         const tilesetMur = map.addTilesetImage("TX Tileset Wall", "Mur");
         const tilesetSol = map.addTilesetImage("TX Tileset Stone Ground", "Sol");
         const tilesetProps = map.addTilesetImage("TX Props", "Props");
-        const tilesetPlant = map.addTilesetImage("TX Plant", "Plant");
+        const tilesetPlant = map.addTilesetImage("Plant", "Plant");
 
         map.createLayer("Grass", [tilesetGrass]);
         const murLayer = map.createLayer("Mur", [tilesetMur]);
@@ -66,6 +66,7 @@ export default class Hub extends Phaser.Scene {
 
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
         this.physics.add.collider(this.player, murLayer);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
@@ -77,6 +78,16 @@ export default class Hub extends Phaser.Scene {
             heart.setScrollFactor(0); // Fixé à l'écran
             this.healthIcons.push(heart);
         }
+
+          // Centrer la caméra sur le joueur
+       this.cameras.main.startFollow(this.player);
+       this.cameras.main.setZoom(1.1); // Zoom léger
+
+       // Limiter les mouvements de la caméra aux bords de la carte
+       const mapWidth = map.widthInPixels;
+       const mapHeight = map.heightInPixels;
+       this.cameras.main.setBounds(-50, -25, mapWidth, mapHeight);
+
     }
 
     updateHealth() {
@@ -93,19 +104,7 @@ export default class Hub extends Phaser.Scene {
             this.scene.restart();
         }
         this.updateHealth();
-
-
-         // Centrer la caméra sur le joueur
-       this.cameras.main.startFollow(this.player);
-       this.cameras.main.setZoom(1.1); // Zoom léger
-
-       // Limiter les mouvements de la caméra aux bords de la carte
-       const mapWidth = map.widthInPixels;
-       const mapHeight = map.heightInPixels;
-       this.cameras.main.setBounds(-50, -25, mapWidth, mapHeight);
-
-       
-    }
+       }
 
     onPortalOverlap() {
         if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
