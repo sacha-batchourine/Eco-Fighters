@@ -25,11 +25,12 @@ export default class Hub extends Phaser.Scene {
     create() {
         // 🔹 Chargement de la carte
         const map = this.make.tilemap({ key: "HUB1" });
+
         const tilesetGrass = map.addTilesetImage("TX Tileset Grass", "Grass");
         const tilesetMur = map.addTilesetImage("TX Tileset Wall", "Mur");
         const tilesetSol = map.addTilesetImage("TX Tileset Stone Ground", "Sol");
         const tilesetProps = map.addTilesetImage("TX Props", "Props");
-        const tilesetPlant = map.addTilesetImage("TX Plant", "Plant");
+        const tilesetPlant = map.addTilesetImage("Plant", "Plant");
 
         map.createLayer("Grass", [tilesetGrass]);
         const murLayer = map.createLayer("Mur", [tilesetMur]);
