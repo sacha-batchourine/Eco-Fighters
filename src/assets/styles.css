@@ -1,0 +1,8 @@
+@font-face {
+    font-family: "CloisterBlack";
+    src: url("fonts/CloisterBlack.ttf") format("truetype");
+}
+
+body {
+    font-family: "CloisterBlack", Arial, sans-serif;
+}
