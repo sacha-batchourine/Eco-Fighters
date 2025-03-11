@@ -30,7 +30,7 @@ export default class Menu extends Phaser.Scene {
 
         // Lancement de la scène Hub quand on clique sur le bouton
         boutonPlay.on("pointerup", () => {
-            this.scene.start("Hub");
+            this.scene.start("Hub");  // Démarre la scène Hub
         });
     }
 }
