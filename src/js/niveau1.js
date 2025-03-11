@@ -25,10 +25,9 @@ export default class Niveau1 extends Phaser.Scene {
         this.load.image("heart", "src/assets/hearth.png"); // Image d'un cœur
     }
 
- 
-    create() {
+  create() {
     
-      const map = this.make.tilemap({ key: "mapN1" });
+        const map = this.make.tilemap({ key: "mapN1" });
 
         const tilesetGrass = map.addTilesetImage("Grass", "Grass");
         const tilesetMur = map.addTilesetImage("Wall", "Wall");
@@ -117,9 +116,8 @@ export default class Niveau1 extends Phaser.Scene {
         }
 
         this.updateHealth(); // Mettre à jour l'affichage initial des cœurs
-
-
-        this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
+    
+      this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
 
 
        // Centrer la caméra sur le joueur
@@ -130,7 +128,7 @@ export default class Niveau1 extends Phaser.Scene {
        const mapWidth = map.widthInPixels;
        const mapHeight = map.heightInPixels;
        this.cameras.main.setBounds(-50, -25, mapWidth + 50, mapHeight);
-    }
+  }
       
        
   
