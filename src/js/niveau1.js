@@ -18,18 +18,24 @@ export default class Niveau1 extends Phaser.Scene {
   }
 
   create() {
-      const map = this.make.tilemap({ key: "mapN1" });
-      const tilesetGrass = map.addTilesetImage("TX Tileset Grass", "Grass");
-      const tilesetMur = map.addTilesetImage("TX Tileset Wall", "Mur");
-      const tilesetSol = map.addTilesetImage("TX Tileset Stone Ground", "Sol");
-      const tilesetProps = map.addTilesetImage("TX Props", "Props");
-      const tilesetPlant = map.addTilesetImage("TX Plant", "Plant");
+       // Chargement de la carte
+       const map = this.make.tilemap({ key: "mapN1" });
 
-      map.createLayer("Grass", [tilesetGrass]);
-      const murLayer = map.createLayer("Mur", [tilesetMur]);
-      map.createLayer("Sol/chemins", [tilesetGrass, tilesetSol]);
-      map.createLayer("Decors", [tilesetProps]);
-      map.createLayer("Details", [tilesetProps, tilesetPlant, tilesetMur]);
+       // Ajout des tilesets dans l'ordre
+       const tilesetGrass = map.addTilesetImage("TX Plant", "Grass");
+       const tilesetChemin = map.addTilesetImage("TX Props", "Chemin");
+       const tilesetOmbres = map.addTilesetImage("TX Shadow Plant", "Ombres");
+       const tilesetMur = map.addTilesetImage("TX Tileset Wall", "Mur");
+       const tilesetVillage = map.addTilesetImage("TX Village Props", "Village");
+       const tilesetEcriture = map.addTilesetImage("TX Props", "Ecriture");
+ 
+       // Création des calques en respectant l'ordre donné
+       const grassLayer = map.createLayer("Grass", [tilesetGrass]);
+       const cheminLayer = map.createLayer("Chemin", [tilesetChemin, tilesetGrass]);
+       const ombresLayer = map.createLayer("Ombres", tilesetOmbres);
+       const mursLayer = map.createLayer("Murs", [tilesetMur, tilesetChemin, tilesetVillage]);
+       const ecritureLayer = map.createLayer("Ecriture", tilesetEcriture);
+ 
 
       // Ajout du joueur dans le niveau 1
       this.player = this.physics.add.sprite(100, 100, "img_perso"); // Spawn à l'entrée du niveau 1
@@ -38,9 +44,7 @@ export default class Niveau1 extends Phaser.Scene {
       // Activer le clavier
       this.cursors = this.input.keyboard.createCursorKeys();
 
-      // Activer les collisions avec les murs
-      murLayer.setCollisionByProperty({ collides: true });
-      this.physics.add.collider(this.player, murLayer);
+      
   }
 
   update() {
