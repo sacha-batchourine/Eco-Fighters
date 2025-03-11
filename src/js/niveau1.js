@@ -44,14 +44,17 @@ export default class Niveau1 extends Phaser.Scene {
         this.player.setCollideWorldBounds(true);
 
         this.cursors = this.input.keyboard.createCursorKeys();
+        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         mursLayer.setCollisionByProperty({ collide: true });
         this.physics.add.collider(this.player, mursLayer);
 
-
         
-        this.portal = this.physics.add.sprite(432, 175, "portail");
+        
+        this.portal = this.physics.add.sprite(1000, 200, "portail");
         this.portal.setImmovable(true);
+        this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
+
 
       
       
@@ -131,7 +134,11 @@ export default class Niveau1 extends Phaser.Scene {
   }
       
        
-  
+  onPortalOverlap() {
+    if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+        this.scene.start("Hub");
+    }
+  }
 
 
 
