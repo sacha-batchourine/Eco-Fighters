@@ -1,5 +1,7 @@
-import Phaser from 'phaser';
-import Hub from "./js/Hub.js"; // Si Hub.js se trouve dans le dossier js
+// index.js ou votre fichier principal où vous configurez le jeu
+
+import Hub from '/src/js/Hub.js';  // Le chemin est relatif, et ça doit pointer vers Hub.js dans /src/js/
+
 const config = {
   type: Phaser.AUTO,
   width: 800,
@@ -8,7 +10,7 @@ const config = {
       default: 'arcade',
       arcade: { debug: false }
   },
-  scene: [Hub]
+  scene: [Hub]  // Ajouter la scène "Hub" ici
 };
 
-const game = new Phaser.Game(config);
+const game = new Phaser.Game(config);  // Initialiser le jeu avec la configuration

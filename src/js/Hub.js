@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+// /src/js/Hub.js
 
 export default class Hub extends Phaser.Scene {
     constructor() {
@@ -13,7 +13,7 @@ export default class Hub extends Phaser.Scene {
         this.load.image("village", "src/assets/TX Village Props.png");
 
         // Chargement de la carte JSON
-        this.load.tilemapTiledJSON("hub", "src/assets/HUB1.json");
+        this.load.tilemapTiledJSON("Hub", "src/assets/HUB1.json");
 
         // Chargement du sprite du joueur
         this.load.spritesheet("player", "src/assets/player.png", {
@@ -24,7 +24,7 @@ export default class Hub extends Phaser.Scene {
 
     create() {
         // Charger la carte
-        const map = this.make.tilemap({ key: "hub" });
+        const map = this.make.tilemap({ key: "Hub" });
 
         // Associer chaque tileset avec son nom dans Tiled
         const tilesetGrass = map.addTilesetImage("TX Tileset Grass", "grass");
