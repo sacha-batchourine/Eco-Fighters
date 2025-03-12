@@ -52,7 +52,7 @@ export default class Hub extends Phaser.Scene {
         
         // Touches
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        
 
         // Collisions
         this.physics.add.collider(this.player, murLayer);
@@ -188,9 +188,6 @@ export default class Hub extends Phaser.Scene {
             this.player.anims.play("stand", true);
         }
 
-        if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
-            this.tirer();
-        }
     }
 }
 
