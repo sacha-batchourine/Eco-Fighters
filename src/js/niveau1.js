@@ -27,7 +27,7 @@ export default class Niveau1 extends Phaser.Scene {
         const tilesetGrass = map.addTilesetImage("Grass", "Grass");
         const tilesetMur = map.addTilesetImage("Wall", "Wall");
         const tilesetProps = map.addTilesetImage("Props", "Objet");
-        
+
         map.createLayer("Grass", [tilesetGrass]);
         const mursLayer = map.createLayer("Mur", [tilesetMur]);
         map.createLayer("Chemin", [tilesetGrass]);
@@ -42,6 +42,14 @@ export default class Niveau1 extends Phaser.Scene {
 
         this.portal = this.physics.add.sprite(1520, 300, "portail");
         this.portal.setImmovable(true);
+
+        // Vérifier si le joueur a déjà complété le niveau précédent
+        const previousLevelComplete = localStorage.getItem("niveau1Complete");
+        if (previousLevelComplete) {
+            this.portal.setAlpha(1); // Le portail du niveau suivant devient visible
+        } else {
+            this.portal.setAlpha(0); // Le portail est invisible tant que le niveau n'est pas terminé
+        }
 
         this.anims.create({
             key: "burger_left",
@@ -95,7 +103,6 @@ export default class Niveau1 extends Phaser.Scene {
         this.healthBar = this.add.graphics();
         this.drawHealthBar();
         this.healthBar.setScrollFactor(0);
-
         this.healthBar.setPosition(140, 80);
 
         this.cameras.main.startFollow(this.player);
@@ -116,6 +123,8 @@ export default class Niveau1 extends Phaser.Scene {
 
     onPortalOverlap() {
         if (this.burgers.countActive(true) === 0) {
+            // Sauvegarde de la progression avant de commencer un autre niveau
+            localStorage.setItem("niveau1Complete", "true");
             this.scene.start("Hub");
         }
     }
@@ -178,7 +187,7 @@ export default class Niveau1 extends Phaser.Scene {
         console.log("Le joueur a été touché !");
         this.currentHealth -= 1;
         burger.destroy();
-        
+
         if (this.currentHealth <= 0) {
             console.log("Game Over");
             this.currentHealth = this.maxHealth;
