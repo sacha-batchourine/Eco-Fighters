@@ -103,23 +103,11 @@ export default class Hub extends Phaser.Scene {
             this.physics.add.overlap(this.player, this.portal3, this.onPortal3Overlap, null, this);
         }
 
-        // Barre de vie
-        this.healthBarBackground = this.add.rectangle(50, 70, 200, 20, 0x000000);
-        this.healthBar = this.add.rectangle(50, 70, 200, 20, 0xff0000);
-        this.healthBar.setOrigin(0, 0);
-        this.healthBarBackground.setOrigin(0, 0);
-
-        this.groupeBullets = this.physics.add.group();
 
         // Caméra
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setZoom(1.1);
         this.cameras.main.setBounds(-50, -25, map.widthInPixels + 50, map.heightInPixels);
-    }
-
-    updateHealth() {
-        const healthPercentage = this.currentHealth / this.maxHealth;
-        this.healthBar.width = 200 * healthPercentage;
     }
 
 
