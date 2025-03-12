@@ -13,9 +13,9 @@ export default class Hub extends Phaser.Scene {
         this.load.image("Props", "src/assets/TX Props.png");
         this.load.image("Plant", "src/assets/TX Plant.png");
 
-        this.load.spritesheet("img_perso", "src/assets/Perso.png", {
-            frameWidth: 48,
-            frameHeight: 48
+        this.load.spritesheet("img_perso", "src/assets/banane.png", {
+            frameWidth: 32,
+            frameHeight: 32
         });
 
         this.load.spritesheet("portail", "src/assets/portal4.png", {
@@ -82,17 +82,16 @@ export default class Hub extends Phaser.Scene {
         
         this.physics.add.overlap(this.player, [this.portal1, this.portal2, this.portal3, this.portal4, this.portal5, this.portalBoss], this.onPortalOverlap, null, this);
 
-        // Création de la barre de vie
-        this.healthBar = this.add.graphics();
-        this.drawHealthBar();
-        this.healthBar.setScrollFactor(0);  // Fixe la barre de vie à la caméra
+        // 🔹 Création de la barre de vie
+        this.healthBarBackground = this.add.rectangle(50, 70, 200, 20, 0x000000);
+        this.healthBar = this.add.rectangle(50, 70, 200, 20, 0xff0000);
 
-        // Positionner la barre de vie dans un endroit visible
-        this.healthBar.setPosition(140, 80);  // Placer la barre de vie en haut à gauche de l'écran
+        this.healthBar.setOrigin(0, 0);
+        this.healthBarBackground.setOrigin(0, 0);
 
         // Centrer la caméra sur le joueur
         this.cameras.main.startFollow(this.player);
-        this.cameras.main.setZoom(1.1);
+        this.cameras.main.setZoom(4.0);
 
         // Limiter les mouvements de la caméra aux bords de la carte
         const mapWidth = map.widthInPixels;
@@ -114,19 +113,6 @@ export default class Hub extends Phaser.Scene {
         }
         this.updateHealth();
     }
-
-
-    drawHealthBar() {
-        this.healthBar.clear();
-        const barWidth = 200;
-        const barHeight = 20;
-        this.healthBar.fillStyle(0x000000);
-        this.healthBar.fillRect(0, 0, barWidth, barHeight);  // Ajusté les dimensions de la barre
-        const healthRatio = this.currentHealth / this.maxHealth;
-        this.healthBar.fillStyle(0xff0000);
-        this.healthBar.fillRect(0, 0, barWidth * healthRatio, barHeight);  // Taille de la barre de vie en fonction de la santé
-    }
-
 
     onPortalOverlap(player, portal) {
         if (!portal.active || !portal.visible) return; // Empêche l'accès aux portails inactifs ou invisibles
