@@ -1,4 +1,4 @@
-export default class Nivea2 extends Phaser.Scene {
+export default class Niveau2 extends Phaser.Scene {
     constructor() {
         super({ key: "Niveau2" });
         this.maxHealth = 5; // Vie maximale en cœurs
@@ -11,6 +11,8 @@ export default class Nivea2 extends Phaser.Scene {
         this.load.image("Grass", "src/assets/TX Tileset Grass.png");
         this.load.image("Wall", "src/assets/TX Tileset Wall.png");
         this.load.image("Objet", "src/assets/TX Props.png");
+        this.load.image("Plant", "src/assets/TX PLant.png");
+        this.load.image("Ombres", "src/assets/TX Shadow PLant.png");
 
         this.load.spritesheet("img_perso", "src/assets/Perso.png", {
             frameWidth: 48,

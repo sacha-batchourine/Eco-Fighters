@@ -42,11 +42,19 @@ export default class Hub extends Phaser.Scene {
         murLayer.setCollisionByExclusion([-1]);
         this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-        this.portal = this.physics.add.sprite(432, 175, "portail");
-        this.portal.setImmovable(true);
+        this.portal1 = this.physics.add.sprite(432, 175, "portail");
+        this.portal1.setImmovable(true);
+
+        this.portal2 = this.physics.add.sprite(600, 300, "portail");
+        this.portal2.setImmovable(true);
+
+
+        
 
         this.player = this.physics.add.sprite(400, 300, "img_perso");
         this.player.setCollideWorldBounds(true);
+        
+        
         this.lastDirection = "down";
 
         this.anims.create({
@@ -66,7 +74,9 @@ export default class Hub extends Phaser.Scene {
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         this.physics.add.collider(this.player, murLayer);
-        this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
+        
+        this.physics.add.overlap(this.player, [this.portal1, this.portal2], this.onPortalOverlap, null, this);
+
 
         // 🔹 Création de la barre de vie
         this.healthBarBackground = this.add.rectangle(50, 70, 200, 20, 0x000000); // Fond de la barre de vie abaissé
@@ -100,9 +110,13 @@ export default class Hub extends Phaser.Scene {
         this.updateHealth();
     }
 
-    onPortalOverlap() {
+    onPortalOverlap(player, portal) {
         if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
-            this.scene.start("Niveau1");
+            if (portal === this.portal1) {
+                this.scene.start("Niveau1");
+            } else if (portal === this.portal2) {
+                this.scene.start("Niveau2");
+            }
         }
     }
 
