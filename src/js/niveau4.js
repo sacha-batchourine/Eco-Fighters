@@ -34,11 +34,14 @@ export default class Niveau4 extends Phaser.Scene {
         const tilesetGrass = map.addTilesetImage("Grass", "Grass");
         const tilesetMur = map.addTilesetImage("Wall", "Wall");
         const tilesetProps = map.addTilesetImage("Props", "Objet");
+        const tilesetPlant = map.addTilesetImage("Plant", "Plant");
+        const tilesetOmbre = map.addTilesetImage("Shadow Plant", "Plant");
 
         map.createLayer("Grass", [tilesetGrass]);
         const mursLayer = map.createLayer("Mur", [tilesetMur]);
         map.createLayer("Chemin", [tilesetGrass]);
-        map.createLayer("Portail", [tilesetProps]);
+        map.createLayer("Ombre", [tilesetOmbre]);
+        map.createLayer("Ecriture", [tilesetProps]);
 
         
 
@@ -48,7 +51,7 @@ export default class Niveau4 extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-        mursLayer.setCollisionByProperty({ collide: true });
+        mursLayer.setCollisionByProperty({ estSolide: true });
         this.physics.add.collider(this.player, mursLayer);
 
         
