@@ -18,7 +18,7 @@ export default class Hub extends Phaser.Scene {
     }
 
     create() {
-        // CREATIO  MAP
+        // Création de la carte
         const map = this.make.tilemap({ key: "HUB1" });
         const tilesetGrass = map.addTilesetImage("TX Tileset Grass", "Grass");
         const tilesetMur = map.addTilesetImage("TX Tileset Wall", "Mur");
@@ -33,14 +33,12 @@ export default class Hub extends Phaser.Scene {
         map.createLayer("Decors", [tilesetProps]);
         map.createLayer("Details", [tilesetProps, tilesetPlant, tilesetMur]);
 
-
-
         murLayer.setCollisionByExclusion([-1]);
         this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
         
-        //PLAYER
+        // PLAYER
         this.player = this.physics.add.sprite(145, 325, "img_perso");
-        this.player.setScale(2); // Agrandit le joueur 2 fois
+        this.player.setScale(2);
         this.lastDirection = "right";
 
         this.anims.create({
@@ -49,39 +47,22 @@ export default class Hub extends Phaser.Scene {
         this.anims.create({
             key: "walk_right", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
         });
-        this.anims.create({
-            key: "walk_left", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
-        });
-        this.anims.create({
-            key: "dead", frames: this.anims.generateFrameNumbers("img_perso", { start: 17, end: 20 }), frameRate: 10, repeat: -1
-        });
 
         this.bullets = this.physics.add.group();
         
-
-        //TOUCHES
+        // Touches
         this.cursors = this.input.keyboard.createCursorKeys();
         this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
 
-        //COLISIONS
+        // Collisions
         this.physics.add.collider(this.player, murLayer);
         this.physics.add.collider(this.bullets, murLayer, (bullet) => bullet.destroy());
 
-        
-
-
-        // Vérifier si le joueur commence une nouvelle session
-        const nouvelleSession = !localStorage.getItem("sessionActive");
-
-        if (nouvelleSession) {
-            localStorage.setItem("sessionActive", "true");
-            localStorage.setItem("niveau1Complete", "false");
-        }
-
-        // Vérifier si les niveaux ont été complétés
+        // Vérifier la progression
         const niveau1Terminé = localStorage.getItem("niveau1Complete") === "true";
         const niveau2Terminé = localStorage.getItem("niveau2Complete") === "true";
         const niveau3Terminé = localStorage.getItem("niveau3Complete") === "true";
+        const niveau4Terminé = localStorage.getItem("niveau4Complete") === "true";
 
         // Portail pour Niveau 1
         this.portal1 = this.physics.add.sprite(432, 175, "portail").setImmovable(true);
@@ -96,13 +77,28 @@ export default class Hub extends Phaser.Scene {
         }
 
         // Portail pour Niveau 3
-        this.portal3 = this.physics.add.sprite(880, 245, "portail").setImmovable(true);
+        this.portal3 = this.physics.add.sprite(880, 240, "portail").setImmovable(true);
         this.portal3.setVisible(niveau2Terminé);
         this.portal3.body.enable = niveau2Terminé;
         if (niveau2Terminé) {
             this.physics.add.overlap(this.player, this.portal3, this.onPortal3Overlap, null, this);
         }
 
+        // ✅ Portail pour Niveau 4
+        this.portal4 = this.physics.add.sprite(1040, 495, "portail").setImmovable(true);
+        this.portal4.setVisible(niveau3Terminé);
+        this.portal4.body.enable = niveau3Terminé;
+        if (niveau3Terminé) {
+            this.physics.add.overlap(this.player, this.portal4, this.onPortal4Overlap, null, this);
+        }
+
+        // ✅ Portail pour Niveau 5 (se débloque après Niveau 4)
+        this.portal5 = this.physics.add.sprite(1170, 142, "portail").setImmovable(true);
+        this.portal5.setVisible(niveau4Terminé);
+        this.portal5.body.enable = niveau4Terminé;
+        if (niveau4Terminé) {
+            this.physics.add.overlap(this.player, this.portal5, this.onPortal5Overlap, null, this);
+        }
 
         // Caméra
         this.cameras.main.startFollow(this.player);
@@ -110,7 +106,7 @@ export default class Hub extends Phaser.Scene {
         this.cameras.main.setBounds(-50, -25, map.widthInPixels + 50, map.heightInPixels);
     }
 
-
+    // Fonctions de changement de niveau
     onPortal1Overlap(player, portal) {
         this.scene.start("Niveau1");
     }
@@ -123,14 +119,21 @@ export default class Hub extends Phaser.Scene {
         this.scene.start("Niveau3");
     }
 
+    onPortal4Overlap(player, portal) {
+        this.scene.start("Niveau4");
+    }
+
+    onPortal5Overlap(player, portal) {
+        this.scene.start("Niveau5");
+    }
+
     update() {
         let speed = 160;
-        let diagonalSpeed = Math.sqrt(speed * speed / 2); // Réduit la vitesse en diagonale
+        let diagonalSpeed = Math.sqrt(speed * speed / 2);
         
         let movingX = false;
         let movingY = false;
         
-        // Mouvement horizontal
         if (this.cursors.left.isDown) {
             this.player.setVelocityX(-speed);
             this.player.anims.play("walk_right", true);
@@ -147,7 +150,6 @@ export default class Hub extends Phaser.Scene {
             this.player.setVelocityX(0);
         }
         
-        // Mouvement vertical
         if (this.cursors.up.isDown) {
             this.player.setVelocityY(-speed);
             movingY = true;
@@ -158,24 +160,11 @@ export default class Hub extends Phaser.Scene {
             this.player.setVelocityY(0);
         }
         
-        // Gestion des animations pour le mouvement vertical
-        if (movingY && !movingX) {
-            if (this.lastDirection === "right") {
-                this.player.anims.play("walk_right", true);
-                this.player.setFlipX(false);
-            } else if (this.lastDirection === "left") {
-                this.player.anims.play("walk_right", true);
-                this.player.setFlipX(true);
-            }
-        }
-        
-        // Si on bouge en diagonale, on ajuste la vitesse
         if (movingX && movingY) {
             this.player.setVelocityX(this.player.body.velocity.x * diagonalSpeed / speed);
             this.player.setVelocityY(this.player.body.velocity.y * diagonalSpeed / speed);
         }
         
-        // Si le joueur ne bouge pas, animation d'arrêt
         if (!movingX && !movingY) {
             this.player.anims.play("stand", true);
         }
@@ -183,16 +172,5 @@ export default class Hub extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
             this.tirer();
         }
-    }
-
-    tirer() {
-        let bullet = this.bullets.create(this.player.x, this.player.y, "bullet");
-        bullet.setScale(0.5);
-        bullet.setVelocityX(this.lastDirection === "right" ? 300 : -300);
-        this.time.addEvent({
-            delay: 2000,
-            callback: () => bullet.destroy(),
-            loop: false
-        });
     }
 }
