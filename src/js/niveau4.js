@@ -45,7 +45,7 @@ export default class Niveau4 extends Phaser.Scene {
 
         
 
-        this.player = this.physics.add.sprite(100, 100, "img_perso");
+        this.player = this.physics.add.sprite(115, 300, "img_perso");
         
 
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -56,7 +56,7 @@ export default class Niveau4 extends Phaser.Scene {
 
         
         
-        this.portal = this.physics.add.sprite(1000, 200, "portail");
+        this.portal = this.physics.add.sprite(3377, 80, "portail");
         this.portal.setImmovable(true);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
