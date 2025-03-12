@@ -24,7 +24,7 @@ export default class Niveau5 extends Phaser.Scene {
             frameHeight: 32
         });
 
-        this.load.image("heart", "src/assets/hearth.png"); // Image d'un cœur
+        
     }
 
   create() {
@@ -38,15 +38,16 @@ export default class Niveau5 extends Phaser.Scene {
         const tilesetOmbre = map.addTilesetImage("Shadow Plant", "Ombres");
 
         map.createLayer("Grass", [tilesetGrass]);
-        const mursLayer = map.createLayer("Mur", [tilesetMur]);
-        map.createLayer("Chemin", [tilesetGrass]);
+        map.createLayer("Chemin", [tilesetGrass, tilesetProps]);
         map.createLayer("Ombre", [tilesetOmbre]);
+        const mursLayer = map.createLayer("Mur", [tilesetMur, tilesetPlant, tilesetProps]);
         map.createLayer("Ecriture", [tilesetProps]);
 
         
+        
 
         this.player = this.physics.add.sprite(100, 100, "img_perso");
-        this.player.setCollideWorldBounds(true);
+        
 
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
