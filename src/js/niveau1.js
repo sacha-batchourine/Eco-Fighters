@@ -81,8 +81,13 @@ export default class Niveau1 extends Phaser.Scene {
         this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
+        // Création de la barre de vie
         this.healthBar = this.add.graphics();
         this.drawHealthBar();
+        this.healthBar.setScrollFactor(0);  // Fixe la barre de vie à la caméra
+
+        // Positionner la barre de vie dans un endroit visible
+        this.healthBar.setPosition(140, 80);  // Placer la barre de vie en haut à gauche de l'écran
 
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setZoom(1.1);
@@ -94,10 +99,10 @@ export default class Niveau1 extends Phaser.Scene {
         const barWidth = 200;
         const barHeight = 20;
         this.healthBar.fillStyle(0x000000);
-        this.healthBar.fillRect(20, 20, barWidth, barHeight);
+        this.healthBar.fillRect(0, 0, barWidth, barHeight);  // Ajusté les dimensions de la barre
         const healthRatio = this.currentHealth / this.maxHealth;
         this.healthBar.fillStyle(0xff0000);
-        this.healthBar.fillRect(20, 20, barWidth * healthRatio, barHeight);
+        this.healthBar.fillRect(0, 0, barWidth * healthRatio, barHeight);  // Taille de la barre de vie en fonction de la santé
     }
 
     onPortalOverlap() {
