@@ -39,16 +39,16 @@ export default class Hub extends Phaser.Scene {
         this.lastDirection = "right";
 
         this.anims.create({
-            key: "walk_up", frames: this.anims.generateFrameNumbers("img_perso", { start: 0, end: 3 }), frameRate: 10, repeat: -1
+            key: "stand", frames: this.anims.generateFrameNumbers("img_perso", { start: 30, end: 32 }), frameRate: 10, repeat: -1
         });
         this.anims.create({
-            key: "walk_right", frames: this.anims.generateFrameNumbers("img_perso", { start: 4, end: 7 }), frameRate: 10, repeat: -1
+            key: "walk_right", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
         });
         this.anims.create({
-            key: "walk_left", frames: this.anims.generateFrameNumbers("img_perso", { start: 8, end: 11 }), frameRate: 10, repeat: -1
+            key: "walk_left", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
         });
         this.anims.create({
-            key: "walk_down", frames: this.anims.generateFrameNumbers("img_perso", { start: 12, end: 15 }), frameRate: 10, repeat: -1
+            key: "dead", frames: this.anims.generateFrameNumbers("img_perso", { start: 17, end: 20 }), frameRate: 10, repeat: -1
         });
 
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -97,6 +97,7 @@ export default class Hub extends Phaser.Scene {
         this.currentHealth -= amount;
         if (this.currentHealth <= 0) {
             this.currentHealth = 0;
+            this.player.anims.play("dead", true);
             console.log("Game Over");
             this.scene.restart();
         }
@@ -112,39 +113,66 @@ export default class Hub extends Phaser.Scene {
     }
 
     update() {
-        let moving = false;
 
+        let speed = 160;
+        let diagonalSpeed = Math.sqrt(speed * speed / 2); // Réduit la vitesse en diagonale
+        
+        let movingX = false;
+        let movingY = false;
+        
+        // Mouvement horizontal
         if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-160);
-            this.player.anims.play("walk_left", true);
-            this.lastDirection = "left";
-            moving = true;
-        } else if (this.cursors.right.isDown) {
-            this.player.setVelocityX(160);
+            this.player.setVelocityX(-speed);
             this.player.anims.play("walk_right", true);
+            this.player.setFlipX(true);
+            this.lastDirection = "left";
+            movingX = true;
+        } else if (this.cursors.right.isDown) {
+            this.player.setVelocityX(speed);
+            this.player.anims.play("walk_right", true);
+            this.player.setFlipX(false);
             this.lastDirection = "right";
-            moving = true;
+            movingX = true;
         } else {
             this.player.setVelocityX(0);
         }
-
+        
+        // Mouvement vertical
         if (this.cursors.up.isDown) {
-            this.player.setVelocityY(-160);
-            this.player.anims.play("walk_up", true);
-            this.lastDirection = "up";
-            moving = true;
+            this.player.setVelocityY(-speed);
+            movingY = true;
         } else if (this.cursors.down.isDown) {
-            this.player.setVelocityY(160);
-            this.player.anims.play("walk_down", true);
-            this.lastDirection = "down";
-            moving = true;
+            this.player.setVelocityY(speed);
+            movingY = true;
         } else {
             this.player.setVelocityY(0);
         }
-
-        if (!moving) {
-            this.player.setVelocity(0);
+        
+        // Gestion des animations pour le mouvement vertical
+        if (movingY && !movingX) {
+            if (this.lastDirection === "right") {
+                this.player.anims.play("walk_right", true);
+                this.player.setFlipX(false);
+            } else if (this.lastDirection === "left") {
+                this.player.anims.play("walk_right", true);
+                this.player.setFlipX(true);
+            }
         }
+        
+        // Si on bouge en diagonale, on ajuste la vitesse
+        if (movingX && movingY) {
+            this.player.setVelocityX(this.player.body.velocity.x * diagonalSpeed / speed);
+            this.player.setVelocityY(this.player.body.velocity.y * diagonalSpeed / speed);
+        }
+        
+        // Si le joueur ne bouge pas, animation d'arrêt
+        if (!movingX && !movingY) {
+            this.player.anims.play("stand", true);
+        }
+        
+        
+        
+        
 
         if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
             this.tirer();
