@@ -63,6 +63,7 @@ export default class Hub extends Phaser.Scene {
         const niveau2Terminé = localStorage.getItem("niveau2Complete") === "true";
         const niveau3Terminé = localStorage.getItem("niveau3Complete") === "true";
         const niveau4Terminé = localStorage.getItem("niveau4Complete") === "true";
+        const niveau5Terminé = localStorage.getItem("niveau5Complete") === "true";
 
         // Portail pour Niveau 1
         this.portal1 = this.physics.add.sprite(432, 175, "portail").setImmovable(true);
@@ -84,7 +85,7 @@ export default class Hub extends Phaser.Scene {
             this.physics.add.overlap(this.player, this.portal3, this.onPortal3Overlap, null, this);
         }
 
-        // ✅ Portail pour Niveau 4
+        // Portail pour Niveau 4
         this.portal4 = this.physics.add.sprite(1040, 495, "portail").setImmovable(true);
         this.portal4.setVisible(niveau3Terminé);
         this.portal4.body.enable = niveau3Terminé;
@@ -92,12 +93,20 @@ export default class Hub extends Phaser.Scene {
             this.physics.add.overlap(this.player, this.portal4, this.onPortal4Overlap, null, this);
         }
 
-        // ✅ Portail pour Niveau 5 (se débloque après Niveau 4)
+        // Portail pour Niveau 5
         this.portal5 = this.physics.add.sprite(1170, 142, "portail").setImmovable(true);
         this.portal5.setVisible(niveau4Terminé);
         this.portal5.body.enable = niveau4Terminé;
         if (niveau4Terminé) {
             this.physics.add.overlap(this.player, this.portal5, this.onPortal5Overlap, null, this);
+        }
+
+        // ✅ Portail pour le Boss (se débloque après Niveau 5)
+        this.portalBoss = this.physics.add.sprite(1455, 335, "portail").setImmovable(true);
+        this.portalBoss.setVisible(niveau5Terminé);
+        this.portalBoss.body.enable = niveau5Terminé;
+        if (niveau5Terminé) {
+            this.physics.add.overlap(this.player, this.portalBoss, this.onPortalBossOverlap, null, this);
         }
 
         // Caméra
@@ -125,6 +134,10 @@ export default class Hub extends Phaser.Scene {
 
     onPortal5Overlap(player, portal) {
         this.scene.start("Niveau5");
+    }
+
+    onPortalBossOverlap(player, portal) {
+        this.scene.start("NiveauBoss");
     }
 
     update() {
