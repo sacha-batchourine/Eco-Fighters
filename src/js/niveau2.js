@@ -46,7 +46,7 @@ export default class Niveau2 extends Phaser.Scene {
 
         
 
-        this.player = this.physics.add.sprite(100, 100, "img_perso");
+        this.player = this.physics.add.sprite(143, 455, "img_perso");
         this.player.setCollideWorldBounds(true);
 
         this.cursors = this.input.keyboard.createCursorKeys();
