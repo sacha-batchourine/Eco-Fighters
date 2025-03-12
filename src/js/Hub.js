@@ -61,18 +61,33 @@ export default class Hub extends Phaser.Scene {
         this.portal1 = this.physics.add.sprite(432, 175, "portail").setImmovable(true);
         this.physics.add.overlap(this.player, this.portal1, this.onPortal1Overlap, null, this);
 
-        // Vérifier si le Niveau 1 a été complété
-        const niveau1Terminé = localStorage.getItem("niveau1Complete") === "true";
+        // Vérifier si le joueur commence une nouvelle session
+        const nouvelleSession = !localStorage.getItem("sessionActive");
 
-        // Portail pour Niveau 2 (caché par défaut)
-        this.portal2 = this.physics.add.sprite(600, 175, "portail").setImmovable(true);
-        if (!niveau1Terminé) {
-            this.portal2.setVisible(false);
-            this.portal2.body.enable = false;
-        } else {
-            this.portal2.setVisible(true);
-            this.portal2.body.enable = true;
+        if (nouvelleSession) {
+            localStorage.setItem("sessionActive", "true");
+            localStorage.setItem("niveau1Complete", "false");
+        }
+
+        // Vérifier si les niveaux ont été complétés
+        const niveau1Terminé = localStorage.getItem("niveau1Complete") === "true";
+        const niveau2Terminé = localStorage.getItem("niveau2Complete") === "true";
+        const niveau3Terminé = localStorage.getItem("niveau3Complete") === "true";
+
+        // Portail pour Niveau 2
+        this.portal2 = this.physics.add.sprite(623, 560, "portail").setImmovable(true);
+        this.portal2.setVisible(niveau1Terminé);
+        this.portal2.body.enable = niveau1Terminé;
+        if (niveau1Terminé) {
             this.physics.add.overlap(this.player, this.portal2, this.onPortal2Overlap, null, this);
+        }
+
+        // Portail pour Niveau 3
+        this.portal3 = this.physics.add.sprite(880, 245, "portail").setImmovable(true);
+        this.portal3.setVisible(niveau2Terminé);
+        this.portal3.body.enable = niveau2Terminé;
+        if (niveau2Terminé) {
+            this.physics.add.overlap(this.player, this.portal3, this.onPortal3Overlap, null, this);
         }
 
         // Barre de vie
@@ -113,19 +128,21 @@ export default class Hub extends Phaser.Scene {
         this.scene.start("Niveau2");
     }
 
-    update() {
+    onPortal3Overlap(player, portal) {
+        this.scene.start("Niveau3");
+    }
 
+    update() {
         let speed = 160;
-        let diagonalSpeed = Math.sqrt(speed * speed / 2); // Réduit la vitesse en diagonale
-        
+        let diagonalSpeed = Math.sqrt(speed * speed / 2);
+
         let movingX = false;
         let movingY = false;
-        
-        // Mouvement horizontal
+
         if (this.cursors.left.isDown) {
             this.player.setVelocityX(-speed);
-            this.player.anims.play("walk_right", true);
-            this.player.setFlipX(true);
+            this.player.anims.play("walk_left", true);
+            this.player.setFlipX(false);
             this.lastDirection = "left";
             movingX = true;
         } else if (this.cursors.right.isDown) {
@@ -137,78 +154,29 @@ export default class Hub extends Phaser.Scene {
         } else {
             this.player.setVelocityX(0);
         }
-        
-        // Mouvement vertical
+
         if (this.cursors.up.isDown) {
             this.player.setVelocityY(-speed);
+            this.lastDirection = "up";
             movingY = true;
         } else if (this.cursors.down.isDown) {
             this.player.setVelocityY(speed);
+            this.lastDirection = "down";
             movingY = true;
         } else {
             this.player.setVelocityY(0);
         }
-        
-        // Gestion des animations pour le mouvement vertical
-        if (movingY && !movingX) {
-            if (this.lastDirection === "right") {
-                this.player.anims.play("walk_right", true);
-                this.player.setFlipX(false);
-            } else if (this.lastDirection === "left") {
-                this.player.anims.play("walk_right", true);
-                this.player.setFlipX(true);
-            }
-        }
-        
-        // Si on bouge en diagonale, on ajuste la vitesse
+
         if (movingX && movingY) {
-            this.player.setVelocityX(this.player.body.velocity.x * diagonalSpeed / speed);
-            this.player.setVelocityY(this.player.body.velocity.y * diagonalSpeed / speed);
+            this.player.setVelocity(this.player.body.velocity.x * diagonalSpeed / speed, this.player.body.velocity.y * diagonalSpeed / speed);
         }
-        
-        // Si le joueur ne bouge pas, animation d'arrêt
+
         if (!movingX && !movingY) {
             this.player.anims.play("stand", true);
         }
-        
-        
-        
-        
 
         if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
             this.tirer();
         }
-    }
-
-    tirer() {
-        let vitesseX = 0;
-        let vitesseY = 0;
-        let angle = 0;
-        let offsetX = 0;
-        let offsetY = 0;
-
-        if (this.lastDirection === "left") {
-            vitesseX = -500;
-            offsetX = -25;
-        } else if (this.lastDirection === "right") {
-            vitesseX = 500;
-            offsetX = 25;
-        } else if (this.lastDirection === "up") {
-            vitesseY = -500;
-            offsetY = -25;
-            angle = -90;
-        } else if (this.lastDirection === "down") {
-            vitesseY = 500;
-            offsetY = 25;
-            angle = 90;
-        }
-
-        let bullet = this.groupeBullets.create(this.player.x + offsetX, this.player.y + offsetY, "bullet")
-            .setScale(0.5)
-            .setAngle(angle)
-            .setCollideWorldBounds(true);
-
-        bullet.body.allowGravity = false;
-        bullet.setVelocity(vitesseX, vitesseY);
     }
 }
