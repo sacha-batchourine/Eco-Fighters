@@ -1,8 +1,8 @@
 export default class Niveau1 extends Phaser.Scene {
     constructor() {
         super({ key: "Niveau1" });
-        this.maxHealth = 5;
-        this.currentHealth = this.maxHealth;
+        this.maxHealth = 5; // Le maximum de points de vie
+        this.currentHealth = this.maxHealth; // Les points de vie actuels
         this.lastDirection = "right"; // Pour éviter de retourner le sprite en boucle
     }
 
@@ -27,6 +27,7 @@ export default class Niveau1 extends Phaser.Scene {
         map.createLayer("Chemin", [tilesetGrass]);
         map.createLayer("Portail", [tilesetProps]);
 
+        // Création du joueur
         this.player = this.physics.add.sprite(100, 100, "img_perso");
         this.player.setCollideWorldBounds(true);
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -39,7 +40,7 @@ export default class Niveau1 extends Phaser.Scene {
         this.portal.setImmovable(true);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
-        // 🔹 Création des animations pour les burgers
+        // Création des animations pour les burgers
         this.anims.create({
             key: "burger_left",
             frames: this.anims.generateFrameNumbers("burger", { frames: [6, 7, 10, 11] }),
@@ -54,6 +55,7 @@ export default class Niveau1 extends Phaser.Scene {
             repeat: -1
         });
 
+        // Création du groupe de burgers
         this.burgers = this.physics.add.group();
         for (let i = 0; i < 5; i++) {
             let x = Phaser.Math.Between(50, 500);
@@ -73,20 +75,34 @@ export default class Niveau1 extends Phaser.Scene {
 
         this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
 
-        // 🔹 Création du système de vie
-        this.healthIcons = [];
-        for (let i = 0; i < this.maxHealth; i++) {
-            let heart = this.add.image(60 + i * 50, 20, "heart").setScale(0.3).setScrollFactor(0);
-            this.healthIcons.push(heart);
-        }
-        this.updateHealth();
+        // Création de la barre de vie
+        this.healthBar = this.add.graphics();
+        this.drawHealthBar();
 
-        // 🔹 Caméra qui suit le joueur
+        // Caméra qui suit le joueur
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setZoom(1.1);
         const mapWidth = map.widthInPixels;
         const mapHeight = map.heightInPixels;
         this.cameras.main.setBounds(-50, -25, mapWidth + 50, mapHeight);
+    }
+
+    drawHealthBar() {
+        // Efface la barre de vie précédente
+        this.healthBar.clear();
+
+        // Dessine la barre de vie
+        const barWidth = 200; // Largeur de la barre de vie
+        const barHeight = 20; // Hauteur de la barre de vie
+
+        // Bar background
+        this.healthBar.fillStyle(0x000000); // Couleur noir pour le fond
+        this.healthBar.fillRect(20, 20, barWidth, barHeight); // Décalage de 20px à droite
+
+        // Bar current health
+        const healthRatio = this.currentHealth / this.maxHealth;
+        this.healthBar.fillStyle(0xff0000); // Couleur rouge pour la vie
+        this.healthBar.fillRect(20, 20, barWidth * healthRatio, barHeight); // Décalage de 20px à droite
     }
 
     onPortalOverlap() {
@@ -99,19 +115,13 @@ export default class Niveau1 extends Phaser.Scene {
         let speed = 160;
         this.player.setVelocity(0);
 
-        // 🔹 Gestion du mouvement du joueur avec inversion du sprite
+        // Gestion du mouvement du joueur
         if (this.cursors.left.isDown) {
             this.player.setVelocityX(-speed);
-            if (this.lastDirection !== "left") {
-                this.player.setFlipX(true);  // Retourne le sprite vers la gauche
-                this.lastDirection = "left";
-            }
+            this.player.setFlipX(true); // Retourne le sprite vers la gauche
         } else if (this.cursors.right.isDown) {
             this.player.setVelocityX(speed);
-            if (this.lastDirection !== "right") {
-                this.player.setFlipX(false); // Remet le sprite normal vers la droite
-                this.lastDirection = "right";
-            }
+            this.player.setFlipX(false); // Remet le sprite normal vers la droite
         }
 
         if (this.cursors.up.isDown) {
@@ -120,7 +130,7 @@ export default class Niveau1 extends Phaser.Scene {
             this.player.setVelocityY(speed);
         }
 
-        // 🔹 Animation et déplacement des burgers
+        // Animation et déplacement des burgers
         this.burgers.children.iterate(burger => {
             const angle = Phaser.Math.Angle.Between(burger.x, burger.y, this.player.x, this.player.y);
             const speed = burger.getData('speed');
@@ -130,7 +140,7 @@ export default class Niveau1 extends Phaser.Scene {
 
             burger.setVelocity(velocityX, velocityY);
 
-            // 🔹 Mise à jour de l'animation du burger
+            // Mise à jour de l'animation du burger
             if (Math.abs(velocityX) > Math.abs(velocityY)) {
                 if (velocityX > 0) {
                     burger.play("burger_right", true);
@@ -139,22 +149,20 @@ export default class Niveau1 extends Phaser.Scene {
                 }
             }
         });
+
+        // Dessine la barre de vie
+        this.drawHealthBar();
     }
 
     hitPlayer(player, burger) {
         console.log("Le joueur a été touché par un burger !");
-        this.currentHealth -= 1;
-        this.updateHealth();
+        this.currentHealth -= 1; // Perte d'un point de vie
+        burger.setActive(false).setVisible(false); // Le burger disparaît
+
+        // Vérifie si le joueur est mort
         if (this.currentHealth <= 0) {
             console.log("Game Over");
             this.scene.restart();
         }
-        burger.setActive(false).setVisible(false);
-    }
-
-    updateHealth() {
-        this.healthIcons.forEach((heart, index) => {
-            heart.setVisible(index < this.currentHealth);
-        });
     }
 }
