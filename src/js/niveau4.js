@@ -3,8 +3,8 @@ export default class Niveau4 extends Phaser.Scene {
         super({ key: "Niveau4" });
         this.maxHealth = 5;
         this.currentHealth = this.maxHealth;
-        this.burgerCount = 0;
         this.maxBurgers = 10;
+        this.burgersSpawned = 0;
     }
 
     preload() {
@@ -17,9 +17,11 @@ export default class Niveau4 extends Phaser.Scene {
         this.load.spritesheet("img_perso", "src/assets/banane.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet("burger", "src/assets/burger_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image("heart", "src/assets/hearth.png");
+        this.load.image("bullet", "src/assets/bullet.png");
     }
 
     create() {
+
         //CREATION MAP
         const map = this.make.tilemap({ key: "mapN4" });
         const tilesetGrass = map.addTilesetImage("Grass", "Grass");
@@ -54,6 +56,7 @@ export default class Niveau4 extends Phaser.Scene {
             key: "dead", frames: this.anims.generateFrameNumbers("img_perso", { start: 17, end: 20 }), frameRate: 10, repeat: -1
         });
 
+        this.burgers = this.physics.add.group();
         this.bullets = this.physics.add.group();
 
 
@@ -67,17 +70,20 @@ export default class Niveau4 extends Phaser.Scene {
         //COlISIONS
         mursLayer.setCollisionByProperty({ estSolide: true });
         this.physics.add.collider(this.player, mursLayer);
+        this.physics.add.collider(this.bullets, this.burgers, this.hitBurger, null, this);
+        this.physics.add.collider(this.bullets, mursLayer, (bullet) => bullet.destroy());
 
 
 
         //PORTAIL
-        this.portal = this.physics.add.sprite(3377, 80, "portail");
-        this.portal.setImmovable(true);
-        this.portal.setVisible(false);
+        this.portal = this.physics.add.sprite(3377, 80, "portail").setImmovable(true);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
 
         //BURGERS
+        let mapWidth = map.widthInPixels;
+        let mapHeight = map.heightInPixels;
+
         this.anims.create({
             key: "burger_left",
             frames: this.anims.generateFrameNumbers("burger", { frames: [6, 7, 10, 11] }),
@@ -92,123 +98,186 @@ export default class Niveau4 extends Phaser.Scene {
             repeat: -1
         });
 
-        this.burgers = this.physics.add.group();
-        this.spawnBurgers();
+        
 
+        this.time.addEvent({
+            delay: 2000,
+            callback: () => {
+                if (this.burgersSpawned < this.maxBurgers) {
+                    let x = Phaser.Math.Between(50, mapWidth - 50);
+                    let y = Phaser.Math.Between(50, mapHeight - 50);
+                    let burger = this.burgers.create(x, y, "burger");
+                    burger.setCollideWorldBounds(true);
+                    burger.setData('speed', 50);
+                    this.burgersSpawned++;
+                    
+                    let direction = Phaser.Math.Between(0, 1);
+                    if (direction === 0) {
+                        burger.setVelocityX(50);
+                        burger.play("burger_right");
+                    } else {
+                        burger.setVelocityX(-50);
+                        burger.play("burger_left");
+                    }
+                }
+            },
+            loop: true
+        });
+
+
+        this.physics.add.collider(this.burgers, mursLayer);
         this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
+        this.physics.add.overlap(this.bullets, this.burgers, this.hitBurger, null, this);
 
 
-        //VIE
-        this.healthIcons = [];
-        for (let i = 0; i < this.maxHealth; i++) {
-            let heart = this.add.image(60 + i * 50, 20, "heart");
-            heart.setScale(0.3);
-            heart.setScrollFactor(0);
-            this.healthIcons.push(heart);
-        }
+        // BARRE DEVIE
+        this.healthBar = this.add.graphics();
+        this.drawHealthBar();
+        this.healthBar.setScrollFactor(0);
+        this.healthBar.setPosition(140, 80);
 
-        this.updateHealth();
         
 
         //CAMERA
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setZoom(1.1);
-        const mapWidth = map.widthInPixels;
-        const mapHeight = map.heightInPixels;
-        this.cameras.main.setBounds(-50, -25, mapWidth + 50, mapHeight);
+        this.cameras.main.setBounds(-50, -25, map.widthInPixels + 50, map.heightInPixels);
     }
 
-    spawnBurgers() {
-        const mapWidth = this.cameras.main.width;
-        const mapHeight = this.cameras.main.height;
+    drawHealthBar() {
+        this.healthBar.clear();
+        const barWidth = 200;
+        const barHeight = 20;
+        this.healthBar.fillStyle(0x000000);
+        this.healthBar.fillRect(0, 0, barWidth, barHeight);
+        const healthRatio = this.currentHealth / this.maxHealth;
+        this.healthBar.fillStyle(0xff0000);
+        this.healthBar.fillRect(0, 0, barWidth * healthRatio, barHeight);
+    }
+    
 
-        this.time.addEvent({
-            delay: 2000, // Apparition toutes les 2 secondes
-            callback: () => {
-                if (this.burgerCount < this.maxBurgers) {
-                    // Limitez l'apparition des burgers aux dimensions de la carte
-                    let x = Phaser.Math.Between(50, mapWidth - 50);
-                    let y = Phaser.Math.Between(50, mapHeight - 50);
-                    
-                    let burger = this.burgers.create(x, y, "burger");
-                    burger.setCollideWorldBounds(true);
-                    burger.setData('speed', 30);
-
-                    let direction = Phaser.Math.Between(0, 1);
-                    if (direction === 0) {
-                        burger.setVelocityX(30);
-                        burger.play("burger_right");
-                    } else {
-                        burger.setVelocityX(-30);
-                        burger.play("burger_left");
-                    }
-
-                    this.burgerCount++;
-                }
-            },
-            repeat: this.maxBurgers - 1
-        });
+    onPortalOverlap() {
+        if (this.burgers.countActive(true) === 0) {
+            // Sauvegarde de la progression avant de commencer un autre niveau
+            localStorage.setItem("niveau4Complete", "true");
+            this.scene.start("Hub");
+        }
     }
 
     update() {
         let speed = 160;
-        let moving = false;
-
+        let diagonalSpeed = Math.sqrt(speed * speed / 2); // Réduit la vitesse en diagonale
+        
+        let movingX = false;
+        let movingY = false;
+        
+        // Mouvement horizontal
         if (this.cursors.left.isDown) {
             this.player.setVelocityX(-speed);
-            moving = true;
+            this.player.anims.play("walk_right", true);
+            this.player.setFlipX(true);
+            this.lastDirection = "left";
+            movingX = true;
         } else if (this.cursors.right.isDown) {
             this.player.setVelocityX(speed);
-            moving = true;
+            this.player.anims.play("walk_right", true);
+            this.player.setFlipX(false);
+            this.lastDirection = "right";
+            movingX = true;
         } else {
             this.player.setVelocityX(0);
         }
-
+        
+        // Mouvement vertical
         if (this.cursors.up.isDown) {
             this.player.setVelocityY(-speed);
-            moving = true;
+            movingY = true;
         } else if (this.cursors.down.isDown) {
             this.player.setVelocityY(speed);
-            moving = true;
+            movingY = true;
         } else {
             this.player.setVelocityY(0);
         }
+        
+        // Gestion des animations pour le mouvement vertical
+        if (movingY && !movingX) {
+            if (this.lastDirection === "right") {
+                this.player.anims.play("walk_right", true);
+                this.player.setFlipX(false);
+            } else if (this.lastDirection === "left") {
+                this.player.anims.play("walk_right", true);
+                this.player.setFlipX(true);
+            }
+        }
+        
+        // Si on bouge en diagonale, on ajuste la vitesse
+        if (movingX && movingY) {
+            this.player.setVelocityX(this.player.body.velocity.x * diagonalSpeed / speed);
+            this.player.setVelocityY(this.player.body.velocity.y * diagonalSpeed / speed);
+        }
+        
+        // Si le joueur ne bouge pas, animation d'arrêt
+        if (!movingX && !movingY) {
+            this.player.anims.play("stand", true);
+        }
 
-        if (!moving) {
-            this.player.anims.stop();
+        if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
+            this.tirer();
         }
 
         this.burgers.children.iterate(burger => {
             const angle = Phaser.Math.Angle.Between(burger.x, burger.y, this.player.x, this.player.y);
             const speed = burger.getData('speed');
-
-            const vx = Math.cos(angle) * speed;
-            const vy = Math.sin(angle) * speed;
-
-            burger.setVelocity(vx, vy);
-
-            if (vx > 0) {
-                burger.play("burger_right", true);
-            } else if (vx < 0) {
-                burger.play("burger_left", true);
+            let velocityX = Math.cos(angle) * speed;
+            let velocityY = Math.sin(angle) * speed;
+            burger.setVelocity(velocityX, velocityY);
+            if (Math.abs(velocityX) > Math.abs(velocityY)) {
+                if (velocityX > 0) {
+                    burger.play("burger_right", true);
+                } else {
+                    burger.play("burger_left", true);
+                }
             }
         });
 
-        if (this.burgers.countActive() === 0 && this.burgerCount >= this.maxBurgers) {
-            this.portal.setVisible(true);
+        this.drawHealthBar();
+    }
+
+    // Fonction pour tirer un projectile
+    tirer() {
+        let bullet = this.bullets.create(this.player.x, this.player.y, "bullet");
+        bullet.setScale(0.5);
+        bullet.setVelocityX(this.lastDirection === "right" ? 300 : -300);
+        this.time.addEvent({
+            delay: 2000,
+            callback: () => bullet.destroy(),
+            loop: false
+        });
+    }
+
+    onPortalOverlap() {
+        if (this.burgers.countActive(true) === 0) {
+            // Sauvegarde de la progression avant de commencer un autre niveau
+            localStorage.setItem("niveau3Complete", "true");
+            this.scene.start("Hub");
         }
     }
 
     hitPlayer(player, burger) {
-        console.log("Le joueur a été touché par un burger !");
+        console.log("Le joueur a été touché !");
         this.currentHealth -= 1;
-        this.updateHealth();
+        burger.destroy();
 
         if (this.currentHealth <= 0) {
             console.log("Game Over");
+            this.currentHealth = this.maxHealth;
+            this.burgers.clear(true, true);
             this.scene.restart();
         }
-
+    }
+    
+    hitBurger(bullet, burger) {
+        bullet.destroy();
         burger.destroy();
     }
 
@@ -216,18 +285,5 @@ export default class Niveau4 extends Phaser.Scene {
         this.healthIcons.forEach((heart, index) => {
             heart.setVisible(index < this.currentHealth);
         });
-    }
-
-    onPortalOverlap() {
-        if (this.burgers.countActive(true) === 0 && Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
-            let currentLevel = 4; // Numéro du niveau actuel
-            let unlockedLevel = localStorage.getItem("unlockedLevel") || 1;
-            
-            if (currentLevel >= unlockedLevel) {
-                localStorage.setItem("unlockedLevel", currentLevel + 1); // Débloque le niveau suivant (Niveau 3)
-            }
-    
-            this.scene.start("Hub");
-        }
     }
 }
