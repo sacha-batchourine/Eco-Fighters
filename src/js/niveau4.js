@@ -255,13 +255,7 @@ export default class Niveau4 extends Phaser.Scene {
         });
     }
 
-    onPortalOverlap() {
-        if (this.burgers.countActive(true) === 0) {
-            // Sauvegarde de la progression avant de commencer un autre niveau
-            localStorage.setItem("niveau3Complete", "true");
-            this.scene.start("Hub");
-        }
-    }
+
 
     hitPlayer(player, burger) {
         console.log("Le joueur a été touché !");
