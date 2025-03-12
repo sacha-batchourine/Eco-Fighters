@@ -120,17 +120,17 @@ export default class Niveau2 extends Phaser.Scene {
             },
             loop: true
         });
-
+        
+        this.physics.add.collider(this.burgers, mursLayer);
         this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
         this.physics.add.overlap(this.bullets, this.burgers, this.hitBurger, null, this);
 
         //VIE
-        this.healthIcons = [];
-        for (let i = 0; i < this.maxHealth; i++) {
-            let heart = this.add.image(60 + i * 50, 20, "heart").setScale(0.3).setScrollFactor(0);
-            this.healthIcons.push(heart);
-        }
-        this.updateHealth();
+        this.healthBar = this.add.graphics();
+        this.drawHealthBar();
+        this.healthBar.setScrollFactor(0);
+        this.healthBar.setPosition(140, 80);
+
 
         //CAMERA
         this.cameras.main.startFollow(this.player);
@@ -225,7 +225,7 @@ export default class Niveau2 extends Phaser.Scene {
             }
         });
 
-
+        this.drawHealthBar();
     }
 
     // Fonction pour tirer un projectile
