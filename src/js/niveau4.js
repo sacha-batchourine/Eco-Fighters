@@ -60,7 +60,8 @@ export default class Niveau4 extends Phaser.Scene {
         //TOUCHES
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        
+        this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); 
+
 
 
         //COlISIONS

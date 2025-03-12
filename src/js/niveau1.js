@@ -6,8 +6,7 @@ export default class Niveau1 extends Phaser.Scene {
         this.lastDirection = "right";
         this.maxBurgers = 10;
         this.burgersSpawned = 0;
-        this.fireRate = 500; // Temps entre deux tirs (ms)
-        this.lastFired = 0; // Dernier tir effectué
+        
     }
 
     preload() {
@@ -67,6 +66,7 @@ export default class Niveau1 extends Phaser.Scene {
         // les portails 
         this.portal = this.physics.add.sprite(1520, 300, "portail");
         this.portal.setImmovable(true);
+        this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
         // Vérifier si le joueur a déjà complété le niveau précédent
         const previousLevelComplete = localStorage.getItem("niveau1Complete");
@@ -122,7 +122,8 @@ export default class Niveau1 extends Phaser.Scene {
 
         this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
         this.physics.add.overlap(this.bullets, this.burgers, this.hitBurger, null, this);
-        this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
+
+        
 
         // Création de la barre de vie
         this.healthBar = this.add.graphics();

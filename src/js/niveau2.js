@@ -4,6 +4,9 @@ export default class Niveau2 extends Phaser.Scene {
         this.maxHealth = 5;
         this.currentHealth = this.maxHealth;
         this.lastDirection = "right"; // Dernière direction du joueur
+        this.maxBurgers = 10;
+        this.burgersSpawned = 0;
+        
         
     }
 
@@ -54,23 +57,30 @@ export default class Niveau2 extends Phaser.Scene {
             key: "dead", frames: this.anims.generateFrameNumbers("img_perso", { start: 17, end: 20 }), frameRate: 10, repeat: -1
         });
 
+        this.burgers = this.physics.add.group();
         this.bullets = this.physics.add.group();
 
         // CREATION DE TOUCHE
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-        
+
         //COLISIONS
         mursLayer.setCollisionByProperty({ estSolide: true });
         this.physics.add.collider(this.player, mursLayer);
+        this.physics.add.collider(this.bullets, this.burgers, this.hitBurger, null, this);
+        this.physics.add.collider(this.bullets, mursLayer, (bullet) => bullet.destroy());
         
 
         //PORTAIL
         this.portal = this.physics.add.sprite(3025, 525, "portail").setImmovable(true);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
-        //BURGER
+        // Les Burgers
+
+        let mapWidth = map.widthInPixels;
+        let mapHeight = map.heightInPixels;
+
         this.anims.create({
             key: "burger_left",
             frames: this.anims.generateFrameNumbers("burger", { frames: [6, 7, 10, 11] }),
@@ -86,26 +96,33 @@ export default class Niveau2 extends Phaser.Scene {
         });
 
         
-        this.burgers = this.physics.add.group({ key: 'burger', repeat: 14 });
-        this.burgers.children.iterate(burger => {
-            let x = Phaser.Math.Between(50, map.widthInPixels - 50);
-            let y = Phaser.Math.Between(50, map.heightInPixels - 50);
-            burger.setPosition(x, y);
-            burger.setCollideWorldBounds(true);
-            burger.setData('speed', 30);
 
-            let direction = Phaser.Math.Between(0, 3);
-            switch (direction) {
-                case 0: burger.setVelocityX(30); burger.play("burger_right"); break;
-                case 1: burger.setVelocityX(-30); burger.play("burger_left"); break;
-                case 2: burger.setVelocityY(30); break;
-                case 3: burger.setVelocityY(-30); break;
-            }
+        this.time.addEvent({
+            delay: 2000,
+            callback: () => {
+                if (this.burgersSpawned < this.maxBurgers) {
+                    let x = Phaser.Math.Between(50, mapWidth - 50);
+                    let y = Phaser.Math.Between(50, mapHeight - 50);
+                    let burger = this.burgers.create(x, y, "burger");
+                    burger.setCollideWorldBounds(true);
+                    burger.setData('speed', 50);
+                    this.burgersSpawned++;
+                    
+                    let direction = Phaser.Math.Between(0, 1);
+                    if (direction === 0) {
+                        burger.setVelocityX(50);
+                        burger.play("burger_right");
+                    } else {
+                        burger.setVelocityX(-50);
+                        burger.play("burger_left");
+                    }
+                }
+            },
+            loop: true
         });
 
-        // Détection des collisions entre le joueur et les burgers
         this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
-
+        this.physics.add.overlap(this.bullets, this.burgers, this.hitBurger, null, this);
 
         //VIE
         this.healthIcons = [];
@@ -119,6 +136,17 @@ export default class Niveau2 extends Phaser.Scene {
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setZoom(1.1);
         this.cameras.main.setBounds(-50, -25, map.widthInPixels + 50, map.heightInPixels);
+    }
+
+    drawHealthBar() {
+        this.healthBar.clear();
+        const barWidth = 200;
+        const barHeight = 20;
+        this.healthBar.fillStyle(0x000000);
+        this.healthBar.fillRect(0, 0, barWidth, barHeight);
+        const healthRatio = this.currentHealth / this.maxHealth;
+        this.healthBar.fillStyle(0xff0000);
+        this.healthBar.fillRect(0, 0, barWidth * healthRatio, barHeight);
     }
 
     update(time) {
@@ -182,13 +210,21 @@ export default class Niveau2 extends Phaser.Scene {
             this.tirer();
         }
 
-        // Logique des burgers
         this.burgers.children.iterate(burger => {
             const angle = Phaser.Math.Angle.Between(burger.x, burger.y, this.player.x, this.player.y);
             const speed = burger.getData('speed');
-            burger.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed);
-            burger.play(burger.body.velocity.x > 0 ? "burger_right" : "burger_left", true);
+            let velocityX = Math.cos(angle) * speed;
+            let velocityY = Math.sin(angle) * speed;
+            burger.setVelocity(velocityX, velocityY);
+            if (Math.abs(velocityX) > Math.abs(velocityY)) {
+                if (velocityX > 0) {
+                    burger.play("burger_right", true);
+                } else {
+                    burger.play("burger_left", true);
+                }
+            }
         });
+
 
     }
 
@@ -204,6 +240,14 @@ export default class Niveau2 extends Phaser.Scene {
         });
     }
 
+    onPortalOverlap() {
+        if (this.burgers.countActive(true) === 0) {
+            // Sauvegarde de la progression avant de commencer un autre niveau
+            localStorage.setItem("niveau2Complete", "true");
+            this.scene.start("Hub");
+        }
+    }
+
     // Fonction de gestion de collision avec un burger (le joueur prend des dégâts)
     hitPlayer(player, burger) {
         this.currentHealth -= 1;
@@ -213,12 +257,7 @@ export default class Niveau2 extends Phaser.Scene {
         }
         burger.setActive(false).setVisible(false);
     }
-    hitPlayer(player, burger) {
-        this.currentHealth -= 1;
-        this.updateHealth();
-        if (this.currentHealth <= 0) { this.scene.restart(); }
-        burger.setActive(false).setVisible(false);
-    }
+    
     hitBurger(bullet, burger) {
         bullet.destroy();
         burger.destroy();
