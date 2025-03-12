@@ -35,7 +35,7 @@ export default class Niveau1 extends Phaser.Scene {
         mursLayer.setCollisionByProperty({ collide: true });
         this.physics.add.collider(this.player, mursLayer);
 
-        this.portal = this.physics.add.sprite(1000, 200, "portail");
+        this.portal = this.physics.add.sprite(1520, 300, "portail");
         this.portal.setImmovable(true);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
