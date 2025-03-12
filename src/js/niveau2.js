@@ -1,4 +1,4 @@
-export default class Nivea2 extends Phaser.Scene {
+export default class Niveau2 extends Phaser.Scene {
     constructor() {
         super({ key: "Niveau2" });
         this.maxHealth = 5; // Vie maximale en cœurs
