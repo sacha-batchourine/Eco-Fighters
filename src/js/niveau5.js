@@ -143,6 +143,17 @@ export default class Niveau5 extends Phaser.Scene {
         this.cameras.main.setBounds(-50, -25, map.widthInPixels + 50, map.heightInPixels);
 
     }
+
+    drawHealthBar() {
+        this.healthBar.clear();
+        const barWidth = 200;
+        const barHeight = 20;
+        this.healthBar.fillStyle(0x000000);
+        this.healthBar.fillRect(0, 0, barWidth, barHeight);
+        const healthRatio = this.currentHealth / this.maxHealth;
+        this.healthBar.fillStyle(0xff0000);
+        this.healthBar.fillRect(0, 0, barWidth * healthRatio, barHeight);
+    }
       
        
     onPortalOverlap() {

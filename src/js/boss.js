@@ -152,6 +152,16 @@ export default class NiveauBoss extends Phaser.Scene {
     }
   }
 
+  drawHealthBar() {
+    this.healthBar.clear();
+    const barWidth = 200;
+    const barHeight = 20;
+    this.healthBar.fillStyle(0x000000);
+    this.healthBar.fillRect(0, 0, barWidth, barHeight);
+    const healthRatio = this.currentHealth / this.maxHealth;
+    this.healthBar.fillStyle(0xff0000);
+    this.healthBar.fillRect(0, 0, barWidth * healthRatio, barHeight);
+}
 
 
 
