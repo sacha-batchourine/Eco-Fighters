@@ -14,8 +14,7 @@ export default class Hub extends Phaser.Scene {
         this.load.image("Plant", "src/assets/TX Plant.png");
         this.load.spritesheet("img_perso", "src/assets/banane.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet("portail", "src/assets/portal4.png", { frameWidth: 32, frameHeight: 32 });
-
-        this.load.image("bullet", "src/assets/balles.png"); // Correction du chemin
+        this.load.image("bullet", "src/assets/balles.png"); 
     }
 
     create() {
@@ -53,27 +52,39 @@ export default class Hub extends Phaser.Scene {
         });
 
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); // Ajout d'une touche pour tirer
+        this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
 
         this.physics.add.collider(this.player, murLayer);
 
-        // Ajout des portails
+        // Portail pour Niveau 1
         this.portal1 = this.physics.add.sprite(432, 175, "portail").setImmovable(true);
-        this.physics.add.overlap(this.player, this.portal1, this.onPortalOverlap, null, this);
+        this.physics.add.overlap(this.player, this.portal1, this.onPortal1Overlap, null, this);
 
-        // Ajout de la barre de vie
+        // Vérifier si le Niveau 1 a été complété
+        const niveau1Terminé = localStorage.getItem("niveau1Complete") === "true";
+
+        // Portail pour Niveau 2 (caché par défaut)
+        this.portal2 = this.physics.add.sprite(600, 175, "portail").setImmovable(true);
+        if (!niveau1Terminé) {
+            this.portal2.setVisible(false);
+            this.portal2.body.enable = false;
+        } else {
+            this.portal2.setVisible(true);
+            this.portal2.body.enable = true;
+            this.physics.add.overlap(this.player, this.portal2, this.onPortal2Overlap, null, this);
+        }
+
+        // Barre de vie
         this.healthBarBackground = this.add.rectangle(50, 70, 200, 20, 0x000000);
         this.healthBar = this.add.rectangle(50, 70, 200, 20, 0xff0000);
         this.healthBar.setOrigin(0, 0);
         this.healthBarBackground.setOrigin(0, 0);
 
-        // Création du groupe de balles
         this.groupeBullets = this.physics.add.group();
 
-        // Configuration de la caméra
+        // Caméra
         this.cameras.main.startFollow(this.player);
-        this.cameras.main.setZoom(4.0);
+        this.cameras.main.setZoom(1.5);
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     }
 
@@ -92,10 +103,12 @@ export default class Hub extends Phaser.Scene {
         this.updateHealth();
     }
 
-    onPortalOverlap(player, portal) {
-        if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
-            this.scene.start("Niveau1");
-        }
+    onPortal1Overlap(player, portal) {
+        this.scene.start("Niveau1");
+    }
+
+    onPortal2Overlap(player, portal) {
+        this.scene.start("Niveau2");
     }
 
     update() {
@@ -133,24 +146,40 @@ export default class Hub extends Phaser.Scene {
             this.player.setVelocity(0);
         }
 
-        // Tirer avec la touche "A"
         if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
             this.tirer();
         }
     }
 
     tirer() {
-        let coefDirX = 0;
-        let coefDirY = 0;
+        let vitesseX = 0;
+        let vitesseY = 0;
+        let angle = 0;
+        let offsetX = 0;
+        let offsetY = 0;
 
-        if (this.lastDirection === "left") coefDirX = -1;
-        if (this.lastDirection === "right") coefDirX = 1;
-        if (this.lastDirection === "up") coefDirY = -1;
-        if (this.lastDirection === "down") coefDirY = 1;
+        if (this.lastDirection === "left") {
+            vitesseX = -500;
+            offsetX = -25;
+        } else if (this.lastDirection === "right") {
+            vitesseX = 500;
+            offsetX = 25;
+        } else if (this.lastDirection === "up") {
+            vitesseY = -500;
+            offsetY = -25;
+            angle = -90;
+        } else if (this.lastDirection === "down") {
+            vitesseY = 500;
+            offsetY = 25;
+            angle = 90;
+        }
 
-        let bullet = this.groupeBullets.create(this.player.x, this.player.y, "bullet");
-        bullet.setVelocity(300 * coefDirX, 300 * coefDirY);
+        let bullet = this.groupeBullets.create(this.player.x + offsetX, this.player.y + offsetY, "bullet")
+            .setScale(0.5)
+            .setAngle(angle)
+            .setCollideWorldBounds(true);
+
         bullet.body.allowGravity = false;
-        bullet.setCollideWorldBounds(true);
+        bullet.setVelocity(vitesseX, vitesseY);
     }
 }

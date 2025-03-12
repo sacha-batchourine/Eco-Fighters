@@ -4,6 +4,10 @@ export default class Niveau1 extends Phaser.Scene {
         this.maxHealth = 5;
         this.currentHealth = this.maxHealth;
         this.lastDirection = "right";
+        this.maxBurgers = 10;
+        this.burgersSpawned = 0;
+        this.fireRate = 500; // Temps entre deux tirs (ms)
+        this.lastFired = 0; // Dernier tir effectué
     }
 
     preload() {
@@ -14,6 +18,8 @@ export default class Niveau1 extends Phaser.Scene {
         this.load.spritesheet("img_perso", "src/assets/Perso.png", { frameWidth: 48, frameHeight: 48 });
         this.load.spritesheet("burger", "src/assets/burger_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image("heart", "src/assets/hearth.png");
+        this.load.image("portail", "src/assets/portail.png");
+        this.load.image("bullet", "src/assets/bullet.png"); // Image du projectile
     }
 
     create() {
@@ -29,7 +35,7 @@ export default class Niveau1 extends Phaser.Scene {
 
         this.player = this.physics.add.sprite(112, 295, "img_perso");
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); // Touche A pour tirer
 
         mursLayer.setCollisionByProperty({ collide: true });
         this.physics.add.collider(this.player, mursLayer);
@@ -52,25 +58,28 @@ export default class Niveau1 extends Phaser.Scene {
         });
 
         this.burgers = this.physics.add.group();
+        this.bullets = this.physics.add.group();
+
         const mapWidth = map.widthInPixels;
         const mapHeight = map.heightInPixels;
 
         this.time.addEvent({
             delay: 2000,
             callback: () => {
-                if (this.burgers.getChildren().length < 5) {
+                if (this.burgersSpawned < this.maxBurgers) {
                     let x = Phaser.Math.Between(50, mapWidth - 50);
                     let y = Phaser.Math.Between(50, mapHeight - 50);
                     let burger = this.burgers.create(x, y, "burger");
                     burger.setCollideWorldBounds(true);
-                    burger.setData('speed', 30);
+                    burger.setData('speed', 50);
+                    this.burgersSpawned++;
                     
                     let direction = Phaser.Math.Between(0, 1);
                     if (direction === 0) {
-                        burger.setVelocityX(30);
+                        burger.setVelocityX(50);
                         burger.play("burger_right");
                     } else {
-                        burger.setVelocityX(-30);
+                        burger.setVelocityX(-50);
                         burger.play("burger_left");
                     }
                 }
@@ -79,15 +88,15 @@ export default class Niveau1 extends Phaser.Scene {
         });
 
         this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
+        this.physics.add.overlap(this.bullets, this.burgers, this.hitBurger, null, this);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
         // Création de la barre de vie
         this.healthBar = this.add.graphics();
         this.drawHealthBar();
-        this.healthBar.setScrollFactor(0);  // Fixe la barre de vie à la caméra
+        this.healthBar.setScrollFactor(0);
 
-        // Positionner la barre de vie dans un endroit visible
-        this.healthBar.setPosition(140, 80);  // Placer la barre de vie en haut à gauche de l'écran
+        this.healthBar.setPosition(140, 80);
 
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setZoom(1.1);
@@ -99,42 +108,41 @@ export default class Niveau1 extends Phaser.Scene {
         const barWidth = 200;
         const barHeight = 20;
         this.healthBar.fillStyle(0x000000);
-        this.healthBar.fillRect(0, 0, barWidth, barHeight);  // Ajusté les dimensions de la barre
+        this.healthBar.fillRect(0, 0, barWidth, barHeight);
         const healthRatio = this.currentHealth / this.maxHealth;
         this.healthBar.fillStyle(0xff0000);
-        this.healthBar.fillRect(0, 0, barWidth * healthRatio, barHeight);  // Taille de la barre de vie en fonction de la santé
+        this.healthBar.fillRect(0, 0, barWidth * healthRatio, barHeight);
     }
 
     onPortalOverlap() {
-        if (this.burgers.countActive(true) === 0 && Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
-            let currentLevel = 1; // Numéro du niveau actuel
-            let unlockedLevel = localStorage.getItem("unlockedLevel") || 1;
-            
-            if (currentLevel >= unlockedLevel) {
-                localStorage.setItem("unlockedLevel", currentLevel + 1); // Débloque le niveau suivant
-            }
-    
+        if (this.burgers.countActive(true) === 0) {
             this.scene.start("Hub");
         }
     }
-    
 
-    update() {
+    update(time) {
         let speed = 160;
         this.player.setVelocity(0);
 
         if (this.cursors.left.isDown) {
             this.player.setVelocityX(-speed);
             this.player.setFlipX(true);
+            this.lastDirection = "left";
         } else if (this.cursors.right.isDown) {
             this.player.setVelocityX(speed);
             this.player.setFlipX(false);
+            this.lastDirection = "right";
         }
 
         if (this.cursors.up.isDown) {
             this.player.setVelocityY(-speed);
         } else if (this.cursors.down.isDown) {
             this.player.setVelocityY(speed);
+        }
+
+        if (Phaser.Input.Keyboard.JustDown(this.shootKey) && time > this.lastFired + this.fireRate) {
+            this.shoot();
+            this.lastFired = time;
         }
 
         this.burgers.children.iterate(burger => {
@@ -155,16 +163,32 @@ export default class Niveau1 extends Phaser.Scene {
         this.drawHealthBar();
     }
 
+    shoot() {
+        let bullet = this.bullets.create(this.player.x, this.player.y, "bullet");
+        bullet.setScale(0.5);
+        bullet.setVelocityX(this.lastDirection === "right" ? 300 : -300);
+        this.time.addEvent({
+            delay: 2000,
+            callback: () => bullet.destroy(),
+            loop: false
+        });
+    }
+
     hitPlayer(player, burger) {
-        console.log("Le joueur a été touché par un burger !");
+        console.log("Le joueur a été touché !");
         this.currentHealth -= 1;
         burger.destroy();
         
         if (this.currentHealth <= 0) {
             console.log("Game Over");
-            this.currentHealth = this.maxHealth; // Réinitialise la vie
-            this.burgers.clear(true, true); // Supprime tous les burgers
-            this.scene.restart(); // Redémarre la scène
+            this.currentHealth = this.maxHealth;
+            this.burgers.clear(true, true);
+            this.scene.restart();
         }
+    }
+
+    hitBurger(bullet, burger) {
+        bullet.destroy();
+        burger.destroy();
     }
 }
