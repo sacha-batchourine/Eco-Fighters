@@ -13,6 +13,7 @@ export default class NiveauBoss extends Phaser.Scene {
         this.load.image("Objet", "src/assets/TX Props.png");
         this.load.image("Plant", "src/assets/TX PLant.png");
         this.load.image("Ombres", "src/assets/TX Shadow PLant.png");
+        this.load.image("Sol", "src/assets/TX Tileset Stone Ground.png");
 
         this.load.spritesheet("img_perso", "src/assets/Perso.png", {
             frameWidth: 48,
@@ -36,16 +37,16 @@ export default class NiveauBoss extends Phaser.Scene {
         const tilesetProps = map.addTilesetImage("Props", "Objet");
         const tilesetPlant = map.addTilesetImage("Plant", "Plant");
         const tilesetOmbre = map.addTilesetImage("Shadow Plant", "Ombres");
+        const tilesetSol = map.addTilesetImage("Stone Ground", "Sol");
 
         map.createLayer("Grass", [tilesetGrass]);
-        map.createLayer("Chemin", [tilesetGrass, tilesetProps]);
-        map.createLayer("Ombre", [tilesetOmbre]);
+        map.createLayer("Chemin", [tilesetGrass, tilesetProps, tilesetSol]);
         const mursLayer = map.createLayer("Mur", [tilesetMur, tilesetPlant, tilesetProps]);
         map.createLayer("Ecriture", [tilesetProps]);
 
         
 
-        this.player = this.physics.add.sprite(100, 100, "img_perso");
+        this.player = this.physics.add.sprite(100, 978, "img_perso");
         
 
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -56,7 +57,7 @@ export default class NiveauBoss extends Phaser.Scene {
 
         
         
-        this.portal = this.physics.add.sprite(1000, 200, "portail");
+        this.portal = this.physics.add.sprite(1000, 1000, "portail");
         this.portal.setImmovable(true);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
