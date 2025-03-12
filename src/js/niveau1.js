@@ -29,8 +29,7 @@ export default class Niveau1 extends Phaser.Scene {
 
         // Création du joueur
         this.player = this.physics.add.sprite(112, 295, "img_perso");
-        this.player.setCollideWorldBounds(true);
-        this.cursors = this.input.keyboard.createCursorKeys();
+         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         mursLayer.setCollisionByProperty({ collide: true });

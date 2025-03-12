@@ -47,7 +47,6 @@ export default class Niveau2 extends Phaser.Scene {
         
 
         this.player = this.physics.add.sprite(143, 455, "img_perso");
-        this.player.setCollideWorldBounds(true);
 
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);

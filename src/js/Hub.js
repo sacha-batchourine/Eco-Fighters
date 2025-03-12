@@ -55,7 +55,6 @@ export default class Hub extends Phaser.Scene {
         
 
         this.player = this.physics.add.sprite(400, 300, "img_perso");
-        this.player.setCollideWorldBounds(true);
         
         
         this.lastDirection = "down";
