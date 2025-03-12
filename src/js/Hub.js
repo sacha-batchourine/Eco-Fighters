@@ -12,16 +12,10 @@ export default class Hub extends Phaser.Scene {
         this.load.image("Sol", "src/assets/TX Tileset Stone Ground.png");
         this.load.image("Props", "src/assets/TX Props.png");
         this.load.image("Plant", "src/assets/TX Plant.png");
+        this.load.spritesheet("img_perso", "src/assets/banane.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet("portail", "src/assets/portal4.png", { frameWidth: 32, frameHeight: 32 });
 
-        this.load.spritesheet("img_perso", "src/assets/banane.png", {
-            frameWidth: 32,
-            frameHeight: 32
-        });
-
-        this.load.spritesheet("portail", "src/assets/portal4.png", {
-            frameWidth: 32,
-            frameHeight: 32
-        });
+        this.load.image("bullet", "src/assets/balles.png"); // Correction du chemin
     }
 
     create() {
@@ -42,25 +36,8 @@ export default class Hub extends Phaser.Scene {
         murLayer.setCollisionByExclusion([-1]);
         this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-        this.portal1 = this.physics.add.sprite(432, 175, "portail").setImmovable(true);
-        this.portal2 = this.physics.add.sprite(624, 559, "portail").setImmovable(true);
-        this.portal3 = this.physics.add.sprite(880, 240, "portail").setImmovable(true);
-        this.portal4 = this.physics.add.sprite(1040, 495, "portail").setImmovable(true);
-        this.portal5 = this.physics.add.sprite(1170, 143, "portail").setImmovable(true);
-        this.portalBoss = this.physics.add.sprite(1455, 335, "portail").setImmovable(true);
-
-        let unlockedLevel = localStorage.getItem("unlockedLevel") || 1;
-
-        this.portal1.setVisible(unlockedLevel >= 1).setActive(unlockedLevel >= 1);
-        this.portal2.setVisible(unlockedLevel >= 2).setActive(unlockedLevel >= 2);
-        this.portal3.setVisible(unlockedLevel >= 3).setActive(unlockedLevel >= 3);
-        this.portal4.setVisible(unlockedLevel >= 4).setActive(unlockedLevel >= 4);
-        this.portal5.setVisible(unlockedLevel >= 5).setActive(unlockedLevel >= 5);
-        this.portalBoss.setVisible(unlockedLevel >= 6).setActive(unlockedLevel >= 6);
-
         this.player = this.physics.add.sprite(145, 325, "img_perso");
-
-        this.lastDirection = "down";
+        this.lastDirection = "right";
 
         this.anims.create({
             key: "walk_up", frames: this.anims.generateFrameNumbers("img_perso", { start: 0, end: 3 }), frameRate: 10, repeat: -1
@@ -77,26 +54,27 @@ export default class Hub extends Phaser.Scene {
 
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); // Ajout d'une touche pour tirer
 
         this.physics.add.collider(this.player, murLayer);
-        
-        this.physics.add.overlap(this.player, [this.portal1, this.portal2, this.portal3, this.portal4, this.portal5, this.portalBoss], this.onPortalOverlap, null, this);
 
-        // 🔹 Création de la barre de vie
+        // Ajout des portails
+        this.portal1 = this.physics.add.sprite(432, 175, "portail").setImmovable(true);
+        this.physics.add.overlap(this.player, this.portal1, this.onPortalOverlap, null, this);
+
+        // Ajout de la barre de vie
         this.healthBarBackground = this.add.rectangle(50, 70, 200, 20, 0x000000);
         this.healthBar = this.add.rectangle(50, 70, 200, 20, 0xff0000);
-
         this.healthBar.setOrigin(0, 0);
         this.healthBarBackground.setOrigin(0, 0);
 
-        // Centrer la caméra sur le joueur
+        // Création du groupe de balles
+        this.groupeBullets = this.physics.add.group();
+
+        // Configuration de la caméra
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setZoom(4.0);
-
-        // Limiter les mouvements de la caméra aux bords de la carte
-        const mapWidth = map.widthInPixels;
-        const mapHeight = map.heightInPixels;
-        this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
+        this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     }
 
     updateHealth() {
@@ -115,22 +93,8 @@ export default class Hub extends Phaser.Scene {
     }
 
     onPortalOverlap(player, portal) {
-        if (!portal.active || !portal.visible) return; // Empêche l'accès aux portails inactifs ou invisibles
-    
         if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
-            if (portal === this.portal1) {
-                this.scene.start("Niveau1");
-            } else if (portal === this.portal2) {
-                this.scene.start("Niveau2");
-            } else if (portal === this.portal3) {
-                this.scene.start("Niveau3");
-            } else if (portal === this.portal4) {
-                this.scene.start("Niveau4");
-            } else if (portal === this.portal5) {
-                this.scene.start("Niveau5");
-            } else if (portal === this.portalBoss) {
-                this.scene.start("NiveauBoss");
-            }
+            this.scene.start("Niveau1");
         }
     }
 
@@ -168,5 +132,25 @@ export default class Hub extends Phaser.Scene {
         if (!moving) {
             this.player.setVelocity(0);
         }
+
+        // Tirer avec la touche "A"
+        if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
+            this.tirer();
+        }
+    }
+
+    tirer() {
+        let coefDirX = 0;
+        let coefDirY = 0;
+
+        if (this.lastDirection === "left") coefDirX = -1;
+        if (this.lastDirection === "right") coefDirX = 1;
+        if (this.lastDirection === "up") coefDirY = -1;
+        if (this.lastDirection === "down") coefDirY = 1;
+
+        let bullet = this.groupeBullets.create(this.player.x, this.player.y, "bullet");
+        bullet.setVelocity(300 * coefDirX, 300 * coefDirY);
+        bullet.body.allowGravity = false;
+        bullet.setCollideWorldBounds(true);
     }
 }

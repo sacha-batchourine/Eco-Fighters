@@ -43,9 +43,9 @@ export default class Niveau3 extends Phaser.Scene {
 
         this.anims.create({ key: "burger_left", frames: this.anims.generateFrameNumbers("burger", { frames: [6, 7, 10, 11] }), frameRate: 10, repeat: -1 });
         this.anims.create({ key: "burger_right", frames: this.anims.generateFrameNumbers("burger", { frames: [8, 9, 12, 13] }), frameRate: 10, repeat: -1 });
-        
+
         this.burgers = this.physics.add.group();
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 15; i++) { // 🔥 Augmentation du nombre de burgers
             let spawnPoint;
             do {
                 spawnPoint = {
@@ -53,10 +53,15 @@ export default class Niveau3 extends Phaser.Scene {
                     y: Phaser.Math.Between(50, map.heightInPixels - 50)
                 };
             } while (mursLayer.getTileAtWorldXY(spawnPoint.x, spawnPoint.y));
-            
+
+            let isBoss = Math.random() < 0.3; // 30% de chance d'être un "boss burger"
             let burger = this.burgers.create(spawnPoint.x, spawnPoint.y, "burger");
+
+            burger.setScale(isBoss ? 1.5 : 1); // 🍔 Boss burger plus gros
+            burger.setData('speed', isBoss ? Phaser.Math.Between(50, 60) : Phaser.Math.Between(40, 50)); // ⚡ Boss burgers sont plus rapides
+            burger.setData('damage', isBoss ? 2 : 1); // 💥 Boss burgers font 2x de dégâts
+
             burger.setCollideWorldBounds(true);
-            burger.setData('speed', 30);
         }
 
         this.physics.add.collider(this.burgers, mursLayer);
@@ -89,7 +94,7 @@ export default class Niveau3 extends Phaser.Scene {
     }
 
     hitPlayer(player, burger) {
-        this.currentHealth -= 1;
+        this.currentHealth -= burger.getData('damage'); // 🔥 Boss burgers font plus mal
         this.updateHealth();
         if (this.currentHealth <= 0) this.scene.restart();
         burger.setActive(false).setVisible(false);
@@ -103,11 +108,11 @@ export default class Niveau3 extends Phaser.Scene {
         if (this.burgers.countActive(true) === 0 && Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
             let currentLevel = 3; // Numéro du niveau actuel
             let unlockedLevel = localStorage.getItem("unlockedLevel") || 1;
-            
+
             if (currentLevel >= unlockedLevel) {
-                localStorage.setItem("unlockedLevel", currentLevel + 1); // Débloque le niveau suivant (Niveau 3)
+                localStorage.setItem("unlockedLevel", currentLevel + 1); // Débloque le niveau suivant
             }
-    
+
             this.scene.start("Hub");
         }
     }
