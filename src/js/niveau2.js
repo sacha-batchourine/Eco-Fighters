@@ -56,7 +56,7 @@ export default class Niveau2 extends Phaser.Scene {
         
 
         
-        this.portal = this.physics.add.sprite(1000, 200, "portail");
+        this.portal = this.physics.add.sprite(3025, 525, "portail");
         this.portal.setImmovable(true);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
