@@ -51,6 +51,10 @@ export default class Hub extends Phaser.Scene {
         this.portal3 = this.physics.add.sprite(880,240, "portail");
         this.portal3.setImmovable(true);
 
+        this.portal4 = this.physics.add.sprite(1025,300, "portail");
+        this.portal4.setImmovable(true);
+
+
 
         
 
@@ -77,7 +81,7 @@ export default class Hub extends Phaser.Scene {
 
         this.physics.add.collider(this.player, murLayer);
         
-        this.physics.add.overlap(this.player, [this.portal1, this.portal2, this.portal3], this.onPortalOverlap, null, this);
+        this.physics.add.overlap(this.player, [this.portal1, this.portal2, this.portal3, this.portal4], this.onPortalOverlap, null, this);
 
 
         // 🔹 Création de la barre de vie
@@ -120,6 +124,8 @@ export default class Hub extends Phaser.Scene {
                 this.scene.start("Niveau2");
             } else if (portal === this.portal3){
                 this.scene.start("Niveau3")
+            } else if (portal === this.portal4){
+                this.scene.start("Niveau4")
             }
         }
     }
