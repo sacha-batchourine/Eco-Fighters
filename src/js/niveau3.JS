@@ -62,20 +62,20 @@ export default class Niveau3 extends Phaser.Scene {
 
       
       
-      // Ajout des animations des burgers
+      // Création des animations pour les burgers
       this.anims.create({
-          key: "burger_left",
-          frames: this.anims.generateFrameNumbers("burger", { start: 4, end: 7 }),
-          frameRate: 10,
-          repeat: -1
-      });
+        key: "burger_left",
+        frames: this.anims.generateFrameNumbers("burger", { frames: [6, 7, 10, 11] }),
+        frameRate: 10,
+        repeat: -1
+    });
 
-        this.anims.create({
-            key: "burger_right",
-            frames: this.anims.generateFrameNumbers("burger", { start: 8, end: 11 }),
-            frameRate: 10,
-            repeat: -1
-        });
+    this.anims.create({
+        key: "burger_right",
+        frames: this.anims.generateFrameNumbers("burger", { frames: [8, 9, 12, 13] }),
+        frameRate: 10,
+        repeat: -1
+    });
 
         this.burgers = this.physics.add.group({
             key: 'burger',
