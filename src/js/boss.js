@@ -3,6 +3,8 @@ export default class NiveauBoss extends Phaser.Scene {
         super({ key: "NiveauBoss" });
         this.maxHealth = 5; // Vie maximale en cœurs
         this.currentHealth = this.maxHealth; // Vie actuelle
+        this.maxBurgers = 10;
+        this.burgersSpawned = 0;
     }
 
     preload() {
@@ -21,9 +23,9 @@ export default class NiveauBoss extends Phaser.Scene {
     }
 
   create() {
-    
-        const map = this.make.tilemap({ key: "mapBoss" });
 
+        //MAP
+        const map = this.make.tilemap({ key: "mapBoss" });
         const tilesetGrass = map.addTilesetImage("Grass", "Grass");
         const tilesetMur = map.addTilesetImage("Wall", "Wall");
         const tilesetProps = map.addTilesetImage("Props", "Objet");
@@ -37,103 +39,115 @@ export default class NiveauBoss extends Phaser.Scene {
         map.createLayer("Ecriture", [tilesetProps]);
 
         
-
+        //PLAYER
         this.player = this.physics.add.sprite(100, 978, "img_perso");
-        
+        this.player.setScale(2); // Agrandit le joueur 2 fois
+        this.lastDirection = "right";
 
+        this.anims.create({
+            key: "stand", frames: this.anims.generateFrameNumbers("img_perso", { start: 30, end: 32 }), frameRate: 10, repeat: -1
+        });
+        this.anims.create({
+            key: "walk_right", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
+        });
+        this.anims.create({
+            key: "walk_left", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
+        });
+        this.anims.create({
+            key: "dead", frames: this.anims.generateFrameNumbers("img_perso", { start: 17, end: 20 }), frameRate: 10, repeat: -1
+        });
+
+        this.burgers = this.physics.add.group();
+        this.bullets = this.physics.add.group();
+
+        
+        //TOUCHES
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); 
 
+        //COLISIONS
         mursLayer.setCollisionByProperty({ estSolide: true });
         this.physics.add.collider(this.player, mursLayer);
+        this.physics.add.collider(this.bullets, this.burgers, this.hitBurger, null, this);
+        this.physics.add.collider(this.bullets, mursLayer, (bullet) => bullet.destroy());
 
         
-        
-        this.portal = this.physics.add.sprite(1000, 1000, "portail");
-        this.portal.setImmovable(true);
+        //PORTAIL
+        this.portal = this.physics.add.sprite(1000, 1000, "portail").setImmovable(true);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
 
       
-      
-      // Création des animations pour les burgers
+      //BURGERS
+      let mapWidth = map.widthInPixels;
+      let mapHeight = map.heightInPixels;
+
       this.anims.create({
-        key: "burger_left",
-        frames: this.anims.generateFrameNumbers("burger", { frames: [6, 7, 10, 11] }),
-        frameRate: 10,
-        repeat: -1
-    });
+          key: "burger_left",
+          frames: this.anims.generateFrameNumbers("burger", { frames: [6, 7, 10, 11] }),
+          frameRate: 10,
+          repeat: -1
+      });
 
-    this.anims.create({
-        key: "burger_right",
-        frames: this.anims.generateFrameNumbers("burger", { frames: [8, 9, 12, 13] }),
-        frameRate: 10,
-        repeat: -1
-    });
+      this.anims.create({
+          key: "burger_right",
+          frames: this.anims.generateFrameNumbers("burger", { frames: [8, 9, 12, 13] }),
+          frameRate: 10,
+          repeat: -1
+      });
 
-        this.burgers = this.physics.add.group({
-            key: 'burger',
-            repeat: 9,
-            setXY: {
-                x: Phaser.Math.Between(50, 500),
-                y: Phaser.Math.Between(50, 500),
-                stepX: 150,
-                stepY: 150
-            }
-        });
+      
 
-        this.burgers.children.iterate(burger => {
-            burger.setCollideWorldBounds(true);
-            burger.setData('speed', 30);
+      this.time.addEvent({
+          delay: 2000,
+          callback: () => {
+              if (this.burgersSpawned < this.maxBurgers) {
+                  let x = Phaser.Math.Between(50, mapWidth - 50);
+                  let y = Phaser.Math.Between(50, mapHeight - 50);
+                  let burger = this.burgers.create(x, y, "burger");
+                  burger.setCollideWorldBounds(true);
+                  burger.setData('speed', 50);
+                  this.burgersSpawned++;
+                  
+                  let direction = Phaser.Math.Between(0, 1);
+                  if (direction === 0) {
+                      burger.setVelocityX(50);
+                      burger.play("burger_right");
+                  } else {
+                      burger.setVelocityX(-50);
+                      burger.play("burger_left");
+                  }
+              }
+          },
+          loop: true
+      });
 
-            let direction = Phaser.Math.Between(0, 3);
-            switch (direction) {
-                case 0:
-                    burger.setVelocityX(30);
-                    burger.play("burger_right");
-                    break;
-                case 1:
-                    burger.setVelocityX(-30);
-                    burger.play("burger_left");
-                    break;
-                case 2:
-                    burger.setVelocityY(30);
-                    break;
-                case 3:
-                    burger.setVelocityY(-30);
-                    break;
-            }
-        });
 
-        this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
-
-        // 🔹 Ajout de la barre de vie avec cœurs
-        this.healthIcons = [];
-        for (let i = 0; i < this.maxHealth; i++) {
-            let heart = this.add.image(60 + i * 50, 20, "heart"); // Position initiale
-            heart.setScale(0.3); // Réduction de la taille
-            heart.setScrollFactor(0); // Fixé à l'écran
-            this.healthIcons.push(heart);
-        }
-
-        this.updateHealth(); // Mettre à jour l'affichage initial des cœurs
-    
+      this.physics.add.collider(this.burgers, mursLayer);
       this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
+      this.physics.add.overlap(this.bullets, this.burgers, this.hitBurger, null, this);
 
+         /// BARRE DEVIE
+         this.healthBar = this.add.graphics();
+         this.drawHealthBar();
+         this.healthBar.setScrollFactor(0);
+         this.healthBar.setPosition(140, 80);
 
-       // Centrer la caméra sur le joueur
+        
+
+       //CAMERA
        this.cameras.main.startFollow(this.player);
-       this.cameras.main.setZoom(1.1); // Zoom léger
+       this.cameras.main.setZoom(1.1);
+       this.cameras.main.setBounds(-50, -25, map.widthInPixels + 50, map.heightInPixels);
 
-       // Limiter les mouvements de la caméra aux bords de la carte
-       const mapWidth = map.widthInPixels;
-       const mapHeight = map.heightInPixels;
-       this.cameras.main.setBounds(-50, -25, mapWidth + 50, mapHeight);
   }
       
        
   onPortalOverlap() {
-    if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+    if (this.burgers.countActive(true) === 0) {
+        // Sauvegarde de la progression avant de commencer un autre niveau
+        localStorage.setItem("niveauBossComplete", "true");
         this.scene.start("Hub");
     }
   }
@@ -143,67 +157,118 @@ export default class NiveauBoss extends Phaser.Scene {
 
     update() {
         let speed = 160;
-        let moving = false;
-
+        let diagonalSpeed = Math.sqrt(speed * speed / 2); // Réduit la vitesse en diagonale
+        
+        let movingX = false;
+        let movingY = false;
+        
+        // Mouvement horizontal
         if (this.cursors.left.isDown) {
             this.player.setVelocityX(-speed);
-            moving = true;
+            this.player.anims.play("walk_right", true);
+            this.player.setFlipX(true);
+            this.lastDirection = "left";
+            movingX = true;
         } else if (this.cursors.right.isDown) {
             this.player.setVelocityX(speed);
-            moving = true;
+            this.player.anims.play("walk_right", true);
+            this.player.setFlipX(false);
+            this.lastDirection = "right";
+            movingX = true;
         } else {
             this.player.setVelocityX(0);
         }
-
+        
+        // Mouvement vertical
         if (this.cursors.up.isDown) {
             this.player.setVelocityY(-speed);
-            moving = true;
+            movingY = true;
         } else if (this.cursors.down.isDown) {
             this.player.setVelocityY(speed);
-            moving = true;
+            movingY = true;
         } else {
             this.player.setVelocityY(0);
         }
+        
+        // Gestion des animations pour le mouvement vertical
+        if (movingY && !movingX) {
+            if (this.lastDirection === "right") {
+                this.player.anims.play("walk_right", true);
+                this.player.setFlipX(false);
+            } else if (this.lastDirection === "left") {
+                this.player.anims.play("walk_right", true);
+                this.player.setFlipX(true);
+            }
+        }
+        
+        // Si on bouge en diagonale, on ajuste la vitesse
+        if (movingX && movingY) {
+            this.player.setVelocityX(this.player.body.velocity.x * diagonalSpeed / speed);
+            this.player.setVelocityY(this.player.body.velocity.y * diagonalSpeed / speed);
+        }
+        
+        // Si le joueur ne bouge pas, animation d'arrêt
+        if (!movingX && !movingY) {
+            this.player.anims.play("stand", true);
+        }
 
-        if (!moving) {
-            this.player.anims.stop();
+        if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
+            this.tirer();
         }
 
         this.burgers.children.iterate(burger => {
             const angle = Phaser.Math.Angle.Between(burger.x, burger.y, this.player.x, this.player.y);
             const speed = burger.getData('speed');
-
-            const vx = Math.cos(angle) * speed;
-            const vy = Math.sin(angle) * speed;
-
-            burger.setVelocity(vx, vy);
-
-            if (vx > 0) {
-                burger.play("burger_right", true);
-            } else if (vx < 0) {
-                burger.play("burger_left", true);
+            let velocityX = Math.cos(angle) * speed;
+            let velocityY = Math.sin(angle) * speed;
+            burger.setVelocity(velocityX, velocityY);
+            if (Math.abs(velocityX) > Math.abs(velocityY)) {
+                if (velocityX > 0) {
+                    burger.play("burger_right", true);
+                } else {
+                    burger.play("burger_left", true);
+                }
             }
+        });
+
+        this.drawHealthBar();
+    }
+
+    // Fonction pour tirer un projectile
+    tirer() {
+        let bullet = this.bullets.create(this.player.x, this.player.y, "bullet");
+        bullet.setScale(0.5);
+        bullet.setVelocityX(this.lastDirection === "right" ? 300 : -300);
+        this.time.addEvent({
+            delay: 2000,
+            callback: () => bullet.destroy(),
+            loop: false
         });
     }
 
+   
+
     hitPlayer(player, burger) {
-        console.log("Le joueur a été touché par un burger !");
-        
-        this.currentHealth -= 1; // Perte d'un cœur
-        this.updateHealth(); // Mettre à jour l'affichage des cœurs
+        console.log("Le joueur a été touché !");
+        this.currentHealth -= 1;
+        burger.destroy();
 
         if (this.currentHealth <= 0) {
             console.log("Game Over");
-            this.scene.restart(); // Redémarrer le niveau
+            this.currentHealth = this.maxHealth;
+            this.burgers.clear(true, true);
+            this.scene.restart();
         }
-
-        burger.setActive(false);
-        burger.setVisible(false);
+    }
+    
+    hitBurger(bullet, burger) {
+        bullet.destroy();
+        burger.destroy();
     }
 
     updateHealth() {
         this.healthIcons.forEach((heart, index) => {
-            heart.setVisible(index < this.currentHealth); // Afficher ou masquer les cœurs
+            heart.setVisible(index < this.currentHealth);
         });
     }
 }
