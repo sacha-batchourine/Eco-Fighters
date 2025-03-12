@@ -36,6 +36,7 @@ export default class Hub extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
         this.player = this.physics.add.sprite(145, 325, "img_perso");
+        this.player.setScale(2); // Agrandit le joueur 2 fois
         this.lastDirection = "right";
 
         this.anims.create({

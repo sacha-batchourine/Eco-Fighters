@@ -23,6 +23,7 @@ export default class Niveau1 extends Phaser.Scene {
     }
 
     create() {
+        // gerer la map 
         const map = this.make.tilemap({ key: "mapN1" });
         const tilesetGrass = map.addTilesetImage("Grass", "Grass");
         const tilesetMur = map.addTilesetImage("Wall", "Wall");
@@ -33,16 +34,42 @@ export default class Niveau1 extends Phaser.Scene {
         map.createLayer("Chemin", [tilesetGrass]);
         map.createLayer("Portail", [tilesetProps]);
 
-        this.player = this.physics.add.sprite(112, 295, "img_perso");
-        this.cursors = this.input.keyboard.createCursorKeys();
-        this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); // Touche A pour tirer
+       
+
+
+
+        // Gerer le personnage
+        this.player = this.physics.add.sprite(145, 325, "img_perso");
+        this.player.setScale(2); // Agrandit le joueur 2 fois
+        this.lastDirection = "right";
 
         mursLayer.setCollisionByProperty({ collide: true });
         this.physics.add.collider(this.player, mursLayer);
 
+        this.anims.create({
+            key: "stand", frames: this.anims.generateFrameNumbers("img_perso", { start: 30, end: 32 }), frameRate: 10, repeat: -1
+        });
+        this.anims.create({
+            key: "walk_right", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
+        });
+        this.anims.create({
+            key: "walk_left", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
+        });
+        this.anims.create({
+            key: "dead", frames: this.anims.generateFrameNumbers("img_perso", { start: 17, end: 20 }), frameRate: 10, repeat: -1
+        });
+
+
+        this.cursors = this.input.keyboard.createCursorKeys();
+        this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); // Touche A pour tirer
+
+
+        // les portails 
         this.portal = this.physics.add.sprite(1520, 300, "portail");
         this.portal.setImmovable(true);
 
+
+        // Les Burgers
         this.anims.create({
             key: "burger_left",
             frames: this.anims.generateFrameNumbers("burger", { frames: [6, 7, 10, 11] }),
@@ -60,8 +87,6 @@ export default class Niveau1 extends Phaser.Scene {
         this.burgers = this.physics.add.group();
         this.bullets = this.physics.add.group();
 
-        const mapWidth = map.widthInPixels;
-        const mapHeight = map.heightInPixels;
 
         this.time.addEvent({
             delay: 2000,
@@ -98,10 +123,16 @@ export default class Niveau1 extends Phaser.Scene {
 
         this.healthBar.setPosition(140, 80);
 
+
+        // CAMERA
+        const mapWidth = map.widthInPixels;
+        const mapHeight = map.heightInPixels;
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setZoom(1.1);
         this.cameras.main.setBounds(-50, -25, mapWidth + 50, mapHeight);
     }
+
+
 
     drawHealthBar() {
         this.healthBar.clear();
@@ -121,29 +152,68 @@ export default class Niveau1 extends Phaser.Scene {
     }
 
     update(time) {
+        
         let speed = 160;
-        this.player.setVelocity(0);
-
+        let diagonalSpeed = Math.sqrt(speed * speed / 2); // Réduit la vitesse en diagonale
+        
+        let movingX = false;
+        let movingY = false;
+        
+        // Mouvement horizontal
         if (this.cursors.left.isDown) {
             this.player.setVelocityX(-speed);
+            this.player.anims.play("walk_right", true);
             this.player.setFlipX(true);
             this.lastDirection = "left";
+            movingX = true;
         } else if (this.cursors.right.isDown) {
             this.player.setVelocityX(speed);
+            this.player.anims.play("walk_right", true);
             this.player.setFlipX(false);
             this.lastDirection = "right";
+            movingX = true;
+        } else {
+            this.player.setVelocityX(0);
         }
-
+        
+        // Mouvement vertical
         if (this.cursors.up.isDown) {
             this.player.setVelocityY(-speed);
+            movingY = true;
         } else if (this.cursors.down.isDown) {
             this.player.setVelocityY(speed);
+            movingY = true;
+        } else {
+            this.player.setVelocityY(0);
+        }
+        
+        // Gestion des animations pour le mouvement vertical
+        if (movingY && !movingX) {
+            if (this.lastDirection === "right") {
+                this.player.anims.play("walk_right", true);
+                this.player.setFlipX(false);
+            } else if (this.lastDirection === "left") {
+                this.player.anims.play("walk_right", true);
+                this.player.setFlipX(true);
+            }
+        }
+        
+        // Si on bouge en diagonale, on ajuste la vitesse
+        if (movingX && movingY) {
+            this.player.setVelocityX(this.player.body.velocity.x * diagonalSpeed / speed);
+            this.player.setVelocityY(this.player.body.velocity.y * diagonalSpeed / speed);
+        }
+        
+        // Si le joueur ne bouge pas, animation d'arrêt
+        if (!movingX && !movingY) {
+            this.player.anims.play("stand", true);
         }
 
-        if (Phaser.Input.Keyboard.JustDown(this.shootKey) && time > this.lastFired + this.fireRate) {
-            this.shoot();
-            this.lastFired = time;
+        if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
+            this.tirer();
         }
+
+
 
         this.burgers.children.iterate(burger => {
             const angle = Phaser.Math.Angle.Between(burger.x, burger.y, this.player.x, this.player.y);
@@ -163,7 +233,7 @@ export default class Niveau1 extends Phaser.Scene {
         this.drawHealthBar();
     }
 
-    shoot() {
+    tirer() {
         let bullet = this.bullets.create(this.player.x, this.player.y, "bullet");
         bullet.setScale(0.5);
         bullet.setVelocityX(this.lastDirection === "right" ? 300 : -300);
