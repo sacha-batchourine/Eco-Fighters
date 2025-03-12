@@ -6,7 +6,7 @@ import Niveau2 from "./js/niveau2.js";
 import Niveau3 from "./js/niveau3.js";
 import Niveau4 from "./js/niveau4.js";
 import Niveau5 from "./js/niveau5.js";
-import Niveau5 from "./js/boss.js";
+import NiveauBoss from "./js/boss.js";
 
 
 const config = {

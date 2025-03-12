@@ -57,7 +57,7 @@ export default class Hub extends Phaser.Scene {
         this.portal5 = this.physics.add.sprite(1170,143, "portail");
         this.portal5.setImmovable(true);
 
-        this.portalBoss = this.physics.add.sprite(1300,143, "portail");
+        this.portalBoss = this.physics.add.sprite(1455,335, "portail");
         this.portalBoss.setImmovable(true);
 
 
