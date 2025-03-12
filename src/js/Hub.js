@@ -135,7 +135,7 @@ export default class Hub extends Phaser.Scene {
             }else if (portal === this.portal5){
                 this.scene.start("Niveau5")
             }else if (portal === this.portalBoss){
-                this.scene.start("Boss")
+                this.scene.start("NiveauBoss")
         }
         }
     }
