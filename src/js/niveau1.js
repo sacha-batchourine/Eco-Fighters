@@ -28,7 +28,7 @@ export default class Niveau1 extends Phaser.Scene {
         map.createLayer("Portail", [tilesetProps]);
 
         // Création du joueur
-        this.player = this.physics.add.sprite(100, 100, "img_perso");
+        this.player = this.physics.add.sprite(112, 295, "img_perso");
         this.player.setCollideWorldBounds(true);
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
