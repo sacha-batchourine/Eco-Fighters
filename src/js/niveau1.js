@@ -244,15 +244,36 @@ export default class Niveau1 extends Phaser.Scene {
     }
 
     tirer() {
+        // Crée la balle à la position du joueur
         let bullet = this.bullets.create(this.player.x, this.player.y, "bullet");
         bullet.setScale(0.5);
-        bullet.setVelocityX(this.lastDirection === "right" ? 300 : -300);
+    
+        // Ajuster la position de la souris par rapport à la caméra
+        const mouseX = this.input.mousePointer.x + this.cameras.main.scrollX;
+        const mouseY = this.input.mousePointer.y + this.cameras.main.scrollY;
+    
+        // Calculer l'angle entre la position du joueur et la souris
+        const angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, mouseX, mouseY);
+    
+        // Calculer la vitesse de la balle en fonction de l'angle
+        const speed = 300;
+        const velocityX = Math.cos(angle) * speed;
+        const velocityY = Math.sin(angle) * speed;
+    
+        // Appliquer la direction à la balle
+        bullet.setVelocity(velocityX, velocityY);
+    
+        // Ajuster l'orientation de la balle selon l'angle
+        bullet.rotation = angle;
+    
+        // Détruire la balle après un délai
         this.time.addEvent({
-            delay: 2000,
+            delay: 2000,  // La balle disparaît après 2 secondes
             callback: () => bullet.destroy(),
             loop: false
         });
     }
+    
 
     hitPlayer(player, burger) {
         console.log("Le joueur a été touché !");
