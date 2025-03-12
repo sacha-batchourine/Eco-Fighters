@@ -22,8 +22,6 @@ export default class Hub extends Phaser.Scene {
             frameWidth: 32,
             frameHeight: 32
         });
-
-        this.load.image("heart", "src/assets/hearth.png"); // Image d'un cœur
     }
 
     create() {
@@ -70,30 +68,26 @@ export default class Hub extends Phaser.Scene {
         this.physics.add.collider(this.player, murLayer);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
-        // 🔹 Ajout de la barre de vie avec cœurs mieux espacés et descendus
-        this.healthIcons = [];
-        for (let i = 0; i < this.maxHealth; i++) {
-            let heart = this.add.image(60 + i * 50, 80, "heart"); // Décalage de 60px à droite et descente de 20px
-            heart.setScale(0.3); // Réduction de la taille
-            heart.setScrollFactor(0); // Fixé à l'écran
-            this.healthIcons.push(heart);
-        }
+        // 🔹 Création de la barre de vie
+        this.healthBarBackground = this.add.rectangle(50, 70, 200, 20, 0x000000); // Fond de la barre de vie abaissé
+        this.healthBar = this.add.rectangle(50, 70, 200, 20, 0xff0000); // Barre de vie abaissée
 
-          // Centrer la caméra sur le joueur
-       this.cameras.main.startFollow(this.player);
-       this.cameras.main.setZoom(1.1); // Zoom léger
+        this.healthBar.setOrigin(0, 0); // Définir l'origine pour que la barre commence à gauche
+        this.healthBarBackground.setOrigin(0, 0); // Définir l'origine pour le fond
 
-       // Limiter les mouvements de la caméra aux bords de la carte
-       const mapWidth = map.widthInPixels;
-       const mapHeight = map.heightInPixels;
-       this.cameras.main.setBounds(-50, -25, mapWidth, mapHeight);
+        // Centrer la caméra sur le joueur
+        this.cameras.main.startFollow(this.player);
+        this.cameras.main.setZoom(1.1); // Zoom léger
 
+        // Limiter les mouvements de la caméra aux bords de la carte
+        const mapWidth = map.widthInPixels;
+        const mapHeight = map.heightInPixels;
+        this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
     }
 
     updateHealth() {
-        this.healthIcons.forEach((heart, index) => {
-            heart.setVisible(index < this.currentHealth);
-        });
+        const healthPercentage = this.currentHealth / this.maxHealth;
+        this.healthBar.width = 200 * healthPercentage; // Mise à jour de la largeur de la barre de vie
     }
 
     takeDamage(amount = 1) {
@@ -104,7 +98,7 @@ export default class Hub extends Phaser.Scene {
             this.scene.restart();
         }
         this.updateHealth();
-       }
+    }
 
     onPortalOverlap() {
         if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
