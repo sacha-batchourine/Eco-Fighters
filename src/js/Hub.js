@@ -66,48 +66,54 @@ export default class Hub extends Phaser.Scene {
         const niveau5Terminé = localStorage.getItem("niveau5Complete") === "true";
 
         // Portail pour Niveau 1
-        this.portal1 = this.physics.add.sprite(432, 175, "portail").setImmovable(true);
-        this.physics.add.overlap(this.player, this.portal1, this.onPortal1Overlap, null, this);
+this.portal1 = this.physics.add.sprite(432, 175, "portail").setImmovable(true);
+this.portal1.setFrame(0); // Première frame pour le portail 1
+this.physics.add.overlap(this.player, this.portal1, this.onPortal1Overlap, null, this);
 
-        // Portail pour Niveau 2
-        this.portal2 = this.physics.add.sprite(623, 560, "portail").setImmovable(true);
-        this.portal2.setVisible(niveau1Terminé);
-        this.portal2.body.enable = niveau1Terminé;
-        if (niveau1Terminé) {
-            this.physics.add.overlap(this.player, this.portal2, this.onPortal2Overlap, null, this);
-        }
+// Portail pour Niveau 2
+this.portal2 = this.physics.add.sprite(623, 560, "portail").setImmovable(true);
+this.portal2.setVisible(niveau1Terminé);
+this.portal2.body.enable = niveau1Terminé;
+if (niveau1Terminé) {
+    this.portal2.setFrame(1); // Deuxième frame pour le portail 2
+    this.physics.add.overlap(this.player, this.portal2, this.onPortal2Overlap, null, this);
+}
 
-        // Portail pour Niveau 3
-        this.portal3 = this.physics.add.sprite(880, 240, "portail").setImmovable(true);
-        this.portal3.setVisible(niveau2Terminé);
-        this.portal3.body.enable = niveau2Terminé;
-        if (niveau2Terminé) {
-            this.physics.add.overlap(this.player, this.portal3, this.onPortal3Overlap, null, this);
-        }
+// Portail pour Niveau 3
+this.portal3 = this.physics.add.sprite(880, 240, "portail").setImmovable(true);
+this.portal3.setVisible(niveau2Terminé);
+this.portal3.body.enable = niveau2Terminé;
+if (niveau2Terminé) {
+    this.portal3.setFrame(2); // Troisième frame pour le portail 3
+    this.physics.add.overlap(this.player, this.portal3, this.onPortal3Overlap, null, this);
+}
 
-        // Portail pour Niveau 4
-        this.portal4 = this.physics.add.sprite(1040, 495, "portail").setImmovable(true);
-        this.portal4.setVisible(niveau3Terminé);
-        this.portal4.body.enable = niveau3Terminé;
-        if (niveau3Terminé) {
-            this.physics.add.overlap(this.player, this.portal4, this.onPortal4Overlap, null, this);
-        }
+// Portail pour Niveau 4
+this.portal4 = this.physics.add.sprite(1040, 495, "portail").setImmovable(true);
+this.portal4.setVisible(niveau3Terminé);
+this.portal4.body.enable = niveau3Terminé;
+if (niveau3Terminé) {
+    this.portal4.setFrame(3); // Quatrième frame pour le portail 4
+    this.physics.add.overlap(this.player, this.portal4, this.onPortal4Overlap, null, this);
+}
 
-        // Portail pour Niveau 5
-        this.portal5 = this.physics.add.sprite(1170, 142, "portail").setImmovable(true);
-        this.portal5.setVisible(niveau4Terminé);
-        this.portal5.body.enable = niveau4Terminé;
-        if (niveau4Terminé) {
-            this.physics.add.overlap(this.player, this.portal5, this.onPortal5Overlap, null, this);
-        }
+// Portail pour Niveau 5
+this.portal5 = this.physics.add.sprite(1170, 142, "portail").setImmovable(true);
+this.portal5.setVisible(niveau4Terminé);
+this.portal5.body.enable = niveau4Terminé;
+if (niveau4Terminé) {
+    this.portal5.setFrame(4); // Cinquième frame pour le portail 5
+    this.physics.add.overlap(this.player, this.portal5, this.onPortal5Overlap, null, this);
+}
 
-        // ✅ Portail pour le Boss (se débloque après Niveau 5)
-        this.portalBoss = this.physics.add.sprite(1455, 335, "portail").setImmovable(true);
-        this.portalBoss.setVisible(niveau5Terminé);
-        this.portalBoss.body.enable = niveau5Terminé;
-        if (niveau5Terminé) {
-            this.physics.add.overlap(this.player, this.portalBoss, this.onPortalBossOverlap, null, this);
-        }
+// ✅ Portail pour le Boss (se débloque après Niveau 5)
+this.portalBoss = this.physics.add.sprite(1455, 335, "portail").setImmovable(true);
+this.portalBoss.setVisible(niveau5Terminé);
+this.portalBoss.body.enable = niveau5Terminé;
+if (niveau5Terminé) {
+    this.portalBoss.setFrame(5); // Sixième frame pour le portail Boss
+    this.physics.add.overlap(this.player, this.portalBoss, this.onPortalBossOverlap, null, this);
+}
 
         // Caméra
         this.cameras.main.startFollow(this.player);
