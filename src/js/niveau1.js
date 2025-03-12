@@ -146,9 +146,12 @@ export default class Niveau1 extends Phaser.Scene {
         console.log("Le joueur a été touché par un burger !");
         this.currentHealth -= 1;
         burger.destroy();
+        
         if (this.currentHealth <= 0) {
             console.log("Game Over");
-            this.scene.restart();
+            this.currentHealth = this.maxHealth; // Réinitialise la vie
+            this.burgers.clear(true, true); // Supprime tous les burgers
+            this.scene.restart(); // Redémarre la scène
         }
     }
 }
