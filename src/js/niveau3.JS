@@ -139,19 +139,13 @@ export default class Niveau3 extends Phaser.Scene {
 
     drawHealthBar() {
         this.healthBar.clear();
-        const barX = 140;  // Position X
-        const barY = 80;   // Position Y
         const barWidth = 200;
         const barHeight = 20;
-    
-        // Fond noir de la barre
         this.healthBar.fillStyle(0x000000);
-        this.healthBar.fillRect(barX, barY, barWidth, barHeight);
-    
-        // Barre de vie rouge qui diminue avec les dégâts
+        this.healthBar.fillRect(0, 0, barWidth, barHeight);
         const healthRatio = this.currentHealth / this.maxHealth;
         this.healthBar.fillStyle(0xff0000);
-        this.healthBar.fillRect(barX, barY, barWidth * healthRatio, barHeight);
+        this.healthBar.fillRect(0, 0, barWidth * healthRatio, barHeight);
     }
     
 
@@ -267,14 +261,17 @@ export default class Niveau3 extends Phaser.Scene {
         }
     }
 
-    // Fonction de gestion de collision avec un burger (le joueur prend des dégâts)
     hitPlayer(player, burger) {
+        console.log("Le joueur a été touché !");
         this.currentHealth -= 1;
-        this.updateHealth();
+        burger.destroy();
+
         if (this.currentHealth <= 0) {
+            console.log("Game Over");
+            this.currentHealth = this.maxHealth;
+            this.burgers.clear(true, true);
             this.scene.restart();
         }
-        burger.setActive(false).setVisible(false);
     }
     
     hitBurger(bullet, burger) {

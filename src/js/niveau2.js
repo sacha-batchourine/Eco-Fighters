@@ -248,14 +248,17 @@ export default class Niveau2 extends Phaser.Scene {
         }
     }
 
-    // Fonction de gestion de collision avec un burger (le joueur prend des dégâts)
     hitPlayer(player, burger) {
+        console.log("Le joueur a été touché !");
         this.currentHealth -= 1;
-        this.updateHealth();
+        burger.destroy();
+
         if (this.currentHealth <= 0) {
+            console.log("Game Over");
+            this.currentHealth = this.maxHealth;
+            this.burgers.clear(true, true);
             this.scene.restart();
         }
-        burger.setActive(false).setVisible(false);
     }
     
     hitBurger(bullet, burger) {
