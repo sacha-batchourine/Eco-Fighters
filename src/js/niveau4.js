@@ -182,7 +182,14 @@ export default class Niveau4 extends Phaser.Scene {
     }
 
     onPortalOverlap() {
-        if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+        if (this.burgers.countActive(true) === 0 && Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+            let currentLevel = 4; // Numéro du niveau actuel
+            let unlockedLevel = localStorage.getItem("unlockedLevel") || 1;
+            
+            if (currentLevel >= unlockedLevel) {
+                localStorage.setItem("unlockedLevel", currentLevel + 1); // Débloque le niveau suivant (Niveau 3)
+            }
+    
             this.scene.start("Hub");
         }
     }

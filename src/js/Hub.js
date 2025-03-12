@@ -60,9 +60,17 @@ export default class Hub extends Phaser.Scene {
         this.portalBoss = this.physics.add.sprite(1455,335, "portail");
         this.portalBoss.setImmovable(true);
 
+        let progression = localStorage.getItem("progression") || 1;
+
+        this.portal1.setVisible(progression >= 1);
+        this.portal2.setVisible(progression >= 2);
+        this.portal3.setVisible(progression >= 3);
+        this.portal4.setVisible(progression >= 4);
+        this.portal5.setVisible(progression >= 5);
+        this.portalBoss.setVisible(progression >= 6);
 
 
-        
+
 
         this.player = this.physics.add.sprite(145, 325, "img_perso");
         
