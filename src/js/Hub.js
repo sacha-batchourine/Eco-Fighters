@@ -54,7 +54,7 @@ export default class Hub extends Phaser.Scene {
 
         
 
-        this.player = this.physics.add.sprite(400, 300, "img_perso");
+        this.player = this.physics.add.sprite(145, 325, "img_perso");
         
         
         this.lastDirection = "down";
