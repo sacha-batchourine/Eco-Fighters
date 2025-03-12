@@ -73,7 +73,7 @@ export default class Niveau1 extends Phaser.Scene {
         if (previousLevelComplete) {
             this.portal.setAlpha(1); // Le portail du niveau suivant devient visible
         } else {
-            this.portal.setAlpha(0); // Le portail est invisible tant que le niveau n'est pas terminé
+            this.portal.setAlpha(1); // Le portail est invisible tant que le niveau n'est pas terminé
         }
 
 

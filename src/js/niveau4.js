@@ -3,7 +3,7 @@ export default class Niveau4 extends Phaser.Scene {
         super({ key: "Niveau4" });
         this.maxHealth = 5;
         this.currentHealth = this.maxHealth;
-        this.maxBurgers = 10;
+        this.maxBurgers = 20;
         this.burgersSpawned = 0;
     }
 
