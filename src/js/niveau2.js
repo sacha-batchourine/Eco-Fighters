@@ -22,7 +22,6 @@ export default class Niveau2 extends Phaser.Scene {
     }
 
     create() {
-        localStorage.removeItem("niveau2Complete");
         const map = this.make.tilemap({ key: "mapN2" });
         const tilesetGrass = map.addTilesetImage("Grass", "Grass");
         const tilesetMur = map.addTilesetImage("Wall", "Wall");
@@ -36,18 +35,38 @@ export default class Niveau2 extends Phaser.Scene {
         map.createLayer("Ombre", [tilesetOmbre]);
         map.createLayer("Ecriture", [tilesetProps]);
 
-        this.player = this.physics.add.sprite(143, 455, "img_perso");
-        this.cursors = this.input.keyboard.createCursorKeys();
-        this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); // Touche A pour tirer
 
+        // PLAYER
+        this.player = this.physics.add.sprite(143, 455, "img_perso");
+        this.player.setScale(2); // Agrandit le joueur 2 fois
+        this.lastDirection = "right";
+
+
+        this.anims.create({
+            key: "stand", frames: this.anims.generateFrameNumbers("img_perso", { start: 30, end: 32 }), frameRate: 10, repeat: -1
+        });
+        this.anims.create({
+            key: "walk_right", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
+        });
+        this.anims.create({
+            key: "walk_left", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
+        });
+        this.anims.create({
+            key: "dead", frames: this.anims.generateFrameNumbers("img_perso", { start: 17, end: 20 }), frameRate: 10, repeat: -1
+        });
+
+        this.bullets = this.physics.add.group();
+
+        // CREATION DE TOUCHE
+        this.cursors = this.input.keyboard.createCursorKeys();
+        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        
         mursLayer.setCollisionByProperty({ estSolide: true });
         this.physics.add.collider(this.player, mursLayer);
-
-        // Création du portail
+        
         this.portal = this.physics.add.sprite(3025, 525, "portail").setImmovable(true);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
-        // Création des animations pour les burgers
         this.anims.create({
             key: "burger_left",
             frames: this.anims.generateFrameNumbers("burger", { frames: [6, 7, 10, 11] }),
@@ -83,7 +102,6 @@ export default class Niveau2 extends Phaser.Scene {
         // Détection des collisions entre le joueur et les burgers
         this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
 
-        // Création des icônes de vie du joueur
         this.healthIcons = [];
         for (let i = 0; i < this.maxHealth; i++) {
             let heart = this.add.image(60 + i * 50, 20, "heart").setScale(0.3).setScrollFactor(0);
@@ -91,11 +109,6 @@ export default class Niveau2 extends Phaser.Scene {
         }
         this.updateHealth();
 
-        // Création du groupe de projectiles (balles)
-        this.bullets = this.physics.add.group();
-        this.physics.add.overlap(this.bullets, this.burgers, this.hitBurger, null, this);
-
-        // Suivi de la caméra sur le joueur
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setZoom(1.1);
         this.cameras.main.setBounds(-50, -25, map.widthInPixels + 50, map.heightInPixels);
@@ -105,35 +118,15 @@ export default class Niveau2 extends Phaser.Scene {
         let speed = 160;
         let moving = false;
 
-        // Gestion des déplacements du joueur
-        if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-speed);
-            this.player.setFlipX(true);
-            this.lastDirection = "left";
-            moving = true;
-        } else if (this.cursors.right.isDown) {
-            this.player.setVelocityX(speed);
-            this.player.setFlipX(false);
-            this.lastDirection = "right";
-            moving = true;
-        } else {
-            this.player.setVelocityX(0);
-        }
+        if (this.cursors.left.isDown) { this.player.setVelocityX(-speed); moving = true; }
+        else if (this.cursors.right.isDown) { this.player.setVelocityX(speed); moving = true; }
+        else { this.player.setVelocityX(0); }
 
-        if (this.cursors.up.isDown) {
-            this.player.setVelocityY(-speed);
-            moving = true;
-        } else if (this.cursors.down.isDown) {
-            this.player.setVelocityY(speed);
-            moving = true;
-        } else {
-            this.player.setVelocityY(0);
-        }
+        if (this.cursors.up.isDown) { this.player.setVelocityY(-speed); moving = true; }
+        else if (this.cursors.down.isDown) { this.player.setVelocityY(speed); moving = true; }
+        else { this.player.setVelocityY(0); }
 
-        // Si le joueur n'est pas en mouvement, arrêter l'animation
-        if (!moving) {
-            this.player.anims.stop();
-        }
+        if (!moving) { this.player.anims.stop(); }
 
         // Logique des burgers
         this.burgers.children.iterate(burger => {
@@ -173,6 +166,10 @@ export default class Niveau2 extends Phaser.Scene {
         }
         burger.setActive(false).setVisible(false);
     }
+    hitBurger(bullet, burger) {
+        bullet.destroy();
+        burger.destroy();
+    }
 
     // Fonction pour détruire un burger quand il est touché par un projectile
     hitBurger(bullet, burger) {
@@ -185,13 +182,5 @@ export default class Niveau2 extends Phaser.Scene {
         this.healthIcons.forEach((heart, index) => {
             heart.setVisible(index < this.currentHealth);
         });
-    }
-
-    // Fonction pour vérifier la condition de victoire (tous les burgers détruits)
-    onPortalOverlap() {
-        if (this.burgers.countActive(true) === 0) {
-            localStorage.setItem("niveau2Complete", "true");
-            this.scene.start("Hub");
-        }
     }
 }
