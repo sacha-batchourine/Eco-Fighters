@@ -1,36 +1,26 @@
 export default class Niveau4 extends Phaser.Scene {
     constructor() {
         super({ key: "Niveau4" });
-        this.maxHealth = 5; // Vie maximale en cœurs
-        this.currentHealth = this.maxHealth; // Vie actuelle
+        this.maxHealth = 5;
+        this.currentHealth = this.maxHealth;
+        this.burgerCount = 0;
+        this.maxBurgers = 10;
     }
 
     preload() {
         this.load.tilemapTiledJSON("mapN4", "src/assets/mapN4.json");
-
         this.load.image("Grass", "src/assets/TX Tileset Grass.png");
         this.load.image("Wall", "src/assets/TX Tileset Wall.png");
         this.load.image("Objet", "src/assets/TX Props.png");
         this.load.image("Plant", "src/assets/TX PLant.png");
         this.load.image("Ombres", "src/assets/TX Shadow PLant.png");
-
-        this.load.spritesheet("img_perso", "src/assets/Perso.png", {
-            frameWidth: 48,
-            frameHeight: 48
-        });
-
-        this.load.spritesheet("burger", "src/assets/burger_spritesheet.png", {
-            frameWidth: 32,
-            frameHeight: 32
-        });
-
-        this.load.image("heart", "src/assets/hearth.png"); // Image d'un cœur
+        this.load.spritesheet("img_perso", "src/assets/Perso.png", { frameWidth: 48, frameHeight: 48 });
+        this.load.spritesheet("burger", "src/assets/burger_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.image("heart", "src/assets/hearth.png");
     }
 
-  create() {
-    
+    create() {
         const map = this.make.tilemap({ key: "mapN4" });
-
         const tilesetGrass = map.addTilesetImage("Grass", "Grass");
         const tilesetMur = map.addTilesetImage("Wall", "Wall");
         const tilesetProps = map.addTilesetImage("Props", "Objet");
@@ -43,110 +33,85 @@ export default class Niveau4 extends Phaser.Scene {
         const mursLayer = map.createLayer("Mur", [tilesetMur, tilesetPlant, tilesetProps]);
         map.createLayer("Ecriture", [tilesetProps]);
 
-        
-
         this.player = this.physics.add.sprite(115, 300, "img_perso");
-        
-
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         mursLayer.setCollisionByProperty({ estSolide: true });
         this.physics.add.collider(this.player, mursLayer);
 
-        
-        
         this.portal = this.physics.add.sprite(3377, 80, "portail");
         this.portal.setImmovable(true);
+        this.portal.setVisible(false);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
-
-      
-      
-      // Création des animations pour les burgers
-      this.anims.create({
-        key: "burger_left",
-        frames: this.anims.generateFrameNumbers("burger", { frames: [6, 7, 10, 11] }),
-        frameRate: 10,
-        repeat: -1
-    });
-
-    this.anims.create({
-        key: "burger_right",
-        frames: this.anims.generateFrameNumbers("burger", { frames: [8, 9, 12, 13] }),
-        frameRate: 10,
-        repeat: -1
-    });
-
-        this.burgers = this.physics.add.group({
-            key: 'burger',
-            repeat: 9,
-            setXY: {
-                x: Phaser.Math.Between(50, 500),
-                y: Phaser.Math.Between(50, 500),
-                stepX: 150,
-                stepY: 150
-            }
+        this.anims.create({
+            key: "burger_left",
+            frames: this.anims.generateFrameNumbers("burger", { frames: [6, 7, 10, 11] }),
+            frameRate: 10,
+            repeat: -1
         });
 
-        this.burgers.children.iterate(burger => {
-            burger.setCollideWorldBounds(true);
-            burger.setData('speed', 30);
-
-            let direction = Phaser.Math.Between(0, 3);
-            switch (direction) {
-                case 0:
-                    burger.setVelocityX(30);
-                    burger.play("burger_right");
-                    break;
-                case 1:
-                    burger.setVelocityX(-30);
-                    burger.play("burger_left");
-                    break;
-                case 2:
-                    burger.setVelocityY(30);
-                    break;
-                case 3:
-                    burger.setVelocityY(-30);
-                    break;
-            }
+        this.anims.create({
+            key: "burger_right",
+            frames: this.anims.generateFrameNumbers("burger", { frames: [8, 9, 12, 13] }),
+            frameRate: 10,
+            repeat: -1
         });
+
+        this.burgers = this.physics.add.group();
+        this.spawnBurgers();
 
         this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
 
-        // 🔹 Ajout de la barre de vie avec cœurs
         this.healthIcons = [];
         for (let i = 0; i < this.maxHealth; i++) {
-            let heart = this.add.image(60 + i * 50, 20, "heart"); // Position initiale
-            heart.setScale(0.3); // Réduction de la taille
-            heart.setScrollFactor(0); // Fixé à l'écran
+            let heart = this.add.image(60 + i * 50, 20, "heart");
+            heart.setScale(0.3);
+            heart.setScrollFactor(0);
             this.healthIcons.push(heart);
         }
 
-        this.updateHealth(); // Mettre à jour l'affichage initial des cœurs
-    
-      this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
+        this.updateHealth();
 
-
-       // Centrer la caméra sur le joueur
-       this.cameras.main.startFollow(this.player);
-       this.cameras.main.setZoom(1.1); // Zoom léger
-
-       // Limiter les mouvements de la caméra aux bords de la carte
-       const mapWidth = map.widthInPixels;
-       const mapHeight = map.heightInPixels;
-       this.cameras.main.setBounds(-50, -25, mapWidth + 50, mapHeight);
-  }
-      
-       
-  onPortalOverlap() {
-    if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
-        this.scene.start("Hub");
+        this.cameras.main.startFollow(this.player);
+        this.cameras.main.setZoom(1.1);
+        const mapWidth = map.widthInPixels;
+        const mapHeight = map.heightInPixels;
+        this.cameras.main.setBounds(-50, -25, mapWidth + 50, mapHeight);
     }
-  }
 
+    spawnBurgers() {
+        const mapWidth = this.cameras.main.width;
+        const mapHeight = this.cameras.main.height;
 
+        this.time.addEvent({
+            delay: 2000, // Apparition toutes les 2 secondes
+            callback: () => {
+                if (this.burgerCount < this.maxBurgers) {
+                    // Limitez l'apparition des burgers aux dimensions de la carte
+                    let x = Phaser.Math.Between(50, mapWidth - 50);
+                    let y = Phaser.Math.Between(50, mapHeight - 50);
+                    
+                    let burger = this.burgers.create(x, y, "burger");
+                    burger.setCollideWorldBounds(true);
+                    burger.setData('speed', 30);
 
+                    let direction = Phaser.Math.Between(0, 1);
+                    if (direction === 0) {
+                        burger.setVelocityX(30);
+                        burger.play("burger_right");
+                    } else {
+                        burger.setVelocityX(-30);
+                        burger.play("burger_left");
+                    }
+
+                    this.burgerCount++;
+                }
+            },
+            repeat: this.maxBurgers - 1
+        });
+    }
 
     update() {
         let speed = 160;
@@ -191,26 +156,34 @@ export default class Niveau4 extends Phaser.Scene {
                 burger.play("burger_left", true);
             }
         });
+
+        if (this.burgers.countActive() === 0 && this.burgerCount >= this.maxBurgers) {
+            this.portal.setVisible(true);
+        }
     }
 
     hitPlayer(player, burger) {
         console.log("Le joueur a été touché par un burger !");
-        
-        this.currentHealth -= 1; // Perte d'un cœur
-        this.updateHealth(); // Mettre à jour l'affichage des cœurs
+        this.currentHealth -= 1;
+        this.updateHealth();
 
         if (this.currentHealth <= 0) {
             console.log("Game Over");
-            this.scene.restart(); // Redémarrer le niveau
+            this.scene.restart();
         }
 
-        burger.setActive(false);
-        burger.setVisible(false);
+        burger.destroy();
     }
 
     updateHealth() {
         this.healthIcons.forEach((heart, index) => {
-            heart.setVisible(index < this.currentHealth); // Afficher ou masquer les cœurs
+            heart.setVisible(index < this.currentHealth);
         });
+    }
+
+    onPortalOverlap() {
+        if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+            this.scene.start("Hub");
+        }
     }
 }
