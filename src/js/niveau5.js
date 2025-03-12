@@ -109,9 +109,34 @@ export default class Niveau5 extends Phaser.Scene {
                     let y = Phaser.Math.Between(50, mapHeight - 50);
                     let burger = this.burgers.create(x, y, "burger");
                     burger.setCollideWorldBounds(true);
-                    burger.setData('speed', 50);
+        
+                    // Choisir un type de burger
+                    let burgerType = Phaser.Math.Between(1, 3); // 1 = petit, 2 = moyen, 3 = gros
+        
+                    // Création du burger en fonction du type
+                    switch (burgerType) {
+                        case 1:  // Burger petit
+                            burger.setData('health', 1);
+                            burger.setData('damage', 1);
+                            burger.setScale(1);  // Taille normale (petite)
+                            burger.setData('speed', 100);  // Vitesse élevée pour les petits burgers
+                            break;
+                        case 2:  // Burger moyen
+                            burger.setData('health', 2);
+                            burger.setData('damage', 2);
+                            burger.setScale(1.5);  // Agrandir pour le burger moyen
+                            burger.setData('speed', 75);  // Vitesse modérée pour les burgers moyens
+                            break;
+                        case 3:  // Burger gros
+                            burger.setData('health', 3);
+                            burger.setData('damage', 3);
+                            burger.setScale(2);  // Agrandir davantage pour le burger gros
+                            burger.setData('speed', 50);  // Vitesse plus lente pour les burgers gros
+                            break;
+                    }
+        
                     this.burgersSpawned++;
-                    
+        
                     let direction = Phaser.Math.Between(0, 1);
                     if (direction === 0) {
                         burger.setVelocityX(50);
@@ -263,20 +288,34 @@ export default class Niveau5 extends Phaser.Scene {
 
     hitPlayer(player, burger) {
         console.log("Le joueur a été touché !");
-        this.currentHealth -= 1;
-        burger.destroy();
-
+        
+        // Récupération des dégâts du burger
+        let burgerDamage = burger.getData('damage');
+        
+        // Réduction de la santé du joueur
+        this.currentHealth -= burgerDamage;
+        
+        burger.destroy(); // Le burger est détruit
+    
         if (this.currentHealth <= 0) {
             console.log("Game Over");
-            this.currentHealth = this.maxHealth;
-            this.burgers.clear(true, true);
-            this.scene.restart();
+            this.currentHealth = this.maxHealth; // Réinitialisation de la vie
+            this.burgers.clear(true, true); // Suppression de tous les burgers
+            this.scene.restart(); // Redémarrage de la scène
         }
     }
     
     hitBurger(bullet, burger) {
-        bullet.destroy();
-        burger.destroy();
+        bullet.destroy(); // Détruire la balle
+    
+        // Réduire la vie du burger
+        let burgerHealth = burger.getData('health');
+        burger.setData('health', burgerHealth - 1);
+    
+        // Si la vie du burger est inférieure ou égale à zéro, le détruire
+        if (burger.getData('health') <= 0) {
+            burger.destroy();
+        }
     }
 
     updateHealth() {

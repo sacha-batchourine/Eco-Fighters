@@ -5,6 +5,8 @@ export default class Niveau4 extends Phaser.Scene {
         this.currentHealth = this.maxHealth;
         this.maxBurgers = 20;
         this.burgersSpawned = 0;
+        this.bigBurgersSpawned = 0; // Compteur pour les gros burgers
+        this.giantBurgerSpawned = false; // Flag pour le très gros burger
     }
 
     preload() {
@@ -21,8 +23,7 @@ export default class Niveau4 extends Phaser.Scene {
     }
 
     create() {
-
-        //CREATION MAP
+        // CREATION MAP
         const map = this.make.tilemap({ key: "mapN4" });
         const tilesetGrass = map.addTilesetImage("Grass", "Grass");
         const tilesetMur = map.addTilesetImage("Wall", "Wall");
@@ -36,12 +37,10 @@ export default class Niveau4 extends Phaser.Scene {
         const mursLayer = map.createLayer("Mur", [tilesetMur, tilesetPlant, tilesetProps]);
         map.createLayer("Ecriture", [tilesetProps]);
 
-
-        //PLAYER
+        // PLAYER
         this.player = this.physics.add.sprite(115, 300, "img_perso");
         this.player.setScale(2); // Agrandit le joueur 2 fois
         this.lastDirection = "right";
-
 
         this.anims.create({
             key: "stand", frames: this.anims.generateFrameNumbers("img_perso", { start: 30, end: 32 }), frameRate: 10, repeat: -1
@@ -59,31 +58,22 @@ export default class Niveau4 extends Phaser.Scene {
         this.burgers = this.physics.add.group();
         this.bullets = this.physics.add.group();
 
-
-        //TOUCHES
+        // TOUCHES
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); 
+        this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
 
-
-
-        //COlISIONS
+        // COLISIONS
         mursLayer.setCollisionByProperty({ estSolide: true });
         this.physics.add.collider(this.player, mursLayer);
         this.physics.add.collider(this.bullets, this.burgers, this.hitBurger, null, this);
         this.physics.add.collider(this.bullets, mursLayer, (bullet) => bullet.destroy());
 
-
-
-        //PORTAIL
+        // PORTAIL
         this.portal = this.physics.add.sprite(3377, 80, "portail").setImmovable(true);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
-
-        //BURGERS
-        let mapWidth = map.widthInPixels;
-        let mapHeight = map.heightInPixels;
-
+        // ANIMATIONS DES BURGERS
         this.anims.create({
             key: "burger_left",
             frames: this.anims.generateFrameNumbers("burger", { frames: [6, 7, 10, 11] }),
@@ -98,7 +88,9 @@ export default class Niveau4 extends Phaser.Scene {
             repeat: -1
         });
 
-        
+        // SPAWN DES BURGERS
+        let mapWidth = map.widthInPixels;
+        let mapHeight = map.heightInPixels;
 
         this.time.addEvent({
             delay: 2000,
@@ -106,11 +98,37 @@ export default class Niveau4 extends Phaser.Scene {
                 if (this.burgersSpawned < this.maxBurgers) {
                     let x = Phaser.Math.Between(50, mapWidth - 50);
                     let y = Phaser.Math.Between(50, mapHeight - 50);
-                    let burger = this.burgers.create(x, y, "burger");
+                    let burger;
+
+                    // Spawn des 5 gros burgers
+                    if (this.bigBurgersSpawned < 5) {
+                        burger = this.burgers.create(x, y, "burger");
+                        burger.setScale(2); // Agrandir les burgers (taille normale x2)
+                        burger.setData('health', 200); // Gros burger a 2 fois la vie
+                        burger.setData('damage', 20); // Gros burger inflige 2 fois plus de dégats
+                        burger.setData('speed', 40); // Vitesse plus lente pour les gros burgers
+                        this.bigBurgersSpawned++;
+                    }
+                    // Spawn du très gros burger (le dernier)
+                    else if (!this.giantBurgerSpawned) {
+                        burger = this.burgers.create(x, y, "burger");
+                        burger.setScale(3); // Très gros burger (taille normale x3)
+                        burger.setData('health', 300); // Très gros burger a 3 fois la vie
+                        burger.setData('damage', 30); // Très gros burger inflige 3 fois plus de dégâts
+                        burger.setData('speed', 30); // Très lent pour le gros burger
+                        this.giantBurgerSpawned = true;
+                    }
+                    // Spawn des burgers normaux
+                    else {
+                        burger = this.burgers.create(x, y, "burger");
+                        burger.setData('health', 100); // Burger normal avec la vie de base
+                        burger.setData('damage', 10); // Burger normal avec les dégâts de base
+                        burger.setData('speed', 50); // Burger normal
+                    }
+
                     burger.setCollideWorldBounds(true);
-                    burger.setData('speed', 50);
                     this.burgersSpawned++;
-                    
+
                     let direction = Phaser.Math.Between(0, 1);
                     if (direction === 0) {
                         burger.setVelocityX(50);
@@ -124,21 +142,17 @@ export default class Niveau4 extends Phaser.Scene {
             loop: true
         });
 
-
         this.physics.add.collider(this.burgers, mursLayer);
         this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
         this.physics.add.overlap(this.bullets, this.burgers, this.hitBurger, null, this);
 
-
-        // BARRE DEVIE
+        // BARRE DE VIE
         this.healthBar = this.add.graphics();
         this.drawHealthBar();
         this.healthBar.setScrollFactor(0);
         this.healthBar.setPosition(140, 80);
 
-        
-
-        //CAMERA
+        // CAMERA
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setZoom(1.1);
         this.cameras.main.setBounds(-50, -25, map.widthInPixels + 50, map.heightInPixels);
@@ -154,7 +168,6 @@ export default class Niveau4 extends Phaser.Scene {
         this.healthBar.fillStyle(0xff0000);
         this.healthBar.fillRect(0, 0, barWidth * healthRatio, barHeight);
     }
-    
 
     onPortalOverlap() {
         if (this.burgers.countActive(true) === 0) {
@@ -255,11 +268,10 @@ export default class Niveau4 extends Phaser.Scene {
         });
     }
 
-
-
     hitPlayer(player, burger) {
         console.log("Le joueur a été touché !");
-        this.currentHealth -= 1;
+        let damage = burger.getData('damage');
+        this.currentHealth -= damage;
         burger.destroy();
 
         if (this.currentHealth <= 0) {
@@ -271,13 +283,14 @@ export default class Niveau4 extends Phaser.Scene {
     }
     
     hitBurger(bullet, burger) {
-        bullet.destroy();
-        burger.destroy();
-    }
+        let health = burger.getData('health');
+        health -= 10; // Les balles infligent 10 dégâts
+        burger.setData('health', health);
 
-    updateHealth() {
-        this.healthIcons.forEach((heart, index) => {
-            heart.setVisible(index < this.currentHealth);
-        });
+        if (health <= 0) {
+            burger.destroy();
+        }
+
+        bullet.destroy();
     }
 }

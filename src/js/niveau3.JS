@@ -78,45 +78,59 @@ export default class Niveau3 extends Phaser.Scene {
         let mapWidth = map.widthInPixels;
         let mapHeight = map.heightInPixels;
 
-        this.anims.create({
-            key: "burger_left",
-            frames: this.anims.generateFrameNumbers("burger", { frames: [6, 7, 10, 11] }),
-            frameRate: 10,
-            repeat: -1
-        });
+        // Augmenter la vitesse des burgers
+    this.anims.create({
+        key: "burger_left",
+        frames: this.anims.generateFrameNumbers("burger", { frames: [6, 7, 10, 11] }),
+        frameRate: 10,
+        repeat: -1
+    });
 
-        this.anims.create({
-            key: "burger_right",
-            frames: this.anims.generateFrameNumbers("burger", { frames: [8, 9, 12, 13] }),
-            frameRate: 10,
-            repeat: -1
-        });
+    this.anims.create({
+        key: "burger_right",
+        frames: this.anims.generateFrameNumbers("burger", { frames: [8, 9, 12, 13] }),
+        frameRate: 10,
+        repeat: -1
+    });
 
-        
+    // Modification pour spawn de burgers plus rapides et plus gros
+    this.time.addEvent({
+        delay: 2000,  // Toujours spawn tous les 2 secondes
+        callback: () => {
+            if (this.burgersSpawned < this.maxBurgers) {
+                let x = Phaser.Math.Between(50, mapWidth - 50);
+                let y = Phaser.Math.Between(50, mapHeight - 50);
+                let burger = this.burgers.create(x, y, "burger");
 
-        this.time.addEvent({
-            delay: 2000,
-            callback: () => {
-                if (this.burgersSpawned < this.maxBurgers) {
-                    let x = Phaser.Math.Between(50, mapWidth - 50);
-                    let y = Phaser.Math.Between(50, mapHeight - 50);
-                    let burger = this.burgers.create(x, y, "burger");
-                    burger.setCollideWorldBounds(true);
-                    burger.setData('speed', 50);
-                    this.burgersSpawned++;
-                    
-                    let direction = Phaser.Math.Between(0, 1);
-                    if (direction === 0) {
-                        burger.setVelocityX(50);
-                        burger.play("burger_right");
-                    } else {
-                        burger.setVelocityX(-50);
-                        burger.play("burger_left");
-                    }
+                burger.setCollideWorldBounds(true);
+                burger.setData('speed', 100);  // Augmentation de la vitesse des burgers (plus rapide)
+                this.burgersSpawned++;
+
+                // Décider aléatoirement si ce burger est "gros"
+                const isBigBurger = Phaser.Math.Between(0, 4) === 0;  // 20% de chance d'être gros
+
+                if (isBigBurger) {
+                    burger.setScale(2);  // Le burger devient plus grand
+                    burger.setData('health', 10);  // Plus de vie
+                    burger.setData('damage', 2);  // Inflige plus de dégâts
+                    burger.setTint(0xff0000);  // Changer la couleur du gros burger pour qu'il soit visible
+                } else {
+                    burger.setData('health', 5);  // Vie normale
+                    burger.setData('damage', 1);  // Dégâts normaux
                 }
-            },
-            loop: true
-        });
+
+                let direction = Phaser.Math.Between(0, 1);
+                if (direction === 0) {
+                    burger.setVelocityX(100);  // Burger va plus vite
+                    burger.play("burger_right");
+                } else {
+                    burger.setVelocityX(-100);  // Burger va plus vite
+                    burger.play("burger_left");
+                }
+            }
+        },
+        loop: true
+    });
 
 
         this.physics.add.collider(this.burgers, mursLayer);
@@ -262,10 +276,12 @@ export default class Niveau3 extends Phaser.Scene {
     }
 
     hitPlayer(player, burger) {
-        console.log("Le joueur a été touché !");
-        this.currentHealth -= 1;
+        // Si le burger est gros, il inflige plus de dégâts
+        const damage = burger.getData('damage');
+        this.currentHealth -= damage;  // Le joueur perd plus de vie en fonction du burger
+    
         burger.destroy();
-
+    
         if (this.currentHealth <= 0) {
             console.log("Game Over");
             this.currentHealth = this.maxHealth;
@@ -275,15 +291,17 @@ export default class Niveau3 extends Phaser.Scene {
     }
     
     hitBurger(bullet, burger) {
+        const health = burger.getData('health');
+    
+        // Réduire la vie du burger en fonction des dégâts reçus
+        burger.setData('health', health - 1);
+    
+        // Si le burger a plus de vie, on ne le détruit pas tout de suite
+        if (burger.getData('health') <= 0) {
+            burger.destroy();
+        }
+    
         bullet.destroy();
-        burger.destroy();
     }
-
-    updateHealth() {
-        this.healthIcons.forEach((heart, index) => {
-            heart.setVisible(index < this.currentHealth);
-        });
-    }
-
     
 }

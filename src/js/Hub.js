@@ -191,11 +191,3 @@ export default class Hub extends Phaser.Scene {
     }
 }
 
-// Ajoutez l'événement beforeunload ici, à l'extérieur de la classe
-window.addEventListener("beforeunload", () => {
-    localStorage.removeItem("niveau1Complete");
-    localStorage.removeItem("niveau2Complete");
-    localStorage.removeItem("niveau3Complete");
-    localStorage.removeItem("niveau4Complete");
-    localStorage.removeItem("niveau5Complete");
-});
