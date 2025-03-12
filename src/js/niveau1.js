@@ -36,7 +36,6 @@ export default class Niveau1 extends Phaser.Scene {
 
         this.portal = this.physics.add.sprite(1520, 300, "portail");
         this.portal.setImmovable(true);
-        this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
         this.anims.create({
             key: "burger_left",
@@ -80,6 +79,7 @@ export default class Niveau1 extends Phaser.Scene {
         });
 
         this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
+        this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
         this.healthBar = this.add.graphics();
         this.drawHealthBar();
@@ -101,7 +101,7 @@ export default class Niveau1 extends Phaser.Scene {
     }
 
     onPortalOverlap() {
-        if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+        if (this.burgers.countActive(true) === 0 && Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
             this.scene.start("Hub");
         }
     }
@@ -145,7 +145,7 @@ export default class Niveau1 extends Phaser.Scene {
     hitPlayer(player, burger) {
         console.log("Le joueur a été touché par un burger !");
         this.currentHealth -= 1;
-        burger.setActive(false).setVisible(false);
+        burger.destroy();
         if (this.currentHealth <= 0) {
             console.log("Game Over");
             this.scene.restart();
