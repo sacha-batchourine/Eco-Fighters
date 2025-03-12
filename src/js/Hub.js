@@ -42,39 +42,24 @@ export default class Hub extends Phaser.Scene {
         murLayer.setCollisionByExclusion([-1]);
         this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-        this.portal1 = this.physics.add.sprite(432, 175, "portail");
-        this.portal1.setImmovable(true);
+        this.portal1 = this.physics.add.sprite(432, 175, "portail").setImmovable(true);
+        this.portal2 = this.physics.add.sprite(624, 559, "portail").setImmovable(true);
+        this.portal3 = this.physics.add.sprite(880, 240, "portail").setImmovable(true);
+        this.portal4 = this.physics.add.sprite(1040, 495, "portail").setImmovable(true);
+        this.portal5 = this.physics.add.sprite(1170, 143, "portail").setImmovable(true);
+        this.portalBoss = this.physics.add.sprite(1455, 335, "portail").setImmovable(true);
 
-        this.portal2 = this.physics.add.sprite(624, 559, "portail");
-        this.portal2.setImmovable(true);
+        let unlockedLevel = localStorage.getItem("unlockedLevel") || 1;
 
-        this.portal3 = this.physics.add.sprite(880,240, "portail");
-        this.portal3.setImmovable(true);
-
-        this.portal4 = this.physics.add.sprite(1040,495, "portail");
-        this.portal4.setImmovable(true);
-
-        this.portal5 = this.physics.add.sprite(1170,143, "portail");
-        this.portal5.setImmovable(true);
-
-        this.portalBoss = this.physics.add.sprite(1455,335, "portail");
-        this.portalBoss.setImmovable(true);
-
-        let progression = localStorage.getItem("progression") || 1;
-
-        this.portal1.setVisible(progression >= 1);
-        this.portal2.setVisible(progression >= 2);
-        this.portal3.setVisible(progression >= 3);
-        this.portal4.setVisible(progression >= 4);
-        this.portal5.setVisible(progression >= 5);
-        this.portalBoss.setVisible(progression >= 6);
-
-
-
+        this.portal1.setVisible(unlockedLevel >= 1).setActive(unlockedLevel >= 1);
+        this.portal2.setVisible(unlockedLevel >= 2).setActive(unlockedLevel >= 2);
+        this.portal3.setVisible(unlockedLevel >= 3).setActive(unlockedLevel >= 3);
+        this.portal4.setVisible(unlockedLevel >= 4).setActive(unlockedLevel >= 4);
+        this.portal5.setVisible(unlockedLevel >= 5).setActive(unlockedLevel >= 5);
+        this.portalBoss.setVisible(unlockedLevel >= 6).setActive(unlockedLevel >= 6);
 
         this.player = this.physics.add.sprite(145, 325, "img_perso");
-        
-        
+
         this.lastDirection = "down";
 
         this.anims.create({
@@ -97,17 +82,16 @@ export default class Hub extends Phaser.Scene {
         
         this.physics.add.overlap(this.player, [this.portal1, this.portal2, this.portal3, this.portal4, this.portal5, this.portalBoss], this.onPortalOverlap, null, this);
 
-
         // 🔹 Création de la barre de vie
-        this.healthBarBackground = this.add.rectangle(50, 70, 200, 20, 0x000000); // Fond de la barre de vie abaissé
-        this.healthBar = this.add.rectangle(50, 70, 200, 20, 0xff0000); // Barre de vie abaissée
+        this.healthBarBackground = this.add.rectangle(50, 70, 200, 20, 0x000000);
+        this.healthBar = this.add.rectangle(50, 70, 200, 20, 0xff0000);
 
-        this.healthBar.setOrigin(0, 0); // Définir l'origine pour que la barre commence à gauche
-        this.healthBarBackground.setOrigin(0, 0); // Définir l'origine pour le fond
+        this.healthBar.setOrigin(0, 0);
+        this.healthBarBackground.setOrigin(0, 0);
 
         // Centrer la caméra sur le joueur
         this.cameras.main.startFollow(this.player);
-        this.cameras.main.setZoom(1.1); // Zoom léger
+        this.cameras.main.setZoom(1.1);
 
         // Limiter les mouvements de la caméra aux bords de la carte
         const mapWidth = map.widthInPixels;
@@ -117,7 +101,7 @@ export default class Hub extends Phaser.Scene {
 
     updateHealth() {
         const healthPercentage = this.currentHealth / this.maxHealth;
-        this.healthBar.width = 200 * healthPercentage; // Mise à jour de la largeur de la barre de vie
+        this.healthBar.width = 200 * healthPercentage;
     }
 
     takeDamage(amount = 1) {
@@ -131,20 +115,22 @@ export default class Hub extends Phaser.Scene {
     }
 
     onPortalOverlap(player, portal) {
+        if (!portal.active || !portal.visible) return; // Empêche l'accès aux portails inactifs ou invisibles
+    
         if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
             if (portal === this.portal1) {
                 this.scene.start("Niveau1");
             } else if (portal === this.portal2) {
                 this.scene.start("Niveau2");
-            } else if (portal === this.portal3){
-                this.scene.start("Niveau3")
-            } else if (portal === this.portal4){
-                this.scene.start("Niveau4")
-            }else if (portal === this.portal5){
-                this.scene.start("Niveau5")
-            }else if (portal === this.portalBoss){
-                this.scene.start("NiveauBoss")
-        }
+            } else if (portal === this.portal3) {
+                this.scene.start("Niveau3");
+            } else if (portal === this.portal4) {
+                this.scene.start("Niveau4");
+            } else if (portal === this.portal5) {
+                this.scene.start("Niveau5");
+            } else if (portal === this.portalBoss) {
+                this.scene.start("NiveauBoss");
+            }
         }
     }
 
@@ -153,13 +139,11 @@ export default class Hub extends Phaser.Scene {
 
         if (this.cursors.left.isDown) {
             this.player.setVelocityX(-160);
-            this.player.setVelocityY(0);
             this.player.anims.play("walk_left", true);
             this.lastDirection = "left";
             moving = true;
         } else if (this.cursors.right.isDown) {
             this.player.setVelocityX(160);
-            this.player.setVelocityY(0);
             this.player.anims.play("walk_right", true);
             this.lastDirection = "right";
             moving = true;
@@ -169,13 +153,11 @@ export default class Hub extends Phaser.Scene {
 
         if (this.cursors.up.isDown) {
             this.player.setVelocityY(-160);
-            this.player.setVelocityX(0);
             this.player.anims.play("walk_up", true);
             this.lastDirection = "up";
             moving = true;
         } else if (this.cursors.down.isDown) {
             this.player.setVelocityY(160);
-            this.player.setVelocityX(0);
             this.player.anims.play("walk_down", true);
             this.lastDirection = "down";
             moving = true;
@@ -185,7 +167,6 @@ export default class Hub extends Phaser.Scene {
 
         if (!moving) {
             this.player.setVelocity(0);
-            this.player.anims.play(`idle_${this.lastDirection}`, true);
         }
     }
 }
