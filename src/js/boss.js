@@ -14,18 +14,10 @@ export default class NiveauBoss extends Phaser.Scene {
         this.load.image("Plant", "src/assets/TX PLant.png");
         this.load.image("Ombres", "src/assets/TX Shadow PLant.png");
         this.load.image("Sol", "src/assets/TX Tileset Stone Ground.png");
-
-        this.load.spritesheet("img_perso", "src/assets/Perso.png", {
-            frameWidth: 48,
-            frameHeight: 48
-        });
-
-        this.load.spritesheet("burger", "src/assets/burger_spritesheet.png", {
-            frameWidth: 32,
-            frameHeight: 32
-        });
-
-        this.load.image("heart", "src/assets/hearth.png"); // Image d'un cœur
+        this.load.spritesheet("img_perso", "src/assets/banane.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet("burger", "src/assets/burger_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
+        this.load.image("heart", "src/assets/hearth.png");
+        this.load.image("bullet", "src/assets/bullet.png");
     }
 
   create() {

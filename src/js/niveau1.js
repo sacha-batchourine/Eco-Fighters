@@ -15,7 +15,7 @@ export default class Niveau1 extends Phaser.Scene {
         this.load.image("Grass", "src/assets/TX Tileset Grass.png");
         this.load.image("Wall", "src/assets/TX Tileset Wall.png");
         this.load.image("Objet", "src/assets/TX Props.png");
-        this.load.spritesheet("img_perso", "src/assets/Perso.png", { frameWidth: 48, frameHeight: 48 });
+        this.load.spritesheet("img_perso", "src/assets/Perso.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet("burger", "src/assets/burger_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image("heart", "src/assets/hearth.png");
         this.load.image("portail", "src/assets/portail.png");

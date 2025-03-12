@@ -14,12 +14,13 @@ export default class Niveau4 extends Phaser.Scene {
         this.load.image("Objet", "src/assets/TX Props.png");
         this.load.image("Plant", "src/assets/TX PLant.png");
         this.load.image("Ombres", "src/assets/TX Shadow PLant.png");
-        this.load.spritesheet("img_perso", "src/assets/Perso.png", { frameWidth: 48, frameHeight: 48 });
+        this.load.spritesheet("img_perso", "src/assets/banane.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet("burger", "src/assets/burger_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image("heart", "src/assets/hearth.png");
     }
 
     create() {
+        //CREATION MAP
         const map = this.make.tilemap({ key: "mapN4" });
         const tilesetGrass = map.addTilesetImage("Grass", "Grass");
         const tilesetMur = map.addTilesetImage("Wall", "Wall");
@@ -33,18 +34,49 @@ export default class Niveau4 extends Phaser.Scene {
         const mursLayer = map.createLayer("Mur", [tilesetMur, tilesetPlant, tilesetProps]);
         map.createLayer("Ecriture", [tilesetProps]);
 
+
+        //PLAYER
         this.player = this.physics.add.sprite(115, 300, "img_perso");
+        this.player.setScale(2); // Agrandit le joueur 2 fois
+        this.lastDirection = "right";
+
+
+        this.anims.create({
+            key: "stand", frames: this.anims.generateFrameNumbers("img_perso", { start: 30, end: 32 }), frameRate: 10, repeat: -1
+        });
+        this.anims.create({
+            key: "walk_right", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
+        });
+        this.anims.create({
+            key: "walk_left", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
+        });
+        this.anims.create({
+            key: "dead", frames: this.anims.generateFrameNumbers("img_perso", { start: 17, end: 20 }), frameRate: 10, repeat: -1
+        });
+
+        this.bullets = this.physics.add.group();
+
+
+        //TOUCHES
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        
 
+
+        //COlISIONS
         mursLayer.setCollisionByProperty({ estSolide: true });
         this.physics.add.collider(this.player, mursLayer);
 
+
+
+        //PORTAIL
         this.portal = this.physics.add.sprite(3377, 80, "portail");
         this.portal.setImmovable(true);
         this.portal.setVisible(false);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
+
+        //BURGERS
         this.anims.create({
             key: "burger_left",
             frames: this.anims.generateFrameNumbers("burger", { frames: [6, 7, 10, 11] }),
@@ -64,6 +96,8 @@ export default class Niveau4 extends Phaser.Scene {
 
         this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
 
+
+        //VIE
         this.healthIcons = [];
         for (let i = 0; i < this.maxHealth; i++) {
             let heart = this.add.image(60 + i * 50, 20, "heart");
@@ -73,7 +107,9 @@ export default class Niveau4 extends Phaser.Scene {
         }
 
         this.updateHealth();
+        
 
+        //CAMERA
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setZoom(1.1);
         const mapWidth = map.widthInPixels;
