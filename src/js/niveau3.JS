@@ -6,7 +6,7 @@ export default class Niveau3 extends Phaser.Scene {
     }
 
     preload() {
-        this.load.tilemapTiledJSON("mapN3", "src/assets/mapN2.json");
+        this.load.tilemapTiledJSON("mapN3", "src/assets/mapN3.json");
 
         this.load.image("Grass", "src/assets/TX Tileset Grass.png");
         this.load.image("Wall", "src/assets/TX Tileset Wall.png");
@@ -46,12 +46,11 @@ export default class Niveau3 extends Phaser.Scene {
         
 
         this.player = this.physics.add.sprite(100, 100, "img_perso");
-        this.player.setCollideWorldBounds(true);
 
         this.cursors = this.input.keyboard.createCursorKeys();
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-        mursLayer.setCollisionByProperty({ collide: true });
+        mursLayer.setCollisionByProperty({ estSolide: true });
         this.physics.add.collider(this.player, mursLayer);
 
         

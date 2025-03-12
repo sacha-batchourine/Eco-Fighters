@@ -35,7 +35,7 @@ export default class Niveau2 extends Phaser.Scene {
         const tilesetMur = map.addTilesetImage("Wall", "Wall");
         const tilesetProps = map.addTilesetImage("Props", "Objet");
         const tilesetPlant = map.addTilesetImage("Plant", "Plant");
-        const tilesetOmbre = map.addTilesetImage("Shadow Plant", "Plant");
+        const tilesetOmbre = map.addTilesetImage("Ombre", "Ombres");
 
 
         map.createLayer("Grass", [tilesetGrass]);

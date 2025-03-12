@@ -3,7 +3,7 @@ import Hub from "./js/Hub.js";
 import Menu from "./js/menu.js";
 import Niveau1 from "./js/niveau1.js";
 import Niveau2 from "./js/niveau2.js";
-
+import Niveau3 from "./js/niveau3.js";
 
 const config = {
     type: Phaser.AUTO,
@@ -13,14 +13,14 @@ const config = {
         default: "arcade",
         arcade: { 
             gravity: { y: 0 }, 
-            debug: true 
+            debug: false 
         }
     },
     scale: {
         mode: Phaser.Scale.FIT,  // Ajuste le jeu à la fenêtre sans distorsion
         autoCenter: Phaser.Scale.CENTER_BOTH  // Centre le jeu dans la fenêtre
     },
-    scene: [Menu, Hub, Niveau1, Niveau2]  // Définition des scènes
+    scene: [Menu, Hub, Niveau1, Niveau2, Niveau3]  // Définition des scènes
 };
 
 // Création et lancement du jeu
