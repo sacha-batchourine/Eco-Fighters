@@ -76,7 +76,8 @@ this.isRecharging = false; // Vérifie si on recharge
 this.reloadBar = this.add.graphics();
 this.reloadBar.setVisible(false);
 this.bulletCountText = this.add.text(20, 50, `Balles restantes : ${this.currentBullets}`, { fontSize: '16px', fill: '#fff' });
-
+this.bulletCountText.setScrollFactor(0);
+this.bulletCountText.setPosition(140, 120);
         
         //TOUCHES
         this.cursors = this.input.keyboard.createCursorKeys();

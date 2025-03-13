@@ -80,6 +80,8 @@ this.isRecharging = false; // Vérifie si on recharge
 
     // Initialiser le texte du compteur de balles
     this.bulletCountText = this.add.text(20, 50, `Balles restantes : ${this.currentBullets}`, { fontSize: '16px', fill: '#fff' });
+    this.bulletCountText.setScrollFactor(0);
+    this.bulletCountText.setPosition(140, 120);
         
 
 
