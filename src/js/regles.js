@@ -37,7 +37,7 @@ export default class Regles extends Phaser.Scene {
     "- Tirer / Viser : Souris\n" +
     "- Recharger : R\n" +
     "- Accélérer : Shift\n" +
-    "- Interagir : Espace\n" + // Ajout de la commande pour interagir avec le PNJ
+    "- Interagir : Entrée\n" + // Ajout de la commande pour interagir avec le PNJ
     "\n" + // Adding a new line for better formatting
     "🎯 Objectif :\n" +
     "- Élimine tous les burgers 🍔 pour passer au niveau suivant !\n" +
