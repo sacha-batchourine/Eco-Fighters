@@ -29,6 +29,7 @@ this.isRecharging = false; // Vérifie si on recharge
         this.load.audio("Ambiance", "src/assets/Ambiance.mp3");
         this.load.audio("BouleFeu", "src/assets/BouleFeu.mp3"); 
         this.load.audio("burgerDeath", "src/assets/Mort.mp3");
+        this.load.audio("Reload", "src/assets/Reload.mp3");
     }
 
     create() {
@@ -308,6 +309,7 @@ this.isRecharging = false; // Vérifie si on recharge
     
         this.isRecharging = true;
         console.log("Rechargement en cours...");
+        this.sound.play("Reload", { volume: 0.03 });
     
         // Afficher la barre de recharge
         this.reloadBar.setVisible(true);
