@@ -334,7 +334,7 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
     
         // Détruire la balle après un délai
         this.time.addEvent({
-            delay: 2000,  // La balle disparaît après 2 secondes
+            delay: 1000,  // La balle disparaît après 2 secondes
             callback: () => bullet.destroy(),
             loop: false
         });

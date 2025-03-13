@@ -85,7 +85,7 @@ this.bulletCountText = this.add.text(20, 50, `Balles restantes : ${this.currentB
 this.bulletCountText.setScrollFactor(0);
 this.bulletCountText.setPosition(140, 120);
 // Initialiser le texte du compteur de burgers
-this.burgerCountText = this.add.text(20, 70, `Burgers à tuer : ${this.burgersToKill}`, { fontSize: '16px', fill: '#fff' });
+this.burgerCountText = this.add.text(20, 70, `Tue le BOSS`, { fontSize: '16px', fill: '#fff' });
 this.burgerCountText.setScrollFactor(0);
 this.burgerCountText.setPosition(140, 140);
 
@@ -153,7 +153,7 @@ this.burgerCountText.setPosition(140, 140);
     
                 // Génération de burgers réguliers
                 this.time.addEvent({
-                    delay: 3000, // Toutes les 3 secondes
+                    delay: 1000, // Toutes les 3 secondes
                     callback: () => {
                         if (this.boss.active) { // Tant que le boss est en vie
                             let spawnX = this.boss.x + Phaser.Math.Between(-200, 200);
@@ -177,20 +177,20 @@ this.burgerCountText.setPosition(140, 140);
                                     burger.setScale(1);
                                     burger.setData('health', 1);
                                     burger.setData('damage', 1);
-                                    burger.setData('speed', 100);
+                                    burger.setData('speed', 125);
                                     break;
                                 case 2:
                                     burger.setScale(1.5);
                                     burger.setData('health', 2);
                                     burger.setData('damage', 2);
-                                    burger.setData('speed', 75);
+                                    burger.setData('speed', 100);
                                     burger.setTint(0xff9900);
                                     break;
                                 case 3:
                                     burger.setScale(2);
                                     burger.setData('health', 3);
                                     burger.setData('damage', 3);
-                                    burger.setData('speed', 50);
+                                    burger.setData('speed', 75);
                                     burger.setTint(0xff0000);
                                     break;
                             }
@@ -404,7 +404,7 @@ this.burgerCountText.setPosition(140, 140);
     
         // Détruire la balle après un délai
         this.time.addEvent({
-            delay: 2000,  // La balle disparaît après 2 secondes
+            delay: 1000,  // La balle disparaît après 2 secondes
             callback: () => bullet.destroy(),
             loop: false
         });
@@ -490,10 +490,7 @@ this.burgerCountText.setPosition(140, 140);
             // Détruire le burger qui a touché le joueur
             burger.destroy();
     
-            // Met à jour le nombre de burgers à tuer
-            this.burgersToKill--;
-            this.updateBurgerCountText();
-    
+        
             // Si la vie du joueur est à zéro ou moins, déclenche sa mort
             if (this.currentHealth <= 0) {
                 this.handlePlayerDeath();
@@ -526,8 +523,6 @@ this.burgerCountText.setPosition(140, 140);
     
         // Si la vie du burger est inférieure ou égale à zéro, le détruire
         if (burger.getData('health') <= 0) {
-            this.burgersToKill--; // Décrémente le compteur de burgers restants
-            this.updateBurgerCountText(); // Met à jour le texte du compteur
             this.sound.play("burgerDeath", { volume: 0.1 });
             burger.destroy();
         }
@@ -536,7 +531,5 @@ this.burgerCountText.setPosition(140, 140);
     
 
 
-    updateBurgerCountText() {
-        this.burgerCountText.setText(`Burgers à tuer : ${this.burgersToKill}`);
-    }
+    
 }

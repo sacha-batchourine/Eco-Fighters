@@ -151,7 +151,7 @@ this.burgerCountText.setPosition(140, 140);
                         x = Phaser.Math.Between(50, mapWidth - 50);
                         y = Phaser.Math.Between(50, mapHeight - 50);
                     } while (Phaser.Math.Distance.Between(x, y, this.player.x, this.player.y) < 300);
-                    
+
                     let burger = this.burgers.create(x, y, "burger");
                     this.burgersSpawned++;
         
@@ -369,7 +369,7 @@ this.burgerCountText.setPosition(140, 140);
     
         // Détruire la balle après un délai
         this.time.addEvent({
-            delay: 2000,  // La balle disparaît après 2 secondes
+            delay: 1000,  // La balle disparaît après 2 secondes
             callback: () => bullet.destroy(),
             loop: false
         });
