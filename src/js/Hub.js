@@ -52,10 +52,7 @@ export default class Hub extends Phaser.Scene {
         
         // Touches
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.keyUp = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);   // Z pour haut
-        this.keyLeft = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q); // Q pour gauche
-        this.keyDown = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S); // S pour bas
-        this.keyRight = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D); // D pour droite
+        
         
 
         // Collisions
@@ -122,9 +119,9 @@ export default class Hub extends Phaser.Scene {
 
         // ✅ Portail pour Fin (se débloque après Niveau Boss)
         this.portalFin = this.physics.add.sprite(145, 335, "portail").setImmovable(true);
-        this.portalFin.setVisible(niveau5Terminé);
-        this.portalFin.body.enable = niveau5Terminé;
-        if (niveau5Terminé) {
+        this.portalFin.setVisible(niveauBossTerminé);
+        this.portalFin.body.enable = niveauBossTerminé;
+        if (niveauBossTerminé) {
             this.portalFin.setFrame(6);  // Septième frame pour le portail Fin
             this.physics.add.overlap(this.player, this.portalFin, this.onPortalFinOverlap, null, this);
         }
@@ -160,23 +157,26 @@ export default class Hub extends Phaser.Scene {
         this.scene.start("NiveauBoss");
     }
 
-    
+    // Nouvelle fonction pour le portail vers Fin
+    onPortalFinOverlap(player, portal) {
+        console.log("Portail Fin activé");  // Vérification dans la console
+        this.scene.start("Fin");
+    }
 
     update() {
         let speed = 160;
-        let diagonalSpeed = Math.sqrt(speed * speed / 2); // Réduit la vitesse en diagonale
+        let diagonalSpeed = Math.sqrt(speed * speed / 2);
         
         let movingX = false;
         let movingY = false;
-
-        // Déplacements avec Z, Q, S, D
-        if (this.keyLeft.isDown) {
+        
+        if (this.cursors.left.isDown) {
             this.player.setVelocityX(-speed);
             this.player.anims.play("walk_right", true);
             this.player.setFlipX(true);
             this.lastDirection = "left";
             movingX = true;
-        } else if (this.keyRight.isDown) {
+        } else if (this.cursors.right.isDown) {
             this.player.setVelocityX(speed);
             this.player.anims.play("walk_right", true);
             this.player.setFlipX(false);
@@ -185,46 +185,35 @@ export default class Hub extends Phaser.Scene {
         } else {
             this.player.setVelocityX(0);
         }
-
-        if (this.keyUp.isDown) {
+        
+        if (this.cursors.up.isDown) {
             this.player.setVelocityY(-speed);
             movingY = true;
-        } else if (this.keyDown.isDown) {
+        } else if (this.cursors.down.isDown) {
             this.player.setVelocityY(speed);
             movingY = true;
         } else {
             this.player.setVelocityY(0);
         }
-
-        // Gestion des animations pour le mouvement vertical
-        if (movingY && !movingX) {
-            if (this.lastDirection === "right") {
-                this.player.anims.play("walk_right", true);
-                this.player.setFlipX(false);
-            } else if (this.lastDirection === "left") {
-                this.player.anims.play("walk_right", true);
-                this.player.setFlipX(true);
-            }
-        }
-
-        // Si on bouge en diagonale, on ajuste la vitesse
+        
         if (movingX && movingY) {
             this.player.setVelocityX(this.player.body.velocity.x * diagonalSpeed / speed);
             this.player.setVelocityY(this.player.body.velocity.y * diagonalSpeed / speed);
         }
-
-        // Si le joueur ne bouge pas, animation d'arrêt
+        
         if (!movingX && !movingY) {
             this.player.anims.play("stand", true);
         }
     }
 }
 
-// Ajoutez l'événement beforeunload ici, à l'extérieur de la classe
+// Ajoutez l'événement beforeunload pour effacer les données du localStorage avant de quitter
 window.addEventListener("beforeunload", () => {
+    // Supprimer les données du localStorage lorsque l'utilisateur quitte la page
     localStorage.removeItem("niveau1Complete");
     localStorage.removeItem("niveau2Complete");
     localStorage.removeItem("niveau3Complete");
     localStorage.removeItem("niveau4Complete");
     localStorage.removeItem("niveau5Complete");
+    localStorage.removeItem("niveauBossComplete");
 });
