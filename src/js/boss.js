@@ -321,14 +321,19 @@ export default class NiveauBoss extends Phaser.Scene {
 
     hitPlayer(player, burger) {
         console.log("Le joueur a été touché !");
-        this.currentHealth -= 1;
-        burger.destroy();
-
+        
+        this.currentHealth -= 1; // Réduction de la santé du joueur
+        burger.destroy(); // Suppression du burger qui a touché le joueur
+    
         if (this.currentHealth <= 0) {
             console.log("Game Over");
-            this.currentHealth = this.maxHealth;
-            this.burgers.clear(true, true);
-            this.scene.restart();
+    
+            // Réinitialisation complète du niveau
+            this.currentHealth = this.maxHealth; // Remise à pleine vie
+            this.burgers.clear(true, true); // Suppression de tous les burgers
+            this.burgersSpawned = 0; // Réinitialisation du compteur de burgers
+            
+            this.scene.restart(); // Redémarrage de la scène
         }
     }
     

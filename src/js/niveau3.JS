@@ -318,21 +318,25 @@ export default class Niveau3 extends Phaser.Scene {
         }
     }
 
+    
     hitPlayer(player, burger) {
         // Si le burger est gros, il inflige plus de dégâts
-        const damage = burger.getData('damage');
-        this.currentHealth -= damage;  // Le joueur perd plus de vie en fonction du burger
+        const damage = burger.getData('damage') || 1; // Valeur par défaut de 1 si aucune donnée
+        this.currentHealth -= damage;  
     
         burger.destroy();
     
         if (this.currentHealth <= 0) {
             console.log("Game Over");
+    
+            // Réinitialisation complète du niveau
             this.currentHealth = this.maxHealth;
-            this.burgers.clear(true, true);
-            this.scene.restart();
+            this.burgers.clear(true, true); // Supprime tous les burgers
+            this.burgersSpawned = 0; // Remet à zéro le compteur de burgers
+    
+            this.scene.restart(); // Redémarre la scène
         }
     }
-    
     hitBurger(bullet, burger) {
         const health = burger.getData('health');
     

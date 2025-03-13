@@ -345,8 +345,8 @@ export default class Niveau5 extends Phaser.Scene {
     hitPlayer(player, burger) {
         console.log("Le joueur a été touché !");
         
-        // Récupération des dégâts du burger
-        let burgerDamage = burger.getData('damage');
+        // Récupération des dégâts du burger avec une valeur par défaut de 1 si non défini
+        let burgerDamage = burger.getData('damage') || 1;
         
         // Réduction de la santé du joueur
         this.currentHealth -= burgerDamage;
@@ -355,8 +355,12 @@ export default class Niveau5 extends Phaser.Scene {
     
         if (this.currentHealth <= 0) {
             console.log("Game Over");
+    
+            // Réinitialisation complète du niveau
             this.currentHealth = this.maxHealth; // Réinitialisation de la vie
             this.burgers.clear(true, true); // Suppression de tous les burgers
+            this.burgersSpawned = 0; // Remise à zéro du compteur de burgers
+    
             this.scene.restart(); // Redémarrage de la scène
         }
     }
