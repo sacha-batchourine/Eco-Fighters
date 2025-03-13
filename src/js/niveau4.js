@@ -79,6 +79,7 @@ this.isRecharging = false; // Vérifie si on recharge
         // Ajouter une barre de recharge au-dessus du joueur
     this.reloadBar = this.add.graphics();
     this.reloadBar.setVisible(false);
+    
 
         // TOUCHES
         this.cursors = this.input.keyboard.createCursorKeys();
