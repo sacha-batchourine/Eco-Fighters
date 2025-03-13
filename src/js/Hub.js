@@ -17,7 +17,6 @@ export default class Hub extends Phaser.Scene {
         this.load.image("bullet", "src/assets/balles.png"); 
         this.load.audio("Ambiance", "src/assets/Ambiance.mp3"); 
         this.load.audio("TPportail", "src/assets/TPportail.mp3");
-
     }
 
     create() {

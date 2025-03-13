@@ -284,6 +284,12 @@ this.isRecharging = false; // Vérifie si on recharge
     }
 
         this.drawHealthBar();
+
+        //ANIMATION MORT
+        if (this.currentHealth <= 0) {
+            this.player.anims.play("dead", true);
+            this.player.body.moves = false;
+        }
     }
 
     // Fonction pour tirer un projectile
@@ -382,12 +388,14 @@ this.isRecharging = false; // Vérifie si on recharge
     if (this.currentHealth <= 0) {
         console.log("Game Over");
 
-        // Réinitialisation complète du niveau
-        this.currentHealth = this.maxHealth;
-        this.burgers.clear(true, true); // Supprime tous les burgers
-        this.burgersSpawned = 0; // Remet le compteur à zéro pour permettre le respawn des burgers
+        this.time.delayedCall(400, () => { 
+            this.currentHealth = this.maxHealth;
+            this.burgers.clear(true, true); // Supprime tous les burgers
+            this.burgersSpawned = 0; // Remet à zéro le compteur de burgers
         
-        this.scene.restart(); // Redémarre la scène
+            // Redémarre la scène après l'animation
+            this.scene.restart();
+        });
     }
 }
     
