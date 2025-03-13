@@ -28,6 +28,7 @@ this.isRecharging = false; // Vérifie si on recharge
         this.load.audio("BouleFeu", "src/assets/BouleFeu.mp3"); 
         this.load.audio("burgerDeath", "src/assets/Mort.mp3");
         this.load.audio("Reload", "src/assets/Reload.mp3");
+        this.load.audio("DegatPlayer", "src/assets/DegatPlayer.mp3");
     }
 
     create() {
@@ -315,7 +316,7 @@ this.isRecharging = false; // Vérifie si on recharge
         this.isRecharging = true;
         console.log("Rechargement en cours...");
 
-        this.sound.play("Reload", { volume: 0.03 });
+        this.sound.play("Reload", { volume: 0.1 });
     
         // Afficher la barre de recharge
         this.reloadBar.setVisible(true);
@@ -353,6 +354,7 @@ this.isRecharging = false; // Vérifie si on recharge
     hitPlayer(player, burger) {
         console.log("Le joueur a été touché !");
         this.currentHealth -= 1;
+        this.sound.play("DegatPlayer", { volume: 0.1 });
         burger.destroy();
     
         if (this.currentHealth <= 0) {
@@ -367,7 +369,7 @@ this.isRecharging = false; // Vérifie si on recharge
         }
     }
     hitBurger(bullet, burger) {
-        this.sound.play("burgerDeath", { volume: 0.03 });
+        this.sound.play("burgerDeath", { volume: 0.1 });
         bullet.destroy();
         burger.destroy();
     }

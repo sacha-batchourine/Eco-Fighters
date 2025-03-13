@@ -28,6 +28,7 @@ this.isRecharging = false; // Vérifie si on recharge
         this.load.audio("BouleFeu", "src/assets/BouleFeu.mp3");
         this.load.audio("burgerDeath", "src/assets/Mort.mp3"); 
         this.load.audio("Reload", "src/assets/Reload.mp3");
+        this.load.audio("DegatPlayer", "src/assets/DegatPlayer.mp3");
     }
 
   create() {
@@ -362,7 +363,7 @@ this.reloadBar.setVisible(false);
     
         this.isRecharging = true;
         console.log("Rechargement en cours...");
-        this.sound.play("Reload", { volume: 0.03 });
+        this.sound.play("Reload", { volume: 0.1 });
     
         // Afficher la barre de recharge
         this.reloadBar.setVisible(true);
@@ -406,7 +407,7 @@ this.reloadBar.setVisible(false);
         
         // Réduction de la santé du joueur
         this.currentHealth -= burgerDamage;
-        
+        this.sound.play("DegatPlayer", { volume: 0.1 });
         burger.destroy(); // Le burger est détruit
     
         if (this.currentHealth <= 0) {
@@ -430,7 +431,7 @@ this.reloadBar.setVisible(false);
     
         // Si la vie du burger est inférieure ou égale à zéro, le détruire
         if (burger.getData('health') <= 0) {
-            this.sound.play("burgerDeath", { volume: 0.03 });
+            this.sound.play("burgerDeath", { volume: 0.1 });
             burger.destroy();
         }
     }

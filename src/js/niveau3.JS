@@ -27,6 +27,7 @@ this.isRecharging = false; // Vérifie si on recharge
         this.load.audio("BouleFeu", "src/assets/BouleFeu.mp3"); 
         this.load.audio("burgerDeath", "src/assets/Mort.mp3");
         this.load.audio("Reload", "src/assets/Reload.mp3");
+        this.load.audio("DegatPlayer", "src/assets/DegatPlayer.mp3");
     }
 
     create() {
@@ -325,7 +326,7 @@ this.isRecharging = false; // Vérifie si on recharge
         this.isRecharging = true;
         console.log("Rechargement en cours...");
 
-        this.sound.play("Reload", { volume: 0.03 });
+        this.sound.play("Reload", { volume: 0.1 });
 
         // Afficher la barre de recharge
         this.reloadBar.setVisible(true);
@@ -371,7 +372,8 @@ this.isRecharging = false; // Vérifie si on recharge
     hitPlayer(player, burger) {
         // Si le burger est gros, il inflige plus de dégâts
         const damage = burger.getData('damage') || 1; // Valeur par défaut de 1 si aucune donnée
-        this.currentHealth -= damage;  
+        this.currentHealth -= damage;
+        this.sound.play("DegatPlayer", { volume: 0.1 });  
     
         burger.destroy();
     
@@ -394,7 +396,7 @@ this.isRecharging = false; // Vérifie si on recharge
     
         // Si le burger a plus de vie, on ne le détruit pas tout de suite
         if (burger.getData('health') <= 0) {
-            this.sound.play("burgerDeath", { volume: 0.03 });
+            this.sound.play("burgerDeath", { volume: 0.1 });
             burger.destroy();
         }
     
