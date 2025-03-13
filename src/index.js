@@ -7,24 +7,28 @@ import Niveau3 from "./js/niveau3.js";
 import Niveau4 from "./js/niveau4.js";
 import Niveau5 from "./js/niveau5.js";
 import NiveauBoss from "./js/boss.js";
+import Fin from "./js/fin.js";
 
 const config = {
     type: Phaser.AUTO,
-    width: window.innerWidth,  // Largeur adaptative à l'écran
-    height: window.innerHeight, // Hauteur adaptative à l'écran
+    width: window.innerWidth,
+    height: window.innerHeight,
     physics: {
         default: "arcade",
-        arcade: { 
-            gravity: { y: 0 }, 
-            debug: false 
+        arcade: {
+            gravity: { y: 0 },
+            debug: false
         }
     },
     scale: {
-        mode: Phaser.Scale.FIT,  // Ajuste le jeu à la fenêtre sans distorsion
-        autoCenter: Phaser.Scale.CENTER_BOTH  // Centre le jeu dans la fenêtre
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH
     },
-    scene: [Menu, Hub, Niveau1, Niveau2, Niveau3, Niveau4, Niveau5, NiveauBoss, Synop]  // Ajout de la scène Synop ici
+    scene: [Menu, Hub, Niveau1, Niveau2, Niveau3, Niveau4, Niveau5, NiveauBoss, Synop, Fin]  // Le jeu commence avec la scène "Menu"
 };
+
+
+
 
 // Création et lancement du jeu
 const game = new Phaser.Game(config);

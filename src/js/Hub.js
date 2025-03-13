@@ -115,6 +115,15 @@ export default class Hub extends Phaser.Scene {
             this.physics.add.overlap(this.player, this.portalBoss, this.onPortalBossOverlap, null, this);
         }
 
+        // ✅ Portail pour Fin (se débloque après Niveau Boss)
+        this.portalFin = this.physics.add.sprite(200, 335, "portail").setImmovable(true);
+        this.portalFin.setVisible(niveau5Terminé);
+        this.portalFin.body.enable = niveau5Terminé;
+        if (niveau5Terminé) {
+            this.portalFin.setFrame(6);  // Septième frame pour le portail Fin
+            this.physics.add.overlap(this.player, this.portalFin, this.onPortalFinOverlap, null, this);
+        }
+
         // Caméra
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setZoom(1.1);
@@ -144,6 +153,12 @@ export default class Hub extends Phaser.Scene {
 
     onPortalBossOverlap(player, portal) {
         this.scene.start("NiveauBoss");
+    }
+
+    // Nouvelle fonction pour le portail vers Fin
+    onPortalFinOverlap(player, portal) {
+        console.log("Portail Fin activé");  // Vérification dans la console
+        this.scene.start("Fin");
     }
 
     update() {
@@ -187,7 +202,5 @@ export default class Hub extends Phaser.Scene {
         if (!movingX && !movingY) {
             this.player.anims.play("stand", true);
         }
-
     }
 }
-
