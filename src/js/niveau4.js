@@ -22,9 +22,18 @@ export default class Niveau4 extends Phaser.Scene {
         this.load.spritesheet("burger", "src/assets/burger_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image("heart", "src/assets/hearth.png");
         this.load.image("bullet", "src/assets/bullet.png");
+        this.load.audio("Ambiance", "src/assets/Ambiance.mp3");
     }
 
     create() {
+        //gerer la musique 
+        if (!this.sound.get("Ambiance")) { 
+            this.music = this.sound.add("Ambiance", { loop: true, volume: 0.2 });
+            this.music.play();
+        } else {
+            this.music = this.sound.get("Ambiance");
+        }
+        
         // CREATION MAP
         const map = this.make.tilemap({ key: "mapN4" });
         const tilesetGrass = map.addTilesetImage("Grass", "Grass");

@@ -22,9 +22,11 @@ export default class NiveauBoss extends Phaser.Scene {
         this.load.spritesheet("burger", "src/assets/burger_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image("heart", "src/assets/hearth.png");
         this.load.image("bullet", "src/assets/bullet.png");
+        this.load.audio("BossFight", "src/assets/BossFight.mp3");
     }
 
   create() {
+
 
         //MAP
         const map = this.make.tilemap({ key: "mapBoss" });
@@ -147,6 +149,13 @@ export default class NiveauBoss extends Phaser.Scene {
        this.cameras.main.setZoom(1.1);
        this.cameras.main.setBounds(-50, -25, map.widthInPixels + 50, map.heightInPixels);
 
+       //MUSIC
+       if (this.music) {
+        this.music.stop(); // Arrêter la musique actuelle
+       }
+       this.music = this.sound.add("BossFight", { loop: true, volume: 0.05 });
+       this.music = this.sound.add("BossFight", { loop: true, volume: 0.05 });
+       this.music.play();
   }
       
        
