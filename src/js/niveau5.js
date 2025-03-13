@@ -115,7 +115,7 @@ this.burgerCountText.setPosition(140, 140);
 
         
         //PORTAIL
-        this.portal = this.physics.add.sprite(1000, 200, "portail").setImmovable(true);
+        this.portal = this.physics.add.sprite(3600, 143, "portail").setImmovable(true);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
 
