@@ -116,11 +116,11 @@ export default class Niveau3 extends Phaser.Scene {
 
                 if (isBigBurger) {
                     burger.setScale(2);  // Le burger devient plus grand
-                    burger.setData('health', 10);  // Plus de vie
+                    burger.setData('health', 3);  // Plus de vie
                     burger.setData('damage', 2);  // Inflige plus de dégâts
                     burger.setTint(0xff0000);  // Changer la couleur du gros burger pour qu'il soit visible
                 } else {
-                    burger.setData('health', 3);  // Vie normale
+                    burger.setData('health', 1);  // Vie normale
                     burger.setData('damage', 1);  // Dégâts normaux
                 }
 
