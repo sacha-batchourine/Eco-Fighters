@@ -306,6 +306,10 @@ this.reloadBar.setVisible(false);
                 }
             }
         });
+           // Vérifier si le joueur appuie sur "R" pour recharger
+    if (Phaser.Input.Keyboard.JustDown(this.keyReload)) {
+        this.recharger();
+    }
 
         this.drawHealthBar();
     }

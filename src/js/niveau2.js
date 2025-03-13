@@ -253,6 +253,10 @@ this.isRecharging = false; // Vérifie si on recharge
                 }
             }
         });
+           // Vérifier si le joueur appuie sur "R" pour recharger
+    if (Phaser.Input.Keyboard.JustDown(this.keyReload)) {
+        this.recharger();
+    }
 
         this.drawHealthBar();
     }
