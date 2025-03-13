@@ -140,7 +140,7 @@ export default class Hub extends Phaser.Scene {
         if (this.music) {
             this.music.stop(); // Arrêter la musique actuelle
         }
-        this.music = this.sound.add("Ambiance", { loop: true, volume: 0.05 });
+        this.music = this.sound.add("Ambiance", { loop: true, volume: 0.02 });
         this.music.play();
     }
 

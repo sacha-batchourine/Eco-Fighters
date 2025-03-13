@@ -23,6 +23,7 @@ export default class NiveauBoss extends Phaser.Scene {
         this.load.image("heart", "src/assets/hearth.png");
         this.load.image("bullet", "src/assets/bullet.png");
         this.load.audio("BossFight", "src/assets/BossFight.mp3");
+        this.load.audio("BouleFeu", "src/assets/BouleFeu.mp3"); 
     }
 
   create() {
@@ -153,7 +154,6 @@ export default class NiveauBoss extends Phaser.Scene {
        if (this.music) {
         this.music.stop(); // Arrêter la musique actuelle
        }
-       this.music = this.sound.add("BossFight", { loop: true, volume: 0.05 });
        this.music = this.sound.add("BossFight", { loop: true, volume: 0.05 });
        this.music.play();
   }
@@ -307,7 +307,11 @@ export default class NiveauBoss extends Phaser.Scene {
             this.ballesTirees = 0; // Réinitialiser le compteur de balles
             this.recharger(); // Appeler la fonction de recharge
         }
+    
+        // Jouer le son BouleFeu
+        this.sound.play("BouleFeu", { volume: 0.05});
     }
+
     recharger() {
         if (this.isRecharging) return; // Si déjà en train de recharger, ne rien faire
     
