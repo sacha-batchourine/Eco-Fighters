@@ -29,6 +29,7 @@ this.isRecharging = false; // Vérifie si on recharge
         this.load.audio("burgerDeath", "src/assets/Mort.mp3"); 
         this.load.audio("Reload", "src/assets/Reload.mp3");
         this.load.audio("DegatPlayer", "src/assets/DegatPlayer.mp3");
+        this.load.audio("TPportail", "src/assets/TPportail.mp3");
     }
 
   create() {
@@ -223,6 +224,7 @@ this.reloadBar.setVisible(false);
         if (this.burgers.countActive(true) === 0) {
             // Sauvegarde de la progression avant de commencer un autre niveau
             localStorage.setItem("niveau5Complete", "true");
+            this.sound.play("TPportail", { volume: 0.1 } );
             this.scene.start("Hub");
         }
     }

@@ -16,6 +16,7 @@ export default class Hub extends Phaser.Scene {
         this.load.spritesheet("portail", "src/assets/portal4.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image("bullet", "src/assets/balles.png"); 
         this.load.audio("Ambiance", "src/assets/Ambiance.mp3"); 
+        this.load.audio("TPportail", "src/assets/TPportail.mp3");
 
     }
 
@@ -147,26 +148,32 @@ export default class Hub extends Phaser.Scene {
 
     // Fonctions de changement de niveau
     onPortal1Overlap(player, portal) {
+        this.sound.play("TPportail", { volume: 0.1 } );
         this.scene.start("Niveau1");
     }
 
     onPortal2Overlap(player, portal) {
+        this.sound.play("TPportail", { volume: 0.1 } );
         this.scene.start("Niveau2");
     }
 
     onPortal3Overlap(player, portal) {
+        this.sound.play("TPportail", { volume: 0.1 } );
         this.scene.start("Niveau3");
     }
 
     onPortal4Overlap(player, portal) {
+        this.sound.play("TPportail", { volume: 0.1 } );
         this.scene.start("Niveau4");
     }
 
     onPortal5Overlap(player, portal) {
+        this.sound.play("TPportail", { volume: 0.1 } );
         this.scene.start("Niveau5");
     }
 
     onPortalBossOverlap(player, portal) {
+        this.sound.play("TPportail", { volume: 0.1 } );
         this.scene.start("NiveauBoss");
     }
 
