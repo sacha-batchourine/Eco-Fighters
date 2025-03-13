@@ -21,7 +21,7 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
         this.load.image("Wall", "src/assets/TX Tileset Wall.png");
         this.load.image("Objet", "src/assets/TX Props.png");
         this.load.image("Plant", "src/assets/TX PLant.png");
-        this.load.image("Ombres", "src/assets/TX Shadow PLant.png");
+        this.load.image("Ombres", "src/assets/TX Shadow Plant.png");
         this.load.spritesheet("img_perso", "src/assets/banane.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet("burger", "src/assets/burger_spritesheet.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image("heart", "src/assets/hearth.png");
@@ -53,9 +53,9 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
         const tilesetOmbre = map.addTilesetImage("Shadow Plant", "Ombres");
 
         map.createLayer("Grass", [tilesetGrass]);
-        const mursLayer = map.createLayer("Mur", [tilesetMur, tilesetPlant, tilesetProps]);
         map.createLayer("Chemin", [tilesetGrass, tilesetProps]);
         map.createLayer("Ombre", [tilesetOmbre]);
+        const mursLayer = map.createLayer("Mur", [tilesetMur, tilesetPlant, tilesetProps]);
         map.createLayer("Ecriture", [tilesetProps]);
 
         

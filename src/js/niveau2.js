@@ -56,9 +56,10 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
         const tilesetOmbre = map.addTilesetImage("Ombre", "Ombres");
 
         map.createLayer("Grass", [tilesetGrass]);
-        const mursLayer = map.createLayer("Mur", [tilesetMur, tilesetPlant, tilesetProps]);
+        
         map.createLayer("Chemin", [tilesetGrass, tilesetProps]);
         map.createLayer("Ombre", [tilesetOmbre]);
+        const mursLayer = map.createLayer("Mur", [tilesetMur, tilesetPlant, tilesetProps]);
         map.createLayer("Ecriture", [tilesetProps]);
 
 
