@@ -64,6 +64,7 @@ export default class Hub extends Phaser.Scene {
         const niveau3Terminé = localStorage.getItem("niveau3Complete") === "true";
         const niveau4Terminé = localStorage.getItem("niveau4Complete") === "true";
         const niveau5Terminé = localStorage.getItem("niveau5Complete") === "true";
+        const niveauBossTerminé = localStorage.getItem("niveauBossComplete") === "true";
 
         // Portail pour Niveau 1
         this.portal1 = this.physics.add.sprite(432, 175, "portail").setImmovable(true);
@@ -116,7 +117,7 @@ export default class Hub extends Phaser.Scene {
         }
 
         // ✅ Portail pour Fin (se débloque après Niveau Boss)
-        this.portalFin = this.physics.add.sprite(200, 335, "portail").setImmovable(true);
+        this.portalFin = this.physics.add.sprite(145, 335, "portail").setImmovable(true);
         this.portalFin.setVisible(niveau5Terminé);
         this.portalFin.body.enable = niveau5Terminé;
         if (niveau5Terminé) {
@@ -204,3 +205,14 @@ export default class Hub extends Phaser.Scene {
         }
     }
 }
+
+// Ajoutez l'événement beforeunload pour effacer les données du localStorage avant de quitter
+window.addEventListener("beforeunload", () => {
+    // Supprimer les données du localStorage lorsque l'utilisateur quitte la page
+    localStorage.removeItem("niveau1Complete");
+    localStorage.removeItem("niveau2Complete");
+    localStorage.removeItem("niveau3Complete");
+    localStorage.removeItem("niveau4Complete");
+    localStorage.removeItem("niveau5Complete");
+    localStorage.removeItem("niveauBossComplete");
+});
