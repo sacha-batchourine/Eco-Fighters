@@ -11,6 +11,7 @@ export default class Niveau1 extends Phaser.Scene {
         // Initialisation des balles
 this.maxBullets = 15;  // Nombre max de balles avant recharge
 this.currentBullets = this.maxBullets; // Balles actuelles
+this.bulletCountText = null; // Compteur de balles
 this.isRecharging = false; // Vérifie si on recharge
     }
 
@@ -74,6 +75,9 @@ this.isRecharging = false; // Vérifie si on recharge
     this.reloadBar = this.add.graphics();
     this.reloadBar.setVisible(false);
 
+    // Initialiser le texte du compteur de balles
+    this.bulletCountText = this.add.text(20, 50, `Balles restantes : ${this.currentBullets}`, { fontSize: '16px', fill: '#fff' });
+        
 
 
 
@@ -268,83 +272,91 @@ this.isRecharging = false; // Vérifie si on recharge
         this.drawHealthBar();
     }
 
+    
     tirer() {
         if (this.isRecharging || this.currentBullets <= 0) return; // Impossible de tirer si on recharge ou plus de balles
-        
+
         // Crée la balle à la position du joueur
         let bullet = this.bullets.create(this.player.x, this.player.y, "bullet");
         bullet.setScale(0.5);
-    
+
         // Ajuster la position de la souris par rapport à la caméra
         const mouseX = this.input.mousePointer.x + this.cameras.main.scrollX;
         const mouseY = this.input.mousePointer.y + this.cameras.main.scrollY;
-    
+
         // Calculer l'angle entre la position du joueur et la souris
         const angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, mouseX, mouseY);
-    
+
         // Calculer la vitesse de la balle en fonction de l'angle
         const speed = 300;
         const velocityX = Math.cos(angle) * speed;
         const velocityY = Math.sin(angle) * speed;
-    
+
         // Appliquer la direction à la balle
         bullet.setVelocity(velocityX, velocityY);
-    
+
         // Ajuster l'orientation de la balle selon l'angle
         bullet.rotation = angle;
-    
+
         // Détruire la balle après un délai
         this.time.addEvent({
             delay: 2000,  // La balle disparaît après 2 secondes
             callback: () => bullet.destroy(),
             loop: false
         });
-    
+
         // Réduire le nombre de balles disponibles
         this.currentBullets--;
-    
+
+        // Mettre à jour le texte du compteur de balles
+        this.bulletCountText.setText(`Balles restantes : ${this.currentBullets}`);
+
         console.log(`Balles restantes : ${this.currentBullets}`);
-    
+
         // Jouer le son BouleFeu
-        this.sound.play("BouleFeu", { volume: 0.05});
+        this.sound.play("BouleFeu", { volume: 0.05 });
     }
+
     recharger() {
         if (this.isRecharging || this.currentBullets === this.maxBullets) return; // Si déjà plein ou en recharge, on ignore
-    
+
         this.isRecharging = true;
         console.log("Rechargement en cours...");
-    
+
         // Afficher la barre de recharge
         this.reloadBar.setVisible(true);
         this.reloadBar.clear();
         this.reloadBar.fillStyle(0xffcc00, 1); // Couleur jaune au début
         this.reloadBar.fillRect(this.player.x - 20, this.player.y - 40, 40, 5); // Position au-dessus du joueur
-    
+
         let rechargeTime = 1000; // 2 secondes
         let updateInterval = 100;
         let elapsedTime = 0;
-    
+
         let reloadInterval = this.time.addEvent({
             delay: updateInterval,
             callback: () => {
                 elapsedTime += updateInterval;
                 let progress = elapsedTime / rechargeTime;
-    
+
                 // Mise à jour de la barre de recharge
                 this.reloadBar.clear();
                 this.reloadBar.fillStyle(0x00ff00, 1); // Devient verte en progressant
                 this.reloadBar.fillRect(this.player.x - 20, this.player.y - 40, 40 * progress, 5);
-    
+
                 if (elapsedTime >= rechargeTime) {
                     this.isRecharging = false;
                     this.currentBullets = this.maxBullets; // Recharger toutes les balles
                     console.log("Recharge terminée !");
                     this.reloadBar.setVisible(false); // Cacher la barre
+                    this.bulletCountText.setText(`Balles restantes : ${this.currentBullets}`); // Mettre à jour le compteur
                     reloadInterval.remove(); // Stopper l'intervalle
                 }
             },
             loop: true
         });
+    
+
     }
 
     hitPlayer(player, burger) {
