@@ -15,6 +15,7 @@ export default class Hub extends Phaser.Scene {
         this.load.spritesheet("img_perso", "src/assets/banane.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet("portail", "src/assets/portal4.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image("bullet", "src/assets/balles.png"); 
+        this.load.audio("Ambiance", "src/assets/Ambiance.mp3"); // Assure-toi que le chemin est correct
     }
 
     create() {
@@ -134,6 +135,13 @@ export default class Hub extends Phaser.Scene {
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setZoom(1.1);
         this.cameras.main.setBounds(-50, -25, map.widthInPixels + 50, map.heightInPixels);
+
+        //MUSIC
+        if (this.music) {
+            this.music.stop(); // Arrêter la musique actuelle
+        }
+        this.music = this.sound.add("Ambiance", { loop: true, volume: 0.02 });
+        this.music.play();
     }
 
     // Fonctions de changement de niveau

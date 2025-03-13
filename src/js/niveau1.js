@@ -20,9 +20,19 @@ export default class Niveau1 extends Phaser.Scene {
         this.load.image("heart", "src/assets/hearth.png");
         this.load.image("portail", "src/assets/portail.png");
         this.load.image("bullet", "src/assets/bullet.png"); // Image du projectile
+        this.load.audio("Ambiance", "src/assets/Ambiance.mp3");
+        this.load.audio("BouleFeu", "src/assets/BouleFeu.mp3"); 
     }
 
     create() {
+        //gerer la musique 
+        if (!this.sound.get("Ambiance")) { 
+            this.music = this.sound.add("Ambiance", { loop: true, volume: 0.02 });
+            this.music.play();
+        } else {
+            this.music = this.sound.get("Ambiance");
+        }
+
         // Gerer la map 
         const map = this.make.tilemap({ key: "mapN1" });
         const tilesetGrass = map.addTilesetImage("Grass", "Grass");
@@ -279,6 +289,9 @@ export default class Niveau1 extends Phaser.Scene {
             this.ballesTirees = 0; // Réinitialiser le compteur de balles
             this.recharger(); // Appeler la fonction de recharge
         }
+    
+        // Jouer le son BouleFeu
+        this.sound.play("BouleFeu", { volume: 0.05});
     }
     recharger() {
         if (this.isRecharging) return; // Si déjà en train de recharger, ne rien faire
