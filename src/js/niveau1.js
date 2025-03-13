@@ -383,6 +383,10 @@ this.burgersToKill = this.maxBurgers; // Compteur de burgers à tuer
         this.currentHealth -= 1;
         this.sound.play("DegatPlayer", { volume: 0.1 });
         burger.destroy();
+        // Décrémenter le compteur de burgers restants lorsque le joueur est touché
+    this.burgersToKill--; // Décrémente le compteur de burgers à tuer
+
+    this.updateBurgerCountText(); // Met à jour le texte du compteur
     
         if (this.currentHealth <= 0) {
             console.log("Game Over");
