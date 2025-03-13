@@ -3,6 +3,15 @@ export default class Hub extends Phaser.Scene {
         super({ key: "Hub" });
         this.maxHealth = 5;
         this.currentHealth = this.maxHealth;
+        this.dialogues = [
+            "Salut, aventurier ! Ta mission commence ici. Ensemble, nous allons éliminer cette menace grasse qui pèse sur notre monde.",
+            "Bravo, tu as terminé le premier défi ! Ces burgers sont à peine une mise en bouche. Prépare-toi à en découdre avec plus de ces créatures !",
+            "Bien joué ! Chaque burger que tu vaincs nous redonne espoir. Continue ainsi, et montre-leur de quoi tu es capable !",
+            "Superbe travail ! Tu es notre héros. Continue de te battre, et n’oublie pas que nous sommes tous derrière toi !",
+            "Tu es si proche du but ! Les plus gros burgers t'attendent. Rappelle-toi, chaque pas compte dans cette aventure !",
+            "Attention, le boss approche ! C'est le moment de montrer ta vraie force. Rappelle-toi, tu as déjà accompli tant de choses !",
+            "Félicitations, héros ! Grâce à toi, nous sommes enfin libres. Ton courage et ta détermination resteront gravés dans nos cœurs à jamais."
+        ];
     }
 
     preload() {
@@ -17,6 +26,7 @@ export default class Hub extends Phaser.Scene {
         this.load.image("bullet", "src/assets/balles.png"); 
         this.load.audio("Ambiance", "src/assets/Ambiance.mp3"); 
         this.load.audio("TPportail", "src/assets/TPportail.mp3");
+        this.load.spritesheet("pnj1", "src/assets/pnj1.png", { frameWidth: 48, frameHeight: 48 });
     }
 
     create() {
@@ -59,8 +69,18 @@ export default class Hub extends Phaser.Scene {
         this.keyDown = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S); // S pour bas
         this.keyRight = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D); // D pour droite
         this.keyShift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+        this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
         
-        
+// PNJ
+this.pnj = this.physics.add.sprite(240, 260, "pnj1").setScale(1).setImmovable(true);
+this.physics.add.overlap(this.player, this.pnj, this.onPnjOverlap, null, this);
+// Dans la méthode create
+this.dialogueBox = this.add.text(400, 300, "", { 
+    font: "16px Arial", 
+    fill: "#ffffff", 
+    wordWrap: { width: 300, useAdvancedWrap: true } // Ajustez la largeur selon vos besoins
+}).setOrigin(0.5).setVisible(false);
+
 
         // Collisions
         this.physics.add.collider(this.player, murLayer);
@@ -182,6 +202,28 @@ export default class Hub extends Phaser.Scene {
         console.log("Portail Fin activé");  // Vérification dans la console
         this.scene.start("Fin");
     }
+    onPnjOverlap(player, pnj) {
+        if (Phaser.Input.Keyboard.JustDown(this.keyEnter)) { // Vérifie si Entrée est pressée
+            const niveauxTermines = [
+                localStorage.getItem("niveau1Complete") === "true",
+                localStorage.getItem("niveau2Complete") === "true",
+                localStorage.getItem("niveau3Complete") === "true",
+                localStorage.getItem("niveau4Complete") === "true",
+                localStorage.getItem("niveau5Complete") === "true",
+                localStorage.getItem("niveauBossComplete") === "true"
+            ];
+    
+            let messageIndex = niveauxTermines.filter(Boolean).length; // Compte le nombre de niveaux terminés
+            if (messageIndex < this.dialogues.length) {
+                this.showDialogue(messageIndex); // Affiche le message correspondant
+            }
+        }
+    }
+    
+    showDialogue(index) {
+        this.dialogueBox.setText(this.dialogues[index]).setVisible(true);
+        this.time.delayedCall(2000, () => { this.dialogueBox.setVisible(false); }); // Masque le dialogue après 2 secondes
+    }
 
     update() {
         let baseSpeed = 160;
@@ -226,6 +268,17 @@ export default class Hub extends Phaser.Scene {
         if (!movingX && !movingY) {
             this.player.anims.play("stand", true);
         }
+        // Ajoutez l'événement beforeunload pour effacer les données du localStorage avant de quitter
+window.addEventListener("beforeunload", () => {
+    // Supprimer les données du localStorage lorsque l'utilisateur quitte la page
+    localStorage.removeItem("niveau1Complete");
+    localStorage.removeItem("niveau2Complete");
+    localStorage.removeItem("niveau3Complete");
+    localStorage.removeItem("niveau4Complete");
+    localStorage.removeItem("niveau5Complete");
+    localStorage.removeItem("niveauBossComplete");
+});
 }
+
 }
 
