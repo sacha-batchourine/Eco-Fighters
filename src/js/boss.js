@@ -65,8 +65,11 @@ export default class NiveauBoss extends Phaser.Scene {
         
         //TOUCHES
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); 
+        this.keyUp = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);   // Z pour haut
+        this.keyLeft = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q); // Q pour gauche
+        this.keyDown = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S); // S pour bas
+        this.keyRight = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D); // D pour droite
+        this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); // Touche A pour tirer
 
         //COLISIONS
         mursLayer.setCollisionByProperty({ estSolide: true });
@@ -176,15 +179,15 @@ export default class NiveauBoss extends Phaser.Scene {
         
         let movingX = false;
         let movingY = false;
-        
-        // Mouvement horizontal
-        if (this.cursors.left.isDown) {
+
+        // Déplacements avec Z, Q, S, D
+        if (this.keyLeft.isDown) {
             this.player.setVelocityX(-speed);
             this.player.anims.play("walk_right", true);
             this.player.setFlipX(true);
             this.lastDirection = "left";
             movingX = true;
-        } else if (this.cursors.right.isDown) {
+        } else if (this.keyRight.isDown) {
             this.player.setVelocityX(speed);
             this.player.anims.play("walk_right", true);
             this.player.setFlipX(false);
@@ -193,18 +196,17 @@ export default class NiveauBoss extends Phaser.Scene {
         } else {
             this.player.setVelocityX(0);
         }
-        
-        // Mouvement vertical
-        if (this.cursors.up.isDown) {
+
+        if (this.keyUp.isDown) {
             this.player.setVelocityY(-speed);
             movingY = true;
-        } else if (this.cursors.down.isDown) {
+        } else if (this.keyDown.isDown) {
             this.player.setVelocityY(speed);
             movingY = true;
         } else {
             this.player.setVelocityY(0);
         }
-        
+
         // Gestion des animations pour le mouvement vertical
         if (movingY && !movingX) {
             if (this.lastDirection === "right") {
@@ -215,13 +217,13 @@ export default class NiveauBoss extends Phaser.Scene {
                 this.player.setFlipX(true);
             }
         }
-        
+
         // Si on bouge en diagonale, on ajuste la vitesse
         if (movingX && movingY) {
             this.player.setVelocityX(this.player.body.velocity.x * diagonalSpeed / speed);
             this.player.setVelocityY(this.player.body.velocity.y * diagonalSpeed / speed);
         }
-        
+
         // Si le joueur ne bouge pas, animation d'arrêt
         if (!movingX && !movingY) {
             this.player.anims.play("stand", true);
