@@ -38,10 +38,9 @@ export default class Regles extends Phaser.Scene {
             "- Tirer / Viser : Souris\n" +
             "- Recharger : R\n" +
             "- Accélérer : Shift\n" +
-            "- Interagir avec un PNJ : Entrée\n\n" +
+            "\n" + // Adding a new line for better formatting
             "🎯 Objectif :\n" +
-            "- Élimine tous les burgers 🍔 pour passer au niveau suivant !\n" +
-            "- Interagis avec les PNJ pour obtenir des informations utiles.";
+            "- Élimine tous les burgers 🍔 pour passer au niveau suivant !";
 
         let reglesTexte = this.add.text(largeur / 2, hauteur / 2, texte, {
             font: "28px Arial",  
