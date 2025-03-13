@@ -25,6 +25,7 @@ export default class Niveau2 extends Phaser.Scene {
         this.load.image("bullet", "src/assets/bullet.png"); // Ajout de l'image de la balle
         this.load.audio("Ambiance", "src/assets/Ambiance.mp3");
         this.load.audio("BouleFeu", "src/assets/BouleFeu.mp3"); 
+        this.load.audio("burgerDeath", "src/assets/Mort.mp3");
     }
 
     create() {
@@ -338,6 +339,7 @@ export default class Niveau2 extends Phaser.Scene {
     }
     
     hitBurger(bullet, burger) {
+        this.sound.play("burgerDeath", { volume: 0.03 });
         bullet.destroy();
         burger.destroy();
     }

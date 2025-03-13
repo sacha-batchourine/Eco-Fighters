@@ -24,6 +24,7 @@ export default class NiveauBoss extends Phaser.Scene {
         this.load.image("bullet", "src/assets/bullet.png");
         this.load.audio("BossFight", "src/assets/BossFight.mp3");
         this.load.audio("BouleFeu", "src/assets/BouleFeu.mp3"); 
+        this.load.audio("burgerDeath", "src/assets/Mort.mp3");
     }
 
   create() {
@@ -400,6 +401,7 @@ export default class NiveauBoss extends Phaser.Scene {
     }
     
     hitBurger(bullet, burger) {
+        this.sound.play("burgerDeath", { volume: 0.03 });
         bullet.destroy();
         burger.destroy();
     }
