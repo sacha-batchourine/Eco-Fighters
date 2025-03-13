@@ -9,6 +9,7 @@ export default class Menu extends Phaser.Scene {
         this.load.image("imageBoutonPlay", "src/assets/boutonstart.png");
         this.load.image("parchemin", "src/assets/parchemin.png");  // Charger l'image du parchemin
         this.load.image("imageBoutonOptions", "src/assets/options.png");  // Charger l'image du bouton "Options"
+        this.load.image("imageBoutonSettings", "src/assets/settings.png"); // Bouton "Settings"
     }
 
     create() {
@@ -79,5 +80,19 @@ export default class Menu extends Phaser.Scene {
         boutonOptions.on("pointerup", () => {
             this.scene.start("Synop");  // Changer de scène pour Synop
         });
+        
+        // Bouton Settings
+        let boutonSettings = this.add.image(largeur / 2, hauteur * 0.85, "imageBoutonSettings").setDepth(1)
+        boutonSettings.setInteractive();
+
+        boutonSettings.on("pointerover", () => {
+            boutonSettings.setScale(1.1)
+            });
+        boutonSettings.on("pointerout", () => {
+            boutonSettings.setScale(1);
+        });
+        boutonSettings.on("pointerup", () => {
+            this.scene.start("Regles"); // ✅ Vérifie que ça correspond bien à la clé dans Regles.js
+        });
     }
-}
+    }

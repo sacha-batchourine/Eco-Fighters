@@ -8,6 +8,7 @@ import Niveau4 from "./js/niveau4.js";
 import Niveau5 from "./js/niveau5.js";
 import NiveauBoss from "./js/boss.js";
 import Fin from "./js/fin.js";
+import Regles from "./js/regles.js";
 
 const config = {
     type: Phaser.AUTO,
@@ -24,7 +25,7 @@ const config = {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
-    scene: [Menu, Hub, Niveau1, Niveau2, Niveau3, Niveau4, Niveau5, NiveauBoss, Synop, Fin]  // Le jeu commence avec la scène "Menu"
+    scene: [Menu, Hub, Niveau1, Niveau2, Niveau3, Niveau4, Niveau5, NiveauBoss, Synop, Fin, Regles]  // Le jeu commence avec la scène "Menu"
 };
 
 
