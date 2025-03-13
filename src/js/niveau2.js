@@ -84,18 +84,18 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
         this.burgers = this.physics.add.group();
         this.bullets = this.physics.add.group();
         // Ajouter une barre de recharge au-dessus du joueur
-        this.reloadBar = this.add.graphics();
-        this.reloadBar.setVisible(false);
+    this.reloadBar = this.add.graphics();
+    this.reloadBar.setVisible(false);
 
        // Initialiser le texte du compteur de balles
-        this.bulletCountText = this.add.text(20, 50, `Balles restantes : ${this.currentBullets}`, { fontSize: '16px', fill: '#fff' });
-        this.bulletCountText.setScrollFactor(0);
-        this.bulletCountText.setPosition(140, 120);
-        // Initialiser le texte du compteur de burgers
-        this.burgerCountText = this.add.text(20, 70, `Burgers à tuer : ${this.burgersToKill}`, { fontSize: '16px', fill: '#fff' });
-        this.burgerCountText.setScrollFactor(0);
-        this.burgerCountText.setPosition(140, 140);
-        
+    this.bulletCountText = this.add.text(20, 50, `Balles restantes : ${this.currentBullets}`, { fontSize: '16px', fill: '#fff' });
+    this.bulletCountText.setScrollFactor(0);
+    this.bulletCountText.setPosition(140, 120);
+    // Initialiser le texte du compteur de burgers
+    this.burgerCountText = this.add.text(20, 70, `Burgers à tuer : ${this.burgersToKill}`, { fontSize: '16px', fill: '#fff' });
+    this.burgerCountText.setScrollFactor(0);
+    this.burgerCountText.setPosition(140, 140);
+
 
 
 
@@ -213,10 +213,11 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
         let speedMultiplier = this.keyShift.isDown ? 1.6 : 1; // 1.5x plus rapide avec Shift
         let speed = baseSpeed * speedMultiplier;
         let diagonalSpeed = Math.sqrt(speed * speed / 2);
-    
+        
         let movingX = false;
         let movingY = false;
-    
+
+        // Déplacements avec Z, Q, S, D
         if (this.keyLeft.isDown) {
             this.player.setVelocityX(-speed);
             this.player.anims.play("walk_right", true);
@@ -232,7 +233,7 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
         } else {
             this.player.setVelocityX(0);
         }
-    
+
         if (this.keyUp.isDown) {
             this.player.setVelocityY(-speed);
             movingY = true;
@@ -242,12 +243,13 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
         } else {
             this.player.setVelocityY(0);
         }
-    
+
         if (movingX && movingY) {
             this.player.setVelocityX(this.player.body.velocity.x * diagonalSpeed / speed);
             this.player.setVelocityY(this.player.body.velocity.y * diagonalSpeed / speed);
         }
-    
+
+        // Si le joueur ne bouge pas, animation d'arrêt
         if (!movingX && !movingY) {
             this.player.anims.play("stand", true);
         }
@@ -390,10 +392,10 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
             this.updateBurgerCountText(); // Mettre à jour le texte du compteur de burgers
     
             this.time.delayedCall(400, () => { 
-                this.currentHealth = this.maxHealth;
-                this.burgers.clear(true, true); // Supprime tous les burgers
-                this.burgersSpawned = 0; // Remet à zéro le compteur de burgers
-            
+            this.currentHealth = this.maxHealth;
+            this.burgers.clear(true, true); // Supprime tous les burgers
+            this.burgersSpawned = 0; // Remet à zéro le compteur de burgers
+    
                 // Redémarre la scène après l'animation
                 this.scene.restart();
             });
@@ -411,5 +413,11 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
 
     updateBurgerCountText() {
         this.burgerCountText.setText(`Burgers à tuer : ${this.burgersToKill}`);
+    }
+
+    updateHealth() {
+        this.healthIcons.forEach((heart, index) => {
+            heart.setVisible(index < this.currentHealth);
+        });
     }
 }
