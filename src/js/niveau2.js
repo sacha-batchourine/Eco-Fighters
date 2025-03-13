@@ -110,7 +110,7 @@ export default class Niveau2 extends Phaser.Scene {
                     let x = Phaser.Math.Between(50, mapWidth - 50);
                     let y = Phaser.Math.Between(50, mapHeight - 50);
                     let burger = this.burgers.create(x, y, "burger");
-                    burger.setCollideWorldBounds(true);
+                    
                     burger.setData('speed', 50);
                     this.burgersSpawned++;
                     

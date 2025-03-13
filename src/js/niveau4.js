@@ -108,7 +108,7 @@ export default class Niveau4 extends Phaser.Scene {
                     let y = Phaser.Math.Between(50, mapHeight - 50);
                     let burger = this.burgers.create(x, y, "burger");
     
-                    burger.setCollideWorldBounds(true);
+                    
                     burger.setData('speed', 100);  // Augmentation de la vitesse des burgers (plus rapide)
                     this.burgersSpawned++;
     

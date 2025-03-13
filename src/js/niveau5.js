@@ -114,7 +114,7 @@ export default class Niveau5 extends Phaser.Scene {
                     let x = Phaser.Math.Between(50, mapWidth - 50);
                     let y = Phaser.Math.Between(50, mapHeight - 50);
                     let burger = this.burgers.create(x, y, "burger");
-                    burger.setCollideWorldBounds(true);
+                    
         
                     // Choisir un type de burger
                     let burgerType = Phaser.Math.Between(1, 3); // 1 = petit, 2 = moyen, 3 = gros
