@@ -64,7 +64,7 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
 
         mursLayer.setCollisionByProperty({ collide: true });
         this.physics.add.collider(this.player, mursLayer);
-
+        
         this.anims.create({
             key: "stand", frames: this.anims.generateFrameNumbers("img_perso", { start: 30, end: 32 }), frameRate: 10, repeat: -1
         });
@@ -137,6 +137,10 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
         this.burgers = this.physics.add.group();
         this.bullets = this.physics.add.group();
 
+        this.physics.add.collider(this.bullets, this.burgers, this.hitBurger, null, this);
+        this.physics.add.collider(this.bullets, mursLayer, (bullet) => bullet.destroy());
+        
+
         this.time.addEvent({
             delay: 2000,
             callback: () => {
@@ -148,7 +152,7 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
                         x = Phaser.Math.Between(50, mapWidth - 50);
                         y = Phaser.Math.Between(50, mapHeight - 50);
                     } while (Phaser.Math.Distance.Between(x, y, this.player.x, this.player.y) < 300);
-                    
+
                     let burger = this.burgers.create(x, y, "burger");
                     burger.setCollideWorldBounds(true);
                     burger.setData('speed', 50);

@@ -152,6 +152,7 @@ this.burgerCountText.setPosition(140, 140);
                         y = Phaser.Math.Between(50, mapHeight - 50);
                     } while (Phaser.Math.Distance.Between(x, y, this.player.x, this.player.y) < 300);
                     
+                    let burger = this.burgers.create(x, y, "burger");
                     this.burgersSpawned++;
         
                     // Probabilité ajustée
