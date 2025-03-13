@@ -12,6 +12,7 @@ this.currentBullets = this.maxBullets; // Balles actuelles
 this.bulletCountText = null; // Compteur de balles
 this.isRecharging = false; // Vérifie si on recharge
 this.burgersToKill = this.maxBurgers; // Compteur de burgers à tuer
+this.isShooting = false;  // Indicateur pour éviter un tir continu
     }
 
     preload() {
@@ -228,6 +229,20 @@ this.burgerCountText.setPosition(140, 140);
        }
        this.music = this.sound.add("BossFight", { loop: true, volume: 0.05 });
        this.music.play();
+
+       //TIR AVEC SOURIS 
+        // Gestion du tir avec le clic de souris (prévenir le tir continu)
+        this.input.on('pointerdown', (pointer) => {
+            if (!this.isShooting && pointer.leftButtonDown()) {
+                this.isShooting = true;
+                this.tirer();  // Tire une balle
+            }
+        });
+
+        // Réactiver le tir une fois que le clic est relâché
+        this.input.on('pointerup', () => {
+            this.isShooting = false;  // Permet de tirer à nouveau au prochain clic
+        });
   }
       
        
@@ -319,9 +334,7 @@ this.burgerCountText.setPosition(140, 140);
             this.tirer();
         }
 
-        if (Phaser.Input.Keyboard.JustDown(this.shiftKey)) {
-            this.tirer();
-        }
+        
 
 
         this.burgers.children.iterate(burger => {

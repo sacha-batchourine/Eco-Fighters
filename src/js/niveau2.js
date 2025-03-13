@@ -13,6 +13,7 @@ this.currentBullets = this.maxBullets; // Balles actuelles
 this.bulletCountText = null; // Compteur de balles
 this.isRecharging = false; // Vérifie si on recharge
 this.burgersToKill = this.maxBurgers; // Compteur de burgers à tuer
+this.isShooting = false;  // Indicateur pour éviter un tir continu
         
         
     }
@@ -180,6 +181,20 @@ this.burgersToKill = this.maxBurgers; // Compteur de burgers à tuer
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setZoom(1.1);
         this.cameras.main.setBounds(-50, -25, map.widthInPixels + 50, map.heightInPixels);
+
+        //TIR AVEC SOURIS 
+        // Gestion du tir avec le clic de souris (prévenir le tir continu)
+        this.input.on('pointerdown', (pointer) => {
+            if (!this.isShooting && pointer.leftButtonDown()) {
+                this.isShooting = true;
+                this.tirer();  // Tire une balle
+            }
+        });
+
+        // Réactiver le tir une fois que le clic est relâché
+        this.input.on('pointerup', () => {
+            this.isShooting = false;  // Permet de tirer à nouveau au prochain clic
+        });
     }
 
     drawHealthBar() {
@@ -252,9 +267,7 @@ this.burgersToKill = this.maxBurgers; // Compteur de burgers à tuer
         if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
             this.tirer();
         }
-        if (Phaser.Input.Keyboard.JustDown(this.shiftKey)) {
-            this.tirer();
-        }
+       
 
         this.burgers.children.iterate(burger => {
             const angle = Phaser.Math.Angle.Between(burger.x, burger.y, this.player.x, this.player.y);

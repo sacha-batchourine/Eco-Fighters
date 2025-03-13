@@ -14,6 +14,8 @@ this.currentBullets = this.maxBullets; // Balles actuelles
 this.bulletCountText = null; // Compteur de balles
 this.isRecharging = false; // Vérifie si on recharge
 this.burgersToKill = this.maxBurgers; // Compteur de burgers à tuer
+this.isShooting = false;  // Indicateur pour éviter un tir continu
+
     }
 
     preload() {
@@ -48,11 +50,12 @@ this.burgersToKill = this.maxBurgers; // Compteur de burgers à tuer
         const tilesetGrass = map.addTilesetImage("Grass", "Grass");
         const tilesetMur = map.addTilesetImage("Wall", "Wall");
         const tilesetProps = map.addTilesetImage("Props", "Objet");
+        const tilesetPlant = map.addTilesetImage("Plant", "Plant");
 
         map.createLayer("Grass", [tilesetGrass]);
         const mursLayer = map.createLayer("Mur", [tilesetMur]);
-        map.createLayer("Chemin", [tilesetGrass]);
-        map.createLayer("Portail", [tilesetProps]);
+        map.createLayer("Chemin", [tilesetGrass, tilesetProps]);
+        map.createLayer("Portail", [tilesetProps, tilesetPlant]);
 
         // Gerer le personnage
         this.player = this.physics.add.sprite(145, 325, "img_perso");
@@ -98,7 +101,6 @@ this.burgersToKill = this.maxBurgers; // Compteur de burgers à tuer
         this.keyDown = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S); // S pour bas
         this.keyRight = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D); // D pour droite
         this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); // Touche A pour tirer
-        this.shiftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);  // Ajout de la touche "R" pour recharger
         this.keyReload = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
     
         
@@ -173,6 +175,21 @@ this.burgersToKill = this.maxBurgers; // Compteur de burgers à tuer
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setZoom(1.1);
         this.cameras.main.setBounds(-50, -25, mapWidth + 50, mapHeight);
+
+
+        //TIR AVEC SOURIS 
+        // Gestion du tir avec le clic de souris (prévenir le tir continu)
+        this.input.on('pointerdown', (pointer) => {
+            if (!this.isShooting && pointer.leftButtonDown()) {
+                this.isShooting = true;
+                this.tirer();  // Tire une balle
+            }
+        });
+
+        // Réactiver le tir une fois que le clic est relâché
+        this.input.on('pointerup', () => {
+            this.isShooting = false;  // Permet de tirer à nouveau au prochain clic
+        });
     }
 
     drawHealthBar() {
@@ -256,9 +273,6 @@ this.burgersToKill = this.maxBurgers; // Compteur de burgers à tuer
         }
 
        
-        if (Phaser.Input.Keyboard.JustDown(this.shiftKey)) {
-            this.tirer();
-        }
 
         // Gérer les burgers, etc. (reste inchangé)
         this.burgers.children.iterate(burger => {
@@ -389,6 +403,7 @@ this.burgersToKill = this.maxBurgers; // Compteur de burgers à tuer
         this.updateBurgerCountText(); // Met à jour le texte du compteur
     
         if (this.currentHealth <= 0) {
+
              // Réinitialiser le compteur de burgers à tuer à zéro
             this.burgersToKill = this.maxBurgers;
             this.updateBurgerCountText(); // Mettre à jour le texte du compteur de burgers
