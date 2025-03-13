@@ -101,48 +101,45 @@ export default class Niveau4 extends Phaser.Scene {
         let mapHeight = map.heightInPixels;
 
         this.time.addEvent({
-            delay: 2000,
+            delay: 2000,  // Toujours spawn tous les 2 secondes
             callback: () => {
                 if (this.burgersSpawned < this.maxBurgers) {
                     let x = Phaser.Math.Between(50, mapWidth - 50);
                     let y = Phaser.Math.Between(50, mapHeight - 50);
-                    let burger;
-
-                    // Spawn des 5 gros burgers
-                    if (this.bigBurgersSpawned < 5) {
-                        burger = this.burgers.create(x, y, "burger");
-                        burger.setScale(2); // Agrandir les burgers (taille normale x2)
-                        burger.setData('health',5); // Gros burger a 2 fois la vie
-                        burger.setData('damage', 20); // Gros burger inflige 2 fois plus de dégats
-                        burger.setData('speed', 40); // Vitesse plus lente pour les gros burgers
-                        this.bigBurgersSpawned++;
-                    }
-                    // Spawn du très gros burger (le dernier)
-                    else if (!this.giantBurgerSpawned) {
-                        burger = this.burgers.create(x, y, "burger");
-                        burger.setScale(3); // Très gros burger (taille normale x3)
-                        burger.setData('health', 10); // Très gros burger a 3 fois la vie
-                        burger.setData('damage', 30); // Très gros burger inflige 3 fois plus de dégâts
-                        burger.setData('speed', 30); // Très lent pour le gros burger
-                        this.giantBurgerSpawned = true;
-                    }
-                    // Spawn des burgers normaux
-                    else {
-                        burger = this.burgers.create(x, y, "burger");
-                        burger.setData('health', 3); // Burger normal avec la vie de base
-                        burger.setData('damage', 10); // Burger normal avec les dégâts de base
-                        burger.setData('speed', 50); // Burger normal
-                    }
-
+                    let burger = this.burgers.create(x, y, "burger");
+    
                     burger.setCollideWorldBounds(true);
+                    burger.setData('speed', 100);  // Augmentation de la vitesse des burgers (plus rapide)
                     this.burgersSpawned++;
-
+    
+                    // Décider aléatoirement si ce burger est "gros"
+                    const isBigBurger = Phaser.Math.Between(0, 4) === 0;  // 20% de chance d'être gros
+    
+                    if (isBigBurger) {
+                        burger.setScale(2);  // Le burger devient plus grand
+                        burger.setData('health', 3);  // Plus de vie
+                        burger.setData('damage', 2);  // Inflige plus de dégâts
+                        burger.setTint(0xff0000);  // Changer la couleur du gros burger pour qu'il soit visible
+                    } else {
+                        burger.setData('health', 1);  // Vie normale
+                        burger.setData('damage', 1);  // Dégâts normaux
+                    }
+                    if (isBigBurger) {
+                        burger.setScale(3);  // Le burger devient encore plus grand
+                        burger.setData('health', 6);  // Plus de vie
+                        burger.setData('damage', 3);  // Inflige plus de dégâts
+                        burger.setTint(0xff0000);  // Changer la couleur du gros burger pour qu'il soit visible
+                    } else {
+                        burger.setData('health', 1);  // Vie normale
+                        burger.setData('damage', 1);  // Dégâts normaux
+                    }
+    
                     let direction = Phaser.Math.Between(0, 1);
                     if (direction === 0) {
-                        burger.setVelocityX(50);
+                        burger.setVelocityX(100);  // Burger va plus vite
                         burger.play("burger_right");
                     } else {
-                        burger.setVelocityX(-50);
+                        burger.setVelocityX(-100);  // Burger va plus vite
                         burger.play("burger_left");
                     }
                 }
