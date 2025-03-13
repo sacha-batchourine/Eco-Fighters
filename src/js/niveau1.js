@@ -69,10 +69,7 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
             key: "stand", frames: this.anims.generateFrameNumbers("img_perso", { start: 30, end: 32 }), frameRate: 10, repeat: -1
         });
         this.anims.create({
-            key: "walk_right", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
-        });
-        this.anims.create({
-            key: "walk_left", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
+            key: "walk", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
         });
         this.anims.create({
             key: "dead", frames: this.anims.generateFrameNumbers("img_perso", { start: 17, end: 20 }), frameRate: 10, repeat: -1
@@ -228,7 +225,7 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
 
     update(time) {
         let baseSpeed = 160;
-        let speedMultiplier = this.keyShift.isDown ? 1.6 : 1; // 1.5x plus rapide avec Shift
+        let speedMultiplier = this.keyShift.isDown ? 1.6 : 1; 
         let speed = baseSpeed * speedMultiplier;
         let diagonalSpeed = Math.sqrt(speed * speed / 2);
     
@@ -237,14 +234,14 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
     
         if (this.keyLeft.isDown) {
             this.player.setVelocityX(-speed);
-            this.player.anims.play("walk_right", true);
-            this.player.setFlipX(true);
+            this.player.setFlipX(true); // Marche vers la gauche
+            this.player.anims.play("walk", true);
             this.lastDirection = "left";
             movingX = true;
         } else if (this.keyRight.isDown) {
             this.player.setVelocityX(speed);
-            this.player.anims.play("walk_right", true);
-            this.player.setFlipX(false);
+            this.player.setFlipX(false); // Marche vers la droite
+            this.player.anims.play("walk", true);
             this.lastDirection = "right";
             movingX = true;
         } else {
@@ -366,7 +363,7 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
         this.reloadBar.fillStyle(0xffcc00, 1); // Couleur jaune au début
         this.reloadBar.fillRect(this.player.x - 20, this.player.y - 40, 40, 5); // Position au-dessus du joueur
 
-        let rechargeTime = 1000; // 2 secondes
+        let rechargeTime = 1000; 
         let updateInterval = 100;
         let elapsedTime = 0;
 

@@ -64,10 +64,7 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
             key: "stand", frames: this.anims.generateFrameNumbers("img_perso", { start: 30, end: 32 }), frameRate: 10, repeat: -1
         });
         this.anims.create({
-            key: "walk_right", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
-        });
-        this.anims.create({
-            key: "walk_left", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
+            key: "walk", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
         });
         this.anims.create({
             key: "dead", frames: this.anims.generateFrameNumbers("img_perso", { start: 17, end: 20 }), frameRate: 10, repeat: -1
@@ -295,14 +292,14 @@ this.burgerCountText.setPosition(140, 140);
         // Déplacements avec Z, Q, S, D
         if (this.keyLeft.isDown) {
             this.player.setVelocityX(-speed);
-            this.player.anims.play("walk_right", true);
-            this.player.setFlipX(true);
+            this.player.setFlipX(true); // Marche vers la gauche
+            this.player.anims.play("walk", true);
             this.lastDirection = "left";
             movingX = true;
         } else if (this.keyRight.isDown) {
             this.player.setVelocityX(speed);
-            this.player.anims.play("walk_right", true);
-            this.player.setFlipX(false);
+            this.player.setFlipX(false); // Marche vers la gauche
+            this.player.anims.play("walk", true);
             this.lastDirection = "right";
             movingX = true;
         } else {
@@ -501,7 +498,7 @@ this.burgerCountText.setPosition(140, 140);
     handlePlayerDeath() {
         // Réinitialiser la scène ou traiter la mort du joueur
         this.burgersToKill = this.maxBurgers;
-        this.updateBurgerCountText(); // Mettre à jour le texte du compteur de burgers
+        
     
         // Attendre un court instant, puis redémarrer la scène
         this.time.delayedCall(400, () => {

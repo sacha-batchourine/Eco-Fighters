@@ -71,10 +71,7 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
             key: "stand", frames: this.anims.generateFrameNumbers("img_perso", { start: 30, end: 32 }), frameRate: 10, repeat: -1
         });
         this.anims.create({
-            key: "walk_right", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
-        });
-        this.anims.create({
-            key: "walk_left", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
+            key: "walk", frames: this.anims.generateFrameNumbers("img_perso", { start: 26, end: 28 }), frameRate: 10, repeat: -1
         });
         this.anims.create({
             key: "dead", frames: this.anims.generateFrameNumbers("img_perso", { start: 17, end: 20 }), frameRate: 10, repeat: -1
@@ -275,14 +272,14 @@ this.burgerCountText.setPosition(140, 140);
     
         if (this.keyLeft.isDown) {
             this.player.setVelocityX(-speed);
-            this.player.anims.play("walk_right", true);
-            this.player.setFlipX(true);
+            this.player.setFlipX(true); // Marche vers la gauche
+            this.player.anims.play("walk", true);
             this.lastDirection = "left";
             movingX = true;
         } else if (this.keyRight.isDown) {
             this.player.setVelocityX(speed);
-            this.player.anims.play("walk_right", true);
-            this.player.setFlipX(false);
+            this.player.setFlipX(false); // Marche vers la gauche
+            this.player.anims.play("walk", true);
             this.lastDirection = "right";
             movingX = true;
         } else {
