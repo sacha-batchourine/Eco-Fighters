@@ -70,6 +70,7 @@ export default class NiveauBoss extends Phaser.Scene {
         this.keyDown = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S); // S pour bas
         this.keyRight = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D); // D pour droite
         this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); // Touche A pour tirer
+        this.shiftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
 
         //COLISIONS
         mursLayer.setCollisionByProperty({ estSolide: true });
@@ -232,6 +233,11 @@ export default class NiveauBoss extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
             this.tirer();
         }
+
+        if (Phaser.Input.Keyboard.JustDown(this.shiftKey)) {
+            this.tirer();
+        }
+
 
         this.burgers.children.iterate(burger => {
             const angle = Phaser.Math.Angle.Between(burger.x, burger.y, this.player.x, this.player.y);

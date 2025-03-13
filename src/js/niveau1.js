@@ -62,6 +62,7 @@ export default class Niveau1 extends Phaser.Scene {
         this.keyDown = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S); // S pour bas
         this.keyRight = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D); // D pour droite
         this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); // Touche A pour tirer
+        this.shiftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
 
         // les portails 
         this.portal = this.physics.add.sprite(1520, 300, "portail");
@@ -210,8 +211,12 @@ export default class Niveau1 extends Phaser.Scene {
             this.player.anims.play("stand", true);
         }
 
-        // Tirer avec la souris (garder la même logique)
         if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
+            this.tirer();
+        }
+
+       
+        if (Phaser.Input.Keyboard.JustDown(this.shiftKey)) {
             this.tirer();
         }
 
