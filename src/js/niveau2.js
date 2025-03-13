@@ -12,6 +12,7 @@ export default class Niveau2 extends Phaser.Scene {
 this.currentBullets = this.maxBullets; // Balles actuelles
 this.bulletCountText = null; // Compteur de balles
 this.isRecharging = false; // Vérifie si on recharge
+this.burgersToKill = this.maxBurgers; // Compteur de burgers à tuer
         
         
     }
@@ -82,11 +83,20 @@ this.isRecharging = false; // Vérifie si on recharge
         this.burgers = this.physics.add.group();
         this.bullets = this.physics.add.group();
         // Ajouter une barre de recharge au-dessus du joueur
-    this.reloadBar = this.add.graphics();
-    this.reloadBar.setVisible(false);
-    this.bulletCountText = this.add.text(20, 50, `Balles restantes : ${this.currentBullets}`, { fontSize: '16px', fill: '#fff' });
-    this.bulletCountText.setScrollFactor(0);
-    this.bulletCountText.setPosition(140, 120);
+        this.reloadBar = this.add.graphics();
+        this.reloadBar.setVisible(false);
+
+       // Initialiser le texte du compteur de balles
+        this.bulletCountText = this.add.text(20, 50, `Balles restantes : ${this.currentBullets}`, { fontSize: '16px', fill: '#fff' });
+        this.bulletCountText.setScrollFactor(0);
+        this.bulletCountText.setPosition(140, 120);
+        // Initialiser le texte du compteur de burgers
+        this.burgerCountText = this.add.text(20, 70, `Burgers à tuer : ${this.burgersToKill}`, { fontSize: '16px', fill: '#fff' });
+        this.burgerCountText.setScrollFactor(0);
+        this.burgerCountText.setPosition(140, 140);
+        
+
+
 
         // CREATION DE TOUCHE
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -371,9 +381,12 @@ this.isRecharging = false; // Vérifie si on recharge
         this.currentHealth -= 1;
         this.sound.play("DegatPlayer", { volume: 0.1 });
         burger.destroy();
+        this.burgersToKill--; // Décrémente le compteur de burgers à tuer
+        this.updateBurgerCountText(); // Met à jour le texte du compteur
     
         if (this.currentHealth <= 0) {
-            console.log("Game Over");
+            this.burgersToKill = this.maxBurgers;
+            this.updateBurgerCountText(); // Mettre à jour le texte du compteur de burgers
     
             this.time.delayedCall(400, () => { 
                 this.currentHealth = this.maxHealth;
@@ -388,13 +401,14 @@ this.isRecharging = false; // Vérifie si on recharge
     
     hitBurger(bullet, burger) {
         this.sound.play("burgerDeath", { volume: 0.1 });
+        this.burgersToKill--; // Décrémente le compteur de burgers restants
+        this.updateBurgerCountText(); // Met à jour le texte du compteur
         bullet.destroy();
         burger.destroy();
     }
 
-    updateHealth() {
-        this.healthIcons.forEach((heart, index) => {
-            heart.setVisible(index < this.currentHealth);
-        });
+
+    updateBurgerCountText() {
+        this.burgerCountText.setText(`Burgers à tuer : ${this.burgersToKill}`);
     }
 }
