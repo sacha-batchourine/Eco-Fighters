@@ -156,11 +156,7 @@ export default class Hub extends Phaser.Scene {
         this.scene.start("NiveauBoss");
     }
 
-    // Nouvelle fonction pour le portail vers Fin
-    onPortalFinOverlap(player, portal) {
-        console.log("Portail Fin activé");  // Vérification dans la console
-        this.scene.start("Fin");
-    }
+    
 
     update() {
         let speed = 160;
@@ -206,13 +202,11 @@ export default class Hub extends Phaser.Scene {
     }
 }
 
-// Ajoutez l'événement beforeunload pour effacer les données du localStorage avant de quitter
+// Ajoutez l'événement beforeunload ici, à l'extérieur de la classe
 window.addEventListener("beforeunload", () => {
-    // Supprimer les données du localStorage lorsque l'utilisateur quitte la page
     localStorage.removeItem("niveau1Complete");
     localStorage.removeItem("niveau2Complete");
     localStorage.removeItem("niveau3Complete");
     localStorage.removeItem("niveau4Complete");
     localStorage.removeItem("niveau5Complete");
-    localStorage.removeItem("niveauBossComplete");
 });

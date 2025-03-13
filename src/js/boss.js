@@ -150,9 +150,12 @@ export default class NiveauBoss extends Phaser.Scene {
     if (this.burgers.countActive(true) === 0) {
         // Sauvegarde de la progression avant de commencer un autre niveau
         localStorage.setItem("niveauBossComplete", "true");
-        this.scene.start("Hub");
+        this.scene.start("Fin");
     }
   }
+  
+  
+
 
   drawHealthBar() {
     this.healthBar.clear();

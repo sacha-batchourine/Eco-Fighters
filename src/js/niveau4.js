@@ -106,7 +106,7 @@ export default class Niveau4 extends Phaser.Scene {
                     if (this.bigBurgersSpawned < 5) {
                         burger = this.burgers.create(x, y, "burger");
                         burger.setScale(2); // Agrandir les burgers (taille normale x2)
-                        burger.setData('health', 200); // Gros burger a 2 fois la vie
+                        burger.setData('health',5); // Gros burger a 2 fois la vie
                         burger.setData('damage', 20); // Gros burger inflige 2 fois plus de dégats
                         burger.setData('speed', 40); // Vitesse plus lente pour les gros burgers
                         this.bigBurgersSpawned++;
@@ -115,7 +115,7 @@ export default class Niveau4 extends Phaser.Scene {
                     else if (!this.giantBurgerSpawned) {
                         burger = this.burgers.create(x, y, "burger");
                         burger.setScale(3); // Très gros burger (taille normale x3)
-                        burger.setData('health', 300); // Très gros burger a 3 fois la vie
+                        burger.setData('health', 10); // Très gros burger a 3 fois la vie
                         burger.setData('damage', 30); // Très gros burger inflige 3 fois plus de dégâts
                         burger.setData('speed', 30); // Très lent pour le gros burger
                         this.giantBurgerSpawned = true;
@@ -123,7 +123,7 @@ export default class Niveau4 extends Phaser.Scene {
                     // Spawn des burgers normaux
                     else {
                         burger = this.burgers.create(x, y, "burger");
-                        burger.setData('health', 100); // Burger normal avec la vie de base
+                        burger.setData('health', 3); // Burger normal avec la vie de base
                         burger.setData('damage', 10); // Burger normal avec les dégâts de base
                         burger.setData('speed', 50); // Burger normal
                     }

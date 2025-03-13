@@ -117,7 +117,7 @@ export default class Niveau3 extends Phaser.Scene {
                     burger.setData('damage', 2);  // Inflige plus de dégâts
                     burger.setTint(0xff0000);  // Changer la couleur du gros burger pour qu'il soit visible
                 } else {
-                    burger.setData('health', 5);  // Vie normale
+                    burger.setData('health', 3);  // Vie normale
                     burger.setData('damage', 1);  // Dégâts normaux
                 }
 
@@ -165,18 +165,7 @@ export default class Niveau3 extends Phaser.Scene {
     }
     
 
-    onPortalOverlap() {
-        if (this.burgers.countActive(true) === 0 && Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
-            let currentLevel = 3; // Numéro du niveau actuel
-            let unlockedLevel = localStorage.getItem("unlockedLevel") || 1;
-            
-            if (currentLevel >= unlockedLevel) {
-                localStorage.setItem("unlockedLevel", currentLevel + 1); // Débloque le niveau suivant (Niveau 3)
-            }
     
-            this.scene.start("Hub");
-        }
-    }
 
     update() {
         let speed = 160;
