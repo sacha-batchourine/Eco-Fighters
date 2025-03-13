@@ -10,6 +10,7 @@ export default class Niveau2 extends Phaser.Scene {
         this.isRecharging = false; // État de recharge
         this.maxBullets = 15;  // Nombre max de balles avant recharge
 this.currentBullets = this.maxBullets; // Balles actuelles
+this.bulletCountText = null; // Compteur de balles
 this.isRecharging = false; // Vérifie si on recharge
         
         
@@ -83,6 +84,7 @@ this.isRecharging = false; // Vérifie si on recharge
         // Ajouter une barre de recharge au-dessus du joueur
     this.reloadBar = this.add.graphics();
     this.reloadBar.setVisible(false);
+    this.bulletCountText = this.add.text(20, 50, `Balles restantes : ${this.currentBullets}`, { fontSize: '16px', fill: '#fff' });
 
         // CREATION DE TOUCHE
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -299,6 +301,7 @@ this.isRecharging = false; // Vérifie si on recharge
     
         // Réduire le nombre de balles disponibles
         this.currentBullets--;
+        this.bulletCountText.setText(`Balles restantes : ${this.currentBullets}`);
     
         console.log(`Balles restantes : ${this.currentBullets}`);
     
@@ -339,6 +342,7 @@ this.isRecharging = false; // Vérifie si on recharge
                     this.currentBullets = this.maxBullets; // Recharger toutes les balles
                     console.log("Recharge terminée !");
                     this.reloadBar.setVisible(false); // Cacher la barre
+                    this.bulletCountText.setText(`Balles restantes : ${this.currentBullets}`);
                     reloadInterval.remove(); // Stopper l'intervalle
                 }
             },
