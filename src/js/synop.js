@@ -6,6 +6,7 @@ export default class Synop extends Phaser.Scene {
     preload() {
         // Chargement des ressources nécessaires pour cette scène
         this.load.image("fond2", "src/assets/fond2.png");  // Charger l'image de fond pour la scène Synop
+        this.load.image("quit", "src/assets/quit.png");  // Charger l'image du bouton "Quitter"
     }
 
     create() {
@@ -57,5 +58,23 @@ export default class Synop extends Phaser.Scene {
 
         // Vérification du depth du texte
         synopsis.setDepth(2);
+
+        // Ajout du bouton "Quitter" pour retourner au Menu
+        let boutonQuit = this.add.image(largeur / 2, hauteur * 0.85, "quit").setDepth(1);
+        boutonQuit.setInteractive();
+
+        // Animation du bouton "Quitter" au survol
+        boutonQuit.on("pointerover", () => {
+            boutonQuit.setScale(1.1);
+        });
+
+        boutonQuit.on("pointerout", () => {
+            boutonQuit.setScale(1);
+        });
+
+        // Retour au Menu quand le bouton est cliqué
+        boutonQuit.on("pointerup", () => {
+            this.scene.start("Menu");  // Retourne à la scène "Menu"
+        });
     }
 }
