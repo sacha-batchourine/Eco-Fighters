@@ -63,7 +63,7 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
         
         
         //PLAYER
-        this.player = this.physics.add.sprite(100, 100, "img_perso");
+        this.player = this.physics.add.sprite(170, 150, "img_perso");
         this.player.setScale(2); // Agrandit le joueur 2 fois
         this.lastDirection = "right";
 
