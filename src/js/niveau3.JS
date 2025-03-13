@@ -138,10 +138,14 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
         delay: 2000,  // Toujours spawn tous les 2 secondes
         callback: () => {
             if (this.burgersSpawned < this.maxBurgers) {
-                let x = Phaser.Math.Between(50, mapWidth - 50);
-                let y = Phaser.Math.Between(50, mapHeight - 50);
-                let burger = this.burgers.create(x, y, "burger");
-
+                let x, y;
+            
+                    // Assurez-vous que la position du burger est à 300 pixels du joueur
+                    do {
+                        x = Phaser.Math.Between(50, mapWidth - 50);
+                        y = Phaser.Math.Between(50, mapHeight - 50);
+                    } while (Phaser.Math.Distance.Between(x, y, this.player.x, this.player.y) < 300);
+                    
                 
                 burger.setData('speed', 100);  // Augmentation de la vitesse des burgers (plus rapide)
                 this.burgersSpawned++;

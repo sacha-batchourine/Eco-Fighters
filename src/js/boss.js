@@ -156,8 +156,8 @@ this.burgerCountText.setPosition(140, 140);
                     delay: 3000, // Toutes les 3 secondes
                     callback: () => {
                         if (this.boss.active) { // Tant que le boss est en vie
-                            let spawnX = this.boss.x + Phaser.Math.Between(-50, 50);
-                            let spawnY = this.boss.y + Phaser.Math.Between(-50, 50);
+                            let spawnX = this.boss.x + Phaser.Math.Between(-200, 200);
+                            let spawnY = this.boss.y + Phaser.Math.Between(-200, 200);
                             let burger = this.burgers.create(spawnX, spawnY, "burger");
                             
                             // Déterminer le type de burger généré

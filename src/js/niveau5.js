@@ -144,9 +144,13 @@ this.burgerCountText.setPosition(140, 140);
             delay: 2000,
             callback: () => {
                 if (this.burgersSpawned < this.maxBurgers) {
-                    let x = Phaser.Math.Between(50, mapWidth - 50);
-                    let y = Phaser.Math.Between(50, mapHeight - 50);
-                    let burger = this.burgers.create(x, y, "burger");
+                    let x, y;
+            
+                    // Assurez-vous que la position du burger est à 300 pixels du joueur
+                    do {
+                        x = Phaser.Math.Between(50, mapWidth - 50);
+                        y = Phaser.Math.Between(50, mapHeight - 50);
+                    } while (Phaser.Math.Distance.Between(x, y, this.player.x, this.player.y) < 300);
                     
                     this.burgersSpawned++;
         
