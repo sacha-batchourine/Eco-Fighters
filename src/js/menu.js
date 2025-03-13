@@ -8,6 +8,7 @@ export default class Menu extends Phaser.Scene {
         this.load.image("menu_fond", "src/assets/fond.png");
         this.load.image("imageBoutonPlay", "src/assets/boutonstart.png");
         this.load.image("parchemin", "src/assets/parchemin.png");  // Charger l'image du parchemin
+        this.load.image("imageBoutonOptions", "src/assets/options.png");  // Charger l'image du bouton "Options"
     }
 
     create() {
@@ -59,6 +60,24 @@ export default class Menu extends Phaser.Scene {
         // Lancement de la scène Hub quand on clique sur le bouton
         boutonPlay.on("pointerup", () => {
             this.scene.start("Hub");
+        });
+
+        // Ajout du bouton Options
+        let boutonOptions = this.add.image(largeur / 2, hauteur * 0.75, "imageBoutonOptions").setDepth(1);
+        boutonOptions.setInteractive();
+
+        // Animation du bouton au survol
+        boutonOptions.on("pointerover", () => {
+            boutonOptions.setScale(1.1);
+        });
+
+        boutonOptions.on("pointerout", () => {
+            boutonOptions.setScale(1);
+        });
+
+        // Lancement de la scène Synop (Options) quand on clique sur le bouton
+        boutonOptions.on("pointerup", () => {
+            this.scene.start("Synop");  // Changer de scène pour Synop
         });
     }
 }

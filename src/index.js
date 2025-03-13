@@ -1,4 +1,4 @@
-
+import Synop from "./js/synop.js";  // Importer Synop
 import Hub from "./js/Hub.js";
 import Menu from "./js/menu.js";
 import Niveau1 from "./js/niveau1.js";
@@ -7,7 +7,6 @@ import Niveau3 from "./js/niveau3.js";
 import Niveau4 from "./js/niveau4.js";
 import Niveau5 from "./js/niveau5.js";
 import NiveauBoss from "./js/boss.js";
-
 
 const config = {
     type: Phaser.AUTO,
@@ -24,7 +23,7 @@ const config = {
         mode: Phaser.Scale.FIT,  // Ajuste le jeu à la fenêtre sans distorsion
         autoCenter: Phaser.Scale.CENTER_BOTH  // Centre le jeu dans la fenêtre
     },
-    scene: [Menu, Hub, Niveau1, Niveau2, Niveau3, Niveau4, Niveau5, NiveauBoss]  // Définition des scènes
+    scene: [Menu, Hub, Niveau1, Niveau2, Niveau3, Niveau4, Niveau5, NiveauBoss, Synop]  // Ajout de la scène Synop ici
 };
 
 // Création et lancement du jeu
