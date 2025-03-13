@@ -511,21 +511,17 @@ this.burgerCountText.setPosition(140, 140);
         });
     }
     
-    hitPlayer(burger) {
-        // Si le burger est le boss
-        if (burger.texture.key === 'boss') {
-            this.currentHealth -= 1; // Réduit la vie du joueur
-            if (this.currentHealth <= 0) {
-                this.handlePlayerDeath(); // Gère la mort du joueur
-                this.resetLevel(); // Réinitialise le niveau
-            }
-        } else {
-            // Gérer les collisions avec les autres burgers si nécessaire
-            this.currentHealth -= 1;
-            if (this.currentHealth <= 0) {
-                this.handlePlayerDeath();
-                this.resetLevel(); // Réinitialise le niveau
-            }
+    hitBurger(bullet, burger) {
+        bullet.destroy(); // Détruire la balle
+    
+        // Réduire la vie du burger
+        let burgerHealth = burger.getData('health');
+        burger.setData('health', burgerHealth - 1);
+    
+        // Si la vie du burger est inférieure ou égale à zéro, le détruire
+        if (burger.getData('health') <= 0) {
+            this.sound.play("burgerDeath", { volume: 0.1 });
+            burger.destroy();
         }
     }
 
