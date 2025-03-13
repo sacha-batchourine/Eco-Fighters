@@ -148,12 +148,15 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
                     burger.setData('speed', 50);
                     this.burgersSpawned++;
 
+                    // Appliquer la vitesse
                     let direction = Phaser.Math.Between(0, 1);
+                    let speed = burger.getData('speed'); 
+        
                     if (direction === 0) {
-                        burger.setVelocityX(50);
+                        burger.setVelocityX(speed);
                         burger.play("burger_right");
                     } else {
-                        burger.setVelocityX(-50);
+                        burger.setVelocityX(-speed);
                         burger.play("burger_left");
                     }
                 }

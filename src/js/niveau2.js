@@ -4,7 +4,7 @@ export default class Niveau2 extends Phaser.Scene {
         this.maxHealth = 5;
         this.currentHealth = this.maxHealth;
         this.lastDirection = "right"; // Dernière direction du joueur
-        this.maxBurgers = 10;
+        this.maxBurgers = 15;
         this.burgersSpawned = 0;
         this.ballesTirees = 0; // Compteur de balles tirées
         this.isRecharging = false; // État de recharge
@@ -151,15 +151,18 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
                     let y = Phaser.Math.Between(50, mapHeight - 50);
                     let burger = this.burgers.create(x, y, "burger");
                     
-                    burger.setData('speed', 50);
+                    burger.setData('speed', 75);
                     this.burgersSpawned++;
                     
+                    // Appliquer la vitesse
                     let direction = Phaser.Math.Between(0, 1);
+                    let speed = burger.getData('speed'); 
+        
                     if (direction === 0) {
-                        burger.setVelocityX(50);
+                        burger.setVelocityX(speed);
                         burger.play("burger_right");
                     } else {
-                        burger.setVelocityX(-50);
+                        burger.setVelocityX(-speed);
                         burger.play("burger_left");
                     }
                 }

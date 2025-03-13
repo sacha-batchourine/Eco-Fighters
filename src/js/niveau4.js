@@ -3,7 +3,7 @@ export default class Niveau4 extends Phaser.Scene {
         super({ key: "Niveau4" });
         this.maxHealth = 5;
         this.currentHealth = this.maxHealth;
-        this.maxBurgers = 20;
+        this.maxBurgers = 30;
         this.burgersSpawned = 0;
         this.bigBurgersSpawned = 0; // Compteur pour les gros burgers
         this.giantBurgerSpawned = false; // Flag pour le très gros burger
@@ -143,7 +143,7 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
                     let burger = this.burgers.create(x, y, "burger");
     
                     
-                    burger.setData('speed', 100);  // Augmentation de la vitesse des burgers (plus rapide)
+                    burger.setData('speed', 125);  // Augmentation de la vitesse des burgers (plus rapide)
                     this.burgersSpawned++;
     
                     // Décider aléatoirement si ce burger est "gros"
@@ -159,12 +159,15 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
                         burger.setData('damage', 1);  // Dégâts normaux
                     }
     
+                    // Appliquer la vitesse
                     let direction = Phaser.Math.Between(0, 1);
+                    let speed = burger.getData('speed'); 
+        
                     if (direction === 0) {
-                        burger.setVelocityX(100);  // Burger va plus vite
+                        burger.setVelocityX(speed);
                         burger.play("burger_right");
                     } else {
-                        burger.setVelocityX(-100);  // Burger va plus vite
+                        burger.setVelocityX(-speed);
                         burger.play("burger_left");
                     }
                 }
@@ -410,20 +413,22 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
     }
 }
     
-    hitBurger(bullet, burger) {
-        let health = burger.getData('health');
-        health -= 10; // Les balles infligent 10 dégâts
-        burger.setData('health', health);
+hitBurger(bullet, burger) {
+    const health = burger.getData('health');
 
-        if (health <= 0) {
-            this.burgersToKill--; // Décrémente le compteur de burgers restants
-            this.updateBurgerCountText(); // Met à jour le texte du compteur
-            this.sound.play("burgerDeath", { volume: 0.1 });
-            burger.destroy();
-        }
+    // Réduire la vie du burger en fonction des dégâts reçus
+    burger.setData('health', health - 1);
 
-        bullet.destroy();
+    // Si le burger a plus de vie, on ne le détruit pas tout de suite
+    if (burger.getData('health') <= 0) {
+        this.burgersToKill--; // Décrémente le compteur de burgers restants
+        this.updateBurgerCountText(); // Met à jour le texte du compteur
+        this.sound.play("burgerDeath", { volume: 0.1 });
+        burger.destroy();
     }
+
+    bullet.destroy();
+}
 
     updateBurgerCountText() {
         this.burgerCountText.setText(`Burgers à tuer : ${this.burgersToKill}`);

@@ -195,10 +195,17 @@ this.burgerCountText.setPosition(140, 140);
                                     break;
                             }
     
-                            // Appliquer vitesse et direction
-                            let direction = Phaser.Math.Between(0, 1);
-                            let speed = burger.getData('speed');
-                            burger.setVelocityX(direction === 0 ? speed : -speed);
+                            // Appliquer la vitesse
+                    let direction = Phaser.Math.Between(0, 1);
+                    let speed = burger.getData('speed'); 
+        
+                    if (direction === 0) {
+                        burger.setVelocityX(speed);
+                        burger.play("burger_right");
+                    } else {
+                        burger.setVelocityX(-speed);
+                        burger.play("burger_left");
+                    }
                         }
                     },
                     loop: true
@@ -455,42 +462,78 @@ this.burgerCountText.setPosition(140, 140);
    
 
     hitPlayer(player, burger) {
-        console.log("Le joueur a été touché !");
-        
-        this.currentHealth -= 1; // Réduction de la santé du joueur
-        this.sound.play("DegatPlayer", { volume: 0.1 });
-        burger.destroy(); // Suppression du burger qui a touché le joueur
-        this.burgersToKill--; // Décrémente le compteur de burgers à tuer
-        this.updateBurgerCountText(); // Met à jour le texte du compteur
-    
-    
-        if (this.currentHealth <= 0) {
-            this.burgersToKill = this.maxBurgers;
-            this.updateBurgerCountText(); // Mettre à jour le texte du compteur de burgers
-    
-            this.time.delayedCall(400, () => { 
-                this.currentHealth = this.maxHealth;
-                this.burgers.clear(true, true); // Supprime tous les burgers
-                this.burgersSpawned = 0; // Remet à zéro le compteur de burgers
+        // Vérifier si le burger touché est le boss
+        if (burger === this.boss) {
+            // Si le joueur touche le boss, il meurt directement
+            console.log("Le joueur a touché le boss ! Mort immédiate.");
             
-                // Redémarre la scène après l'animation
-                this.scene.restart();
-            });
+            // Réduire instantanément la vie du joueur à zéro
+            this.currentHealth = 0;
+            
+            // Jouer le son de dégâts
+            this.sound.play("DegatPlayer", { volume: 0.1 });
+    
+            // Redémarrer la scène ou gérer la mort du joueur
+            this.handlePlayerDeath();
+        } else {
+            console.log("Le joueur a été touché par un burger !");
+            
+            // Si ce n'est pas le boss, on applique la logique habituelle de dégâts
+            let burgerDamage = burger.getData('damage') || 1;
+            
+            // Réduire la vie du joueur
+            this.currentHealth -= burgerDamage;
+    
+            // Jouer le son de dégâts
+            this.sound.play("DegatPlayer", { volume: 0.1 });
+    
+            // Détruire le burger qui a touché le joueur
+            burger.destroy();
+    
+            // Met à jour le nombre de burgers à tuer
+            this.burgersToKill--;
+            this.updateBurgerCountText();
+    
+            // Si la vie du joueur est à zéro ou moins, déclenche sa mort
+            if (this.currentHealth <= 0) {
+                this.handlePlayerDeath();
+            }
         }
     }
     
+    handlePlayerDeath() {
+        // Réinitialiser la scène ou traiter la mort du joueur
+        this.burgersToKill = this.maxBurgers;
+        this.updateBurgerCountText(); // Mettre à jour le texte du compteur de burgers
+    
+        // Attendre un court instant, puis redémarrer la scène
+        this.time.delayedCall(400, () => {
+            this.currentHealth = this.maxHealth; // Réinitialiser la vie du joueur
+            this.burgers.clear(true, true); // Supprimer tous les burgers
+            this.burgersSpawned = 0; // Remettre à zéro le compteur de burgers
+            this.boss = false
+            // Redémarre la scène après l'animation
+            this.scene.restart();
+        });
+    }
+    
     hitBurger(bullet, burger) {
-        this.burgersToKill--; // Décrémente le compteur de burgers restants
-        this.updateBurgerCountText(); // Met à jour le texte du compteur
-        this.sound.play("burgerDeath", { volume: 0.1 });
-        bullet.destroy();
-        burger.destroy();
+        bullet.destroy(); // Détruire la balle
+    
+        // Réduire la vie du burger
+        let burgerHealth = burger.getData('health');
+        burger.setData('health', burgerHealth - 1);
+    
+        // Si la vie du burger est inférieure ou égale à zéro, le détruire
+        if (burger.getData('health') <= 0) {
+            this.burgersToKill--; // Décrémente le compteur de burgers restants
+            this.updateBurgerCountText(); // Met à jour le texte du compteur
+            this.sound.play("burgerDeath", { volume: 0.1 });
+            burger.destroy();
+        }
     }
 
-    hitPlayer(player, boss) {
-        console.log("Le joueur est mort !");
-        this.scene.restart();
-    }
+    
 
 
     updateBurgerCountText() {

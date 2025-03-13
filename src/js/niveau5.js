@@ -3,7 +3,7 @@ export default class Niveau5 extends Phaser.Scene {
         super({ key: "Niveau5" });
         this.maxHealth = 5; // Vie maximale en cœurs
         this.currentHealth = this.maxHealth; // Vie actuelle
-        this.maxBurgers = 20;
+        this.maxBurgers = 40;
         this.burgersSpawned = 0;
         this.ballesTirees = 0; // Compteur de balles tirées
         this.isRecharging = false; // État de recharge

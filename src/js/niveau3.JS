@@ -3,7 +3,7 @@ export default class Niveau3 extends Phaser.Scene {
         super({ key: "Niveau3" });
         this.maxHealth = 5;
         this.currentHealth = this.maxHealth;
-        this.maxBurgers = 15;
+        this.maxBurgers = 20;
         this.burgersSpawned = 0;
         this.ballesTirees = 0; // Compteur de balles tirées
         this.isRecharging = false; // État de recharge
@@ -60,7 +60,7 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
 
         
         // PLAYER
-        this.player = this.physics.add.sprite(100, 100, "img_perso");
+        this.player = this.physics.add.sprite(160, 150, "img_perso");
         this.player.setScale(2); // Agrandit le joueur 2 fois
         this.lastDirection = "right";
 
@@ -159,12 +159,15 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
                     burger.setData('damage', 1);  // Dégâts normaux
                 }
 
+                // Appliquer la vitesse
                 let direction = Phaser.Math.Between(0, 1);
+                let speed = burger.getData('speed'); 
+    
                 if (direction === 0) {
-                    burger.setVelocityX(100);  // Burger va plus vite
+                    burger.setVelocityX(speed);
                     burger.play("burger_right");
                 } else {
-                    burger.setVelocityX(-100);  // Burger va plus vite
+                    burger.setVelocityX(-speed);
                     burger.play("burger_left");
                 }
             }
