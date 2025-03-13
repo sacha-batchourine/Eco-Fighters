@@ -15,7 +15,8 @@ export default class Hub extends Phaser.Scene {
         this.load.spritesheet("img_perso", "src/assets/banane.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet("portail", "src/assets/portal4.png", { frameWidth: 32, frameHeight: 32 });
         this.load.image("bullet", "src/assets/balles.png"); 
-        this.load.audio("Ambiance", "src/assets/Ambiance.mp3"); // Assure-toi que le chemin est correct
+        this.load.audio("Ambiance", "src/assets/Ambiance.mp3"); 
+
     }
 
     create() {
@@ -38,7 +39,7 @@ export default class Hub extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
         
         // PLAYER
-        this.player = this.physics.add.sprite(145, 325, "img_perso");
+        this.player = this.physics.add.sprite(145, 325, "img_perso"); 
         this.player.setScale(2);
         this.lastDirection = "right";
 
@@ -229,16 +230,6 @@ export default class Hub extends Phaser.Scene {
         // Si le joueur ne bouge pas, animation d'arrêt
         if (!movingX && !movingY) {
             this.player.anims.play("stand", true);
-        }// Ajoutez l'événement beforeunload pour effacer les données du localStorage avant de quitter
-window.addEventListener("beforeunload", () => {
-    // Supprimer les données du localStorage lorsque l'utilisateur quitte la page
-    localStorage.removeItem("niveau1Complete");
-    localStorage.removeItem("niveau2Complete");
-    localStorage.removeItem("niveau3Complete");
-    localStorage.removeItem("niveau4Complete");
-    localStorage.removeItem("niveau5Complete");
-    localStorage.removeItem("niveauBossComplete");
-});}
-        
+        }}
 }
 
