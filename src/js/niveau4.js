@@ -134,15 +134,6 @@ export default class Niveau4 extends Phaser.Scene {
                         burger.setData('health', 1);  // Vie normale
                         burger.setData('damage', 1);  // Dégâts normaux
                     }
-                    if (isBigBurger) {
-                        burger.setScale(3);  // Le burger devient encore plus grand
-                        burger.setData('health', 6);  // Plus de vie
-                        burger.setData('damage', 3);  // Inflige plus de dégâts
-                        burger.setTint(0xff0000);  // Changer la couleur du gros burger pour qu'il soit visible
-                    } else {
-                        burger.setData('health', 1);  // Vie normale
-                        burger.setData('damage', 1);  // Dégâts normaux
-                    }
     
                     let direction = Phaser.Math.Between(0, 1);
                     if (direction === 0) {
@@ -156,7 +147,7 @@ export default class Niveau4 extends Phaser.Scene {
             },
             loop: true
         });
-
+    
         this.physics.add.collider(this.burgers, mursLayer);
         this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
         this.physics.add.overlap(this.bullets, this.burgers, this.hitBurger, null, this);

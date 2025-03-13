@@ -8,6 +8,10 @@ export default class Niveau1 extends Phaser.Scene {
         this.burgersSpawned = 0;
         this.ballesTirees = 0; // Compteur de balles tirées
         this.isRecharging = false; // État de recharge
+        // Initialisation des balles
+this.maxBullets = 15;  // Nombre max de balles avant recharge
+this.currentBullets = this.maxBullets; // Balles actuelles
+this.isRecharging = false; // Vérifie si on recharge
     }
 
     preload() {
@@ -64,6 +68,13 @@ export default class Niveau1 extends Phaser.Scene {
         this.anims.create({
             key: "dead", frames: this.anims.generateFrameNumbers("img_perso", { start: 17, end: 20 }), frameRate: 10, repeat: -1
         });
+        
+        // Ajouter une barre de recharge au-dessus du joueur
+    this.reloadBar = this.add.graphics();
+    this.reloadBar.setVisible(false);
+
+
+
 
         // TOUCHES
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -72,7 +83,10 @@ export default class Niveau1 extends Phaser.Scene {
         this.keyDown = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S); // S pour bas
         this.keyRight = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D); // D pour droite
         this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); // Touche A pour tirer
-        this.shiftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+        this.shiftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);  // Ajout de la touche "R" pour recharger
+        this.keyReload = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+    
+        
 
         // les portails 
         this.portal = this.physics.add.sprite(1520, 300, "portail");
@@ -245,13 +259,17 @@ export default class Niveau1 extends Phaser.Scene {
                 }
             }
         });
+         // Vérifier si le joueur appuie sur "R" pour recharger
+    if (Phaser.Input.Keyboard.JustDown(this.keyReload)) {
+        this.recharger();
+    }
 
         this.drawHealthBar();
     }
 
     tirer() {
-        if (this.isRecharging) return; // Si on est en train de recharger, on ne peut pas tirer
-    
+        if (this.isRecharging || this.currentBullets <= 0) return; // Impossible de tirer si on recharge ou plus de balles
+        
         // Crée la balle à la position du joueur
         let bullet = this.bullets.create(this.player.x, this.player.y, "bullet");
         bullet.setScale(0.5);
@@ -281,33 +299,50 @@ export default class Niveau1 extends Phaser.Scene {
             loop: false
         });
     
-        // Incrémenter le compteur de balles tirées
-        this.ballesTirees++;
+        // Réduire le nombre de balles disponibles
+        this.currentBullets--;
     
-        // Si 15 balles ont été tirées, commencer le processus de recharge
-        if (this.ballesTirees >= 15) {
-            this.ballesTirees = 0; // Réinitialiser le compteur de balles
-            this.recharger(); // Appeler la fonction de recharge
-        }
+        console.log(`Balles restantes : ${this.currentBullets}`);
     
         // Jouer le son BouleFeu
         this.sound.play("BouleFeu", { volume: 0.05});
     }
     recharger() {
-        if (this.isRecharging) return; // Si déjà en train de recharger, ne rien faire
+        if (this.isRecharging || this.currentBullets === this.maxBullets) return; // Si déjà plein ou en recharge, on ignore
     
-        // Commencer le processus de recharge
         this.isRecharging = true;
-        console.log("Rechargement...");
+        console.log("Rechargement en cours...");
     
-        // Afficher une animation ou un indicateur que le joueur recharge (optionnel)
+        // Afficher la barre de recharge
+        this.reloadBar.setVisible(true);
+        this.reloadBar.clear();
+        this.reloadBar.fillStyle(0xffcc00, 1); // Couleur jaune au début
+        this.reloadBar.fillRect(this.player.x - 20, this.player.y - 40, 40, 5); // Position au-dessus du joueur
     
-        // Après 3 secondes, permettre au joueur de tirer à nouveau
-        this.time.delayedCall(3000, () => {
-            this.isRecharging = false;
-            console.log("Recharge terminée !");
+        let rechargeTime = 1000; // 2 secondes
+        let updateInterval = 100;
+        let elapsedTime = 0;
     
-            // Ici, vous pouvez ajouter une animation de fin de recharge si nécessaire
+        let reloadInterval = this.time.addEvent({
+            delay: updateInterval,
+            callback: () => {
+                elapsedTime += updateInterval;
+                let progress = elapsedTime / rechargeTime;
+    
+                // Mise à jour de la barre de recharge
+                this.reloadBar.clear();
+                this.reloadBar.fillStyle(0x00ff00, 1); // Devient verte en progressant
+                this.reloadBar.fillRect(this.player.x - 20, this.player.y - 40, 40 * progress, 5);
+    
+                if (elapsedTime >= rechargeTime) {
+                    this.isRecharging = false;
+                    this.currentBullets = this.maxBullets; // Recharger toutes les balles
+                    console.log("Recharge terminée !");
+                    this.reloadBar.setVisible(false); // Cacher la barre
+                    reloadInterval.remove(); // Stopper l'intervalle
+                }
+            },
+            loop: true
         });
     }
 
