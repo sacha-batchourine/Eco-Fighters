@@ -5,6 +5,8 @@ export default class Niveau5 extends Phaser.Scene {
         this.currentHealth = this.maxHealth; // Vie actuelle
         this.maxBurgers = 20;
         this.burgersSpawned = 0;
+        this.ballesTirees = 0; // Compteur de balles tirées
+        this.isRecharging = false; // État de recharge
     }
 
     preload() {
@@ -274,13 +276,61 @@ export default class Niveau5 extends Phaser.Scene {
 
     // Fonction pour tirer un projectile
     tirer() {
+        if (this.isRecharging) return; // Si on est en train de recharger, on ne peut pas tirer
+    
+        // Crée la balle à la position du joueur
         let bullet = this.bullets.create(this.player.x, this.player.y, "bullet");
         bullet.setScale(0.5);
-        bullet.setVelocityX(this.lastDirection === "right" ? 300 : -300);
+    
+        // Ajuster la position de la souris par rapport à la caméra
+        const mouseX = this.input.mousePointer.x + this.cameras.main.scrollX;
+        const mouseY = this.input.mousePointer.y + this.cameras.main.scrollY;
+    
+        // Calculer l'angle entre la position du joueur et la souris
+        const angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, mouseX, mouseY);
+    
+        // Calculer la vitesse de la balle en fonction de l'angle
+        const speed = 300;
+        const velocityX = Math.cos(angle) * speed;
+        const velocityY = Math.sin(angle) * speed;
+    
+        // Appliquer la direction à la balle
+        bullet.setVelocity(velocityX, velocityY);
+    
+        // Ajuster l'orientation de la balle selon l'angle
+        bullet.rotation = angle;
+    
+        // Détruire la balle après un délai
         this.time.addEvent({
-            delay: 2000,
+            delay: 2000,  // La balle disparaît après 2 secondes
             callback: () => bullet.destroy(),
             loop: false
+        });
+    
+        // Incrémenter le compteur de balles tirées
+        this.ballesTirees++;
+    
+        // Si 15 balles ont été tirées, commencer le processus de recharge
+        if (this.ballesTirees >= 15) {
+            this.ballesTirees = 0; // Réinitialiser le compteur de balles
+            this.recharger(); // Appeler la fonction de recharge
+        }
+    }
+    recharger() {
+        if (this.isRecharging) return; // Si déjà en train de recharger, ne rien faire
+    
+        // Commencer le processus de recharge
+        this.isRecharging = true;
+        console.log("Rechargement...");
+    
+        // Afficher une animation ou un indicateur que le joueur recharge (optionnel)
+    
+        // Après 3 secondes, permettre au joueur de tirer à nouveau
+        this.time.delayedCall(3000, () => {
+            this.isRecharging = false;
+            console.log("Recharge terminée !");
+    
+            // Ici, vous pouvez ajouter une animation de fin de recharge si nécessaire
         });
     }
 

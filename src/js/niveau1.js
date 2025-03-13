@@ -6,7 +6,8 @@ export default class Niveau1 extends Phaser.Scene {
         this.lastDirection = "right";
         this.maxBurgers = 10;
         this.burgersSpawned = 0;
-        
+        this.ballesTirees = 0; // Compteur de balles tirées
+        this.isRecharging = false; // État de recharge
     }
 
     preload() {
@@ -22,7 +23,7 @@ export default class Niveau1 extends Phaser.Scene {
     }
 
     create() {
-        // gerer la map 
+        // Gerer la map 
         const map = this.make.tilemap({ key: "mapN1" });
         const tilesetGrass = map.addTilesetImage("Grass", "Grass");
         const tilesetMur = map.addTilesetImage("Wall", "Wall");
@@ -32,10 +33,6 @@ export default class Niveau1 extends Phaser.Scene {
         const mursLayer = map.createLayer("Mur", [tilesetMur]);
         map.createLayer("Chemin", [tilesetGrass]);
         map.createLayer("Portail", [tilesetProps]);
-
-       
-
-
 
         // Gerer le personnage
         this.player = this.physics.add.sprite(145, 325, "img_perso");
@@ -58,16 +55,13 @@ export default class Niveau1 extends Phaser.Scene {
             key: "dead", frames: this.anims.generateFrameNumbers("img_perso", { start: 17, end: 20 }), frameRate: 10, repeat: -1
         });
 
-        //TOUCHES
+        // TOUCHES
         this.cursors = this.input.keyboard.createCursorKeys();
         this.keyUp = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);   // Z pour haut
         this.keyLeft = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q); // Q pour gauche
         this.keyDown = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S); // S pour bas
         this.keyRight = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D); // D pour droite
         this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); // Touche A pour tirer
-
-        
-
 
         // les portails 
         this.portal = this.physics.add.sprite(1520, 300, "portail");
@@ -81,7 +75,6 @@ export default class Niveau1 extends Phaser.Scene {
         } else {
             this.portal.setAlpha(1); // Le portail est invisible tant que le niveau n'est pas terminé
         }
-
 
         // Les Burgers
         this.anims.create({
@@ -101,7 +94,6 @@ export default class Niveau1 extends Phaser.Scene {
         this.burgers = this.physics.add.group();
         this.bullets = this.physics.add.group();
 
-
         this.time.addEvent({
             delay: 2000,
             callback: () => {
@@ -112,7 +104,7 @@ export default class Niveau1 extends Phaser.Scene {
                     burger.setCollideWorldBounds(true);
                     burger.setData('speed', 50);
                     this.burgersSpawned++;
-                    
+
                     let direction = Phaser.Math.Between(0, 1);
                     if (direction === 0) {
                         burger.setVelocityX(50);
@@ -129,14 +121,11 @@ export default class Niveau1 extends Phaser.Scene {
         this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
         this.physics.add.overlap(this.bullets, this.burgers, this.hitBurger, null, this);
 
-        
-
         // Création de la barre de vie
         this.healthBar = this.add.graphics();
         this.drawHealthBar();
         this.healthBar.setScrollFactor(0);
         this.healthBar.setPosition(140, 80);
-
 
         // CAMERA
         const mapWidth = map.widthInPixels;
@@ -145,8 +134,6 @@ export default class Niveau1 extends Phaser.Scene {
         this.cameras.main.setZoom(1.1);
         this.cameras.main.setBounds(-50, -25, mapWidth + 50, mapHeight);
     }
-
-
 
     drawHealthBar() {
         this.healthBar.clear();
@@ -173,7 +160,7 @@ export default class Niveau1 extends Phaser.Scene {
         
         let movingX = false;
         let movingY = false;
-    
+
         // Déplacements avec Z, Q, S, D
         if (this.keyLeft.isDown) {
             this.player.setVelocityX(-speed);
@@ -190,7 +177,7 @@ export default class Niveau1 extends Phaser.Scene {
         } else {
             this.player.setVelocityX(0);
         }
-    
+
         if (this.keyUp.isDown) {
             this.player.setVelocityY(-speed);
             movingY = true;
@@ -200,7 +187,7 @@ export default class Niveau1 extends Phaser.Scene {
         } else {
             this.player.setVelocityY(0);
         }
-    
+
         // Gestion des animations pour le mouvement vertical
         if (movingY && !movingX) {
             if (this.lastDirection === "right") {
@@ -211,23 +198,23 @@ export default class Niveau1 extends Phaser.Scene {
                 this.player.setFlipX(true);
             }
         }
-    
+
         // Si on bouge en diagonale, on ajuste la vitesse
         if (movingX && movingY) {
             this.player.setVelocityX(this.player.body.velocity.x * diagonalSpeed / speed);
             this.player.setVelocityY(this.player.body.velocity.y * diagonalSpeed / speed);
         }
-    
+
         // Si le joueur ne bouge pas, animation d'arrêt
         if (!movingX && !movingY) {
             this.player.anims.play("stand", true);
         }
-    
+
         // Tirer avec la souris (garder la même logique)
         if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
             this.tirer();
         }
-    
+
         // Gérer les burgers, etc. (reste inchangé)
         this.burgers.children.iterate(burger => {
             const angle = Phaser.Math.Angle.Between(burger.x, burger.y, this.player.x, this.player.y);
@@ -243,11 +230,13 @@ export default class Niveau1 extends Phaser.Scene {
                 }
             }
         });
-    
+
         this.drawHealthBar();
     }
 
     tirer() {
+        if (this.isRecharging) return; // Si on est en train de recharger, on ne peut pas tirer
+    
         // Crée la balle à la position du joueur
         let bullet = this.bullets.create(this.player.x, this.player.y, "bullet");
         bullet.setScale(0.5);
@@ -276,8 +265,33 @@ export default class Niveau1 extends Phaser.Scene {
             callback: () => bullet.destroy(),
             loop: false
         });
-    }
     
+        // Incrémenter le compteur de balles tirées
+        this.ballesTirees++;
+    
+        // Si 15 balles ont été tirées, commencer le processus de recharge
+        if (this.ballesTirees >= 15) {
+            this.ballesTirees = 0; // Réinitialiser le compteur de balles
+            this.recharger(); // Appeler la fonction de recharge
+        }
+    }
+    recharger() {
+        if (this.isRecharging) return; // Si déjà en train de recharger, ne rien faire
+    
+        // Commencer le processus de recharge
+        this.isRecharging = true;
+        console.log("Rechargement...");
+    
+        // Afficher une animation ou un indicateur que le joueur recharge (optionnel)
+    
+        // Après 3 secondes, permettre au joueur de tirer à nouveau
+        this.time.delayedCall(3000, () => {
+            this.isRecharging = false;
+            console.log("Recharge terminée !");
+    
+            // Ici, vous pouvez ajouter une animation de fin de recharge si nécessaire
+        });
+    }
 
     hitPlayer(player, burger) {
         console.log("Le joueur a été touché !");
