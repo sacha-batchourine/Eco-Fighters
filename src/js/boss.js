@@ -33,6 +33,7 @@ this.burgersToKill = this.maxBurgers; // Compteur de burgers à tuer
         this.load.audio("Reload", "src/assets/Reload.mp3");
         this.load.audio("DegatPlayer", "src/assets/DegatPlayer.mp3");
         this.load.audio("TPportail", "src/assets/TPportail.mp3");
+        this.load.audio("Ambiance", "src/assets/Ambiance.mp3");
     }
 
   create() {
@@ -224,8 +225,8 @@ this.burgerCountText.setPosition(140, 140);
        this.cameras.main.setBounds(-50, -25, map.widthInPixels + 50, map.heightInPixels);
 
        //MUSIC
-       if (this.music) {
-        this.music.stop(); // Arrêter la musique actuelle
+       if (this.sound.get("Ambiance")) {  // Remplace "Ambiance" par le nom réel de la musique d'ambiance
+        this.sound.get("Ambiance").stop();
        }
        this.music = this.sound.add("BossFight", { loop: true, volume: 0.05 });
        this.music.play();
@@ -234,6 +235,9 @@ this.burgerCountText.setPosition(140, 140);
        
   onPortalOverlap() {
     if (this.burgers.countActive(true) === 0) {
+        if (this.music) {
+            this.music.stop();
+        }
         // Sauvegarde de la progression avant de commencer un autre niveau
         localStorage.setItem("niveauBossComplete", "true");
         this.sound.play("TPportail", { volume: 0.1 } );

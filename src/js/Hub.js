@@ -124,7 +124,7 @@ export default class Hub extends Phaser.Scene {
         }
 
         // ✅ Portail pour Fin (se débloque après Niveau Boss)
-        this.portalFin = this.physics.add.sprite(145, 335, "portail").setImmovable(true);
+        this.portalFin = this.physics.add.sprite(300, 335, "portail").setImmovable(true);
         this.portalFin.setVisible(niveauBossTerminé);
         this.portalFin.body.enable = niveauBossTerminé;
         if (niveauBossTerminé) {
