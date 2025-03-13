@@ -106,8 +106,8 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
         this.keyDown = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S); // S pour bas
         this.keyRight = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D); // D pour droite
         this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); // Touche A pour tirer
-        this.shiftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
         this.keyReload = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+        this.keyShift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
     
 
         //COLISIONS
@@ -209,13 +209,14 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
     }
 
     update(time) {
-        let speed = 160;
-        let diagonalSpeed = Math.sqrt(speed * speed / 2); // Réduit la vitesse en diagonale
-        
+        let baseSpeed = 160;
+        let speedMultiplier = this.keyShift.isDown ? 1.6 : 1; // 1.5x plus rapide avec Shift
+        let speed = baseSpeed * speedMultiplier;
+        let diagonalSpeed = Math.sqrt(speed * speed / 2);
+    
         let movingX = false;
         let movingY = false;
-
-        // Déplacements avec Z, Q, S, D
+    
         if (this.keyLeft.isDown) {
             this.player.setVelocityX(-speed);
             this.player.anims.play("walk_right", true);
@@ -231,7 +232,7 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
         } else {
             this.player.setVelocityX(0);
         }
-
+    
         if (this.keyUp.isDown) {
             this.player.setVelocityY(-speed);
             movingY = true;
@@ -241,25 +242,12 @@ this.isShooting = false;  // Indicateur pour éviter un tir continu
         } else {
             this.player.setVelocityY(0);
         }
-
-        // Gestion des animations pour le mouvement vertical
-        if (movingY && !movingX) {
-            if (this.lastDirection === "right") {
-                this.player.anims.play("walk_right", true);
-                this.player.setFlipX(false);
-            } else if (this.lastDirection === "left") {
-                this.player.anims.play("walk_right", true);
-                this.player.setFlipX(true);
-            }
-        }
-
-        // Si on bouge en diagonale, on ajuste la vitesse
+    
         if (movingX && movingY) {
             this.player.setVelocityX(this.player.body.velocity.x * diagonalSpeed / speed);
             this.player.setVelocityY(this.player.body.velocity.y * diagonalSpeed / speed);
         }
-
-        // Si le joueur ne bouge pas, animation d'arrêt
+    
         if (!movingX && !movingY) {
             this.player.anims.play("stand", true);
         }
