@@ -22,6 +22,7 @@ export default class Niveau3 extends Phaser.Scene {
         this.load.image("bullet", "src/assets/bullet.png");
         this.load.audio("Ambiance", "src/assets/Ambiance.mp3");
         this.load.audio("BouleFeu", "src/assets/BouleFeu.mp3"); 
+        this.load.audio("burgerDeath", "src/assets/Mort.mp3");
     }
 
     create() {
@@ -361,6 +362,7 @@ export default class Niveau3 extends Phaser.Scene {
     
         // Si le burger a plus de vie, on ne le détruit pas tout de suite
         if (burger.getData('health') <= 0) {
+            this.sound.play("burgerDeath", { volume: 0.03 });
             burger.destroy();
         }
     

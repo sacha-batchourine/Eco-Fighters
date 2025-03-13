@@ -24,6 +24,7 @@ export default class Niveau4 extends Phaser.Scene {
         this.load.image("bullet", "src/assets/bullet.png");
         this.load.audio("Ambiance", "src/assets/Ambiance.mp3");
         this.load.audio("BouleFeu", "src/assets/BouleFeu.mp3"); 
+        this.load.audio("burgerDeath", "src/assets/Mort.mp3");
     }
 
     create() {
@@ -363,6 +364,7 @@ export default class Niveau4 extends Phaser.Scene {
         burger.setData('health', health);
 
         if (health <= 0) {
+            this.sound.play("burgerDeath", { volume: 0.03 });
             burger.destroy();
         }
 

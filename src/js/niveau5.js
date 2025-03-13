@@ -22,7 +22,8 @@ export default class Niveau5 extends Phaser.Scene {
         this.load.image("heart", "src/assets/hearth.png");
         this.load.image("bullet", "src/assets/bullet.png");
         this.load.audio("Ambiance", "src/assets/Ambiance.mp3");
-        this.load.audio("BouleFeu", "src/assets/BouleFeu.mp3"); 
+        this.load.audio("BouleFeu", "src/assets/BouleFeu.mp3");
+        this.load.audio("burgerDeath", "src/assets/Mort.mp3"); 
     }
 
   create() {
@@ -400,6 +401,7 @@ export default class Niveau5 extends Phaser.Scene {
     
         // Si la vie du burger est inférieure ou égale à zéro, le détruire
         if (burger.getData('health') <= 0) {
+            this.sound.play("burgerDeath", { volume: 0.03 });
             burger.destroy();
         }
     }
