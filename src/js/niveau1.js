@@ -13,6 +13,7 @@ this.maxBullets = 15;  // Nombre max de balles avant recharge
 this.currentBullets = this.maxBullets; // Balles actuelles
 this.bulletCountText = null; // Compteur de balles
 this.isRecharging = false; // Vérifie si on recharge
+this.burgersToKill = this.maxBurgers; // Compteur de burgers à tuer
     }
 
     preload() {
@@ -80,6 +81,12 @@ this.isRecharging = false; // Vérifie si on recharge
 
     // Initialiser le texte du compteur de balles
     this.bulletCountText = this.add.text(20, 50, `Balles restantes : ${this.currentBullets}`, { fontSize: '16px', fill: '#fff' });
+    this.bulletCountText.setScrollFactor(0);
+    this.bulletCountText.setPosition(140, 120);
+    // Initialiser le texte du compteur de burgers
+    this.burgerCountText = this.add.text(20, 70, `Burgers à tuer : ${this.burgersToKill}`, { fontSize: '16px', fill: '#fff' });
+    this.burgerCountText.setScrollFactor(0);
+    this.burgerCountText.setPosition(140, 140);
         
 
 
@@ -395,5 +402,11 @@ this.isRecharging = false; // Vérifie si on recharge
         this.sound.play("burgerDeath", { volume: 0.1 });
         bullet.destroy();
         burger.destroy();
+        this.burgersToKill--; // Décrémente le compteur de burgers restants
+        this.updateBurgerCountText(); // Met à jour le texte du compteur
+    }
+
+    updateBurgerCountText() {
+        this.burgerCountText.setText(`Burgers à tuer : ${this.burgersToKill}`);
     }
 }
