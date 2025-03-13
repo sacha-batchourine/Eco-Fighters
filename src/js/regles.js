@@ -31,17 +31,17 @@ export default class Regles extends Phaser.Scene {
             ease: "Power2"
         });
 
-        // Texte des commandes et règles (centré)
         let texte = 
-            "🕹️ Commandes :\n" +
-            "- Déplacement : ZQSD\n" +
-            "- Tirer / Viser : Souris\n" +
-            "- Recharger : R\n" +
-            "- Accélérer : Shift\n" +
-            "\n" + // Adding a new line for better formatting
-            "🎯 Objectif :\n" +
-            "- Élimine tous les burgers 🍔 pour passer au niveau suivant !";
-
+    "🕹️ Commandes :\n" +
+    "- Déplacement : ZQSD\n" +
+    "- Tirer / Viser : Souris\n" +
+    "- Recharger : R\n" +
+    "- Accélérer : Shift\n" +
+    "- Interagir : Espace\n" + // Ajout de la commande pour interagir avec le PNJ
+    "\n" + // Adding a new line for better formatting
+    "🎯 Objectif :\n" +
+    "- Élimine tous les burgers 🍔 pour passer au niveau suivant !\n" +
+    "- Pense à interagir avec le PNJ pour suivre ce que le peuple pense."; // Ajout de l'instruction d'interaction
         let reglesTexte = this.add.text(largeur / 2, hauteur / 2, texte, {
             font: "28px Arial",  
             fill: "#000000",
