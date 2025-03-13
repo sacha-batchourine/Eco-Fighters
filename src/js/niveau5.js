@@ -115,40 +115,52 @@ export default class Niveau5 extends Phaser.Scene {
                     let y = Phaser.Math.Between(50, mapHeight - 50);
                     let burger = this.burgers.create(x, y, "burger");
                     
+                    this.burgersSpawned++;
         
-                    // Choisir un type de burger
-                    let burgerType = Phaser.Math.Between(1, 3); // 1 = petit, 2 = moyen, 3 = gros
+                    // Probabilité ajustée : plus de burgers moyens et gros
+                    let rand = Phaser.Math.Between(1, 10); // 1 à 10
+                    let burgerType;
+                    if (rand <= 3) {
+                        burgerType = 1; // Petit (30% de chance)
+                    } else if (rand <= 7) {
+                        burgerType = 2; // Moyen (40% de chance)
+                    } else {
+                        burgerType = 3; // Gros (30% de chance)
+                    }
         
                     // Création du burger en fonction du type
                     switch (burgerType) {
                         case 1:  // Burger petit
                             burger.setData('health', 1);
                             burger.setData('damage', 1);
-                            burger.setScale(1);  // Taille normale (petite)
-                            burger.setData('speed', 100);  // Vitesse élevée pour les petits burgers
+                            burger.setScale(1);  // Taille normale
+                            burger.setData('speed', 150);  // Vitesse rapide
                             break;
                         case 2:  // Burger moyen
                             burger.setData('health', 2);
                             burger.setData('damage', 2);
-                            burger.setScale(1.5);  // Agrandir pour le burger moyen
-                            burger.setData('speed', 75);  // Vitesse modérée pour les burgers moyens
+                            burger.setScale(1.5);  // Agrandir un peu
+                            burger.setData('speed', 75);  // Vitesse modérée
+                            burger.setTint(0xff9900); // Orange pour mieux le voir
                             break;
                         case 3:  // Burger gros
                             burger.setData('health', 3);
                             burger.setData('damage', 3);
-                            burger.setScale(2);  // Agrandir davantage pour le burger gros
-                            burger.setData('speed', 50);  // Vitesse plus lente pour les burgers gros
+                            burger.setScale(2);  // Plus gros
+                            burger.setData('speed', 50);  // Lent
+                            burger.setTint(0xff0000); // Rouge pour l'identifier
                             break;
                     }
         
-                    this.burgersSpawned++;
-        
+                    // Appliquer la vitesse en fonction du type
                     let direction = Phaser.Math.Between(0, 1);
+                    let speed = burger.getData('speed'); // Récupérer la vitesse définie
+        
                     if (direction === 0) {
-                        burger.setVelocityX(50);
+                        burger.setVelocityX(speed);
                         burger.play("burger_right");
                     } else {
-                        burger.setVelocityX(-50);
+                        burger.setVelocityX(-speed);
                         burger.play("burger_left");
                     }
                 }

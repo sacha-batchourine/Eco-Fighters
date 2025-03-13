@@ -106,29 +106,78 @@ export default class NiveauBoss extends Phaser.Scene {
       
 
       this.time.addEvent({
-          delay: 2000,
-          callback: () => {
-              if (this.burgersSpawned < this.maxBurgers) {
-                  let x = Phaser.Math.Between(50, mapWidth - 50);
-                  let y = Phaser.Math.Between(50, mapHeight - 50);
-                  let burger = this.burgers.create(x, y, "burger");
-                  burger.setCollideWorldBounds(true);
-                  burger.setData('speed', 50);
-                  this.burgersSpawned++;
-                  
-                  let direction = Phaser.Math.Between(0, 1);
-                  if (direction === 0) {
-                      burger.setVelocityX(50);
-                      burger.play("burger_right");
-                  } else {
-                      burger.setVelocityX(-50);
-                      burger.play("burger_left");
-                  }
-              }
-          },
-          loop: true
-      });
-
+        delay: 2000,
+        callback: () => {
+            if (!this.boss) { // Vérifie si le boss n'existe pas déjà
+                let x = mapWidth / 2; // Position centrale
+                let y = mapHeight / 2;
+                let boss = this.burgers.create(x, y, "mega_burger"); // Création du boss
+                boss.setScale(4); // ÉNORME
+                boss.setTint(0x800080); // Couleur violette pour le différencier
+                boss.setCollideWorldBounds(true);
+                boss.setData('health', 50); // 50 balles pour le tuer
+                boss.setData('damage', 100); // Tue en 1 coup
+                boss.setData('speed', 20); // Très lent
+                boss.setVelocityX(20); // Se déplace lentement à gauche/droite
+                
+                this.boss = boss; // Stocke la référence du boss
+    
+                // Génération de burgers réguliers
+                this.time.addEvent({
+                    delay: 3000, // Toutes les 3 secondes
+                    callback: () => {
+                        if (this.boss.active) { // Tant que le boss est en vie
+                            let spawnX = this.boss.x + Phaser.Math.Between(-50, 50);
+                            let spawnY = this.boss.y + Phaser.Math.Between(-50, 50);
+                            let burger = this.burgers.create(spawnX, spawnY, "burger");
+                            
+                            // Déterminer le type de burger généré
+                            let rand = Phaser.Math.Between(1, 10);
+                            let burgerType;
+                            if (rand <= 3) {
+                                burgerType = 1; // Petit (30%)
+                            } else if (rand <= 7) {
+                                burgerType = 2; // Moyen (40%)
+                            } else {
+                                burgerType = 3; // Gros (30%)
+                            }
+    
+                            // Configuration du burger en fonction de sa taille
+                            switch (burgerType) {
+                                case 1:
+                                    burger.setScale(1);
+                                    burger.setData('health', 1);
+                                    burger.setData('damage', 1);
+                                    burger.setData('speed', 100);
+                                    break;
+                                case 2:
+                                    burger.setScale(1.5);
+                                    burger.setData('health', 2);
+                                    burger.setData('damage', 2);
+                                    burger.setData('speed', 75);
+                                    burger.setTint(0xff9900);
+                                    break;
+                                case 3:
+                                    burger.setScale(2);
+                                    burger.setData('health', 3);
+                                    burger.setData('damage', 3);
+                                    burger.setData('speed', 50);
+                                    burger.setTint(0xff0000);
+                                    break;
+                            }
+    
+                            // Appliquer vitesse et direction
+                            let direction = Phaser.Math.Between(0, 1);
+                            let speed = burger.getData('speed');
+                            burger.setVelocityX(direction === 0 ? speed : -speed);
+                        }
+                    },
+                    loop: true
+                });
+            }
+        },
+        loop: false // Ce boss ne doit apparaître qu'une seule fois
+    });
 
       this.physics.add.collider(this.burgers, mursLayer);
       this.physics.add.collider(this.player, this.burgers, this.hitPlayer, null, this);
@@ -340,6 +389,11 @@ export default class NiveauBoss extends Phaser.Scene {
     hitBurger(bullet, burger) {
         bullet.destroy();
         burger.destroy();
+    }
+
+    hitPlayer(player, boss) {
+        console.log("Le joueur est mort !");
+        this.scene.restart();
     }
 
     updateHealth() {
