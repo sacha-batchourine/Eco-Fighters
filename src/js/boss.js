@@ -55,7 +55,7 @@ this.burgersToKill = this.maxBurgers; // Compteur de burgers à tuer
 
         
         //PLAYER
-        this.player = this.physics.add.sprite(100, 978, "img_perso");
+        this.player = this.physics.add.sprite(150, 950, "img_perso");
         this.player.setScale(2); // Agrandit le joueur 2 fois
         this.lastDirection = "right";
 
@@ -108,14 +108,12 @@ this.burgerCountText.setPosition(140, 140);
 
         
         //PORTAIL
-        this.portal = this.physics.add.sprite(1000, 1000, "portail").setImmovable(true);
+        this.portal = this.physics.add.sprite( 2250,  932, "portail").setImmovable(true);
         this.physics.add.overlap(this.player, this.portal, this.onPortalOverlap, null, this);
 
 
       
       //BURGERS
-      let mapWidth = map.widthInPixels;
-      let mapHeight = map.heightInPixels;
 
       this.anims.create({
           key: "burger_left",
@@ -131,24 +129,24 @@ this.burgerCountText.setPosition(140, 140);
           repeat: -1
       });
 
-      
-
+      if (!this.burgers) {
+        this.burgers = this.physics.add.group(); 
+      }
+      const bossSpawnPosition = { x: 2250, y: 900 }; // Modifie ces valeurs comme tu veux
       this.time.addEvent({
         delay: 2000,
         callback: () => {
             if (!this.boss) { // Vérifie si le boss n'existe pas déjà
-                let x = mapWidth / 2; // Position centrale
-                let y = mapHeight / 2;
-                let boss = this.burgers.create(x, y, "mega_burger"); // Création du boss
-                boss.setScale(4); // ÉNORME
-                boss.setTint(0x800080); // Couleur violette pour le différencier
-                boss.setCollideWorldBounds(true);
-                boss.setData('health', 50); // 50 balles pour le tuer
-                boss.setData('damage', 100); // Tue en 1 coup
-                boss.setData('speed', 20); // Très lent
-                boss.setVelocityX(20); // Se déplace lentement à gauche/droite
                 
-                this.boss = boss; // Stocke la référence du boss
+                this.boss = this.burgers.create(bossSpawnPosition.x, bossSpawnPosition.y, "mega_burger");
+                this.boss.setScale(4); // ÉNORME
+                this.boss.setTint(0x800080); // Couleur violette pour le différencier
+                this.boss.setCollideWorldBounds(false);
+                this.boss.setData('health', 50); // 50 balles pour le tuer
+                this.boss.setData('damage', 100); // Tue en 1 coup
+                this.boss.setData('speed', 20); // Très lent
+                this.boss.setVelocityX(20); // Se déplace lentement à gauche/droite
+                
     
                 // Génération de burgers réguliers
                 this.time.addEvent({
@@ -241,7 +239,7 @@ this.burgerCountText.setPosition(140, 140);
         // Sauvegarde de la progression avant de commencer un autre niveau
         localStorage.setItem("niveauBossComplete", "true");
         this.sound.play("TPportail", { volume: 0.1 } );
-        this.scene.start("Fin");
+        this.scene.start("Hub");
     }
   }
   
